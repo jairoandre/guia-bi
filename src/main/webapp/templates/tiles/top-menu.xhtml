@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:body>
+  <h:form id="menuForm">
+    <p:growl id="messages" showDetail="true" showSummary="true"
+             autoUpdate="true" globalOnly="true"/>
+    <p:menubar rendered="#{request.getUserPrincipal() != null}" toggleEvent="click">
+      <p:menuitem action="/pages/index.xhtml?faces-redirect=true">
+        <h:graphicImage library="img" name="favicon.png" height="15"/>
+      </p:menuitem>
+      <p:menuitem value="Usuários"
+                  action="/admin/user/list.xhtml?faces-redirect=true" ajax="false"
+                  icon="ui-icon-person"/>
+      <p:submenu label="Cadastro" icon="ui-icon-document">
+        <p:menuitem value="Clientes"
+                    ajax="false"
+                    action="/pages/client/list.xhtml?faces-redirect=true"/>
+        <p:menuitem value="Setores"
+                    ajax="false"
+                    action="/pages/sector/list.xhtml?faces-redirect=true"/>
+        <p:menuitem value="Serviços"
+                    ajax="false"
+                    action="/pages/service/list.xhtml?faces-redirect=true"/>
+        <p:menuitem value="Contratos"
+                    ajax="false"
+                    action="/pages/contract/list.xhtml?faces-redirect=true"/>
+      </p:submenu>
+      <p:menuitem value="Lançamentos"
+                  ajax="false"
+                  action="/pages/entry/list.xhtml?faces-redirect=true"/>
+      <f:facet name="options">
+        <h:panelGroup style="margin-top: 3px;" layout="block">
+          <h:outputText value="Olá, #{loginController.username}     "
+                        rendered="#{request.getUserPrincipal() != null}"/>
+          <p:commandButton value="Logout" action="#{loginController.logout}"
+                           icon="fa fa-sign-out"
+                           rendered="#{request.getUserPrincipal() != null}"/>
+        </h:panelGroup>
+      </f:facet>
+    </p:menubar>
+  </h:form>
+</h:body>
+</html>

@@ -1,0 +1,224 @@
+body {
+  background: rgb(232, 216, 169) url("#{resource['img/bg.png']}");
+}
+
+.ui-widget {
+  font-size: 90%;
+}
+
+.ui-datatable .ui-button {
+  float: left;
+}
+
+.admin-dashboard-button {
+  width: 150px;
+  height: 150px;
+  margin: 10px;
+}
+
+.userDataTableStyle {
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 0;
+}
+
+.login-pnl {
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
+  margin-top: 15%;
+  background: #EFF7E1;
+  padding: 30px 0;
+  border: solid 1px #D0DEB8;
+  border-radius: 15px;
+  box-shadow: 0px 0px 10px rgb(119, 119, 119);
+}
+
+.login-pnl img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-pnl table {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.userFormStyle {
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
+}
+
+.ui-selectmanymenu {
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+.homeWrapper {
+  background: #159957 linear-gradient(120deg, #155799, #159957);
+  border-radius: 15px;
+}
+
+.home {
+  position: relative;
+  padding: 30px 15px;
+  color: rgba(255, 255, 255, .8);
+  font-size: 20px;
+}
+
+.home .homeImgWrapper {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 10px 0;
+  background: rgba(53, 5, 5, 0.16);
+  border-radius: 10px;
+}
+
+.masthead {
+  padding: 40px 20px;
+  color: white;
+}
+
+.masthead > h1 {
+  font-size: 3em;
+}
+
+.masthead > h2 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.masthead a {
+  color: #ddd;
+}
+
+.masthead p {
+  margin: 10px;
+}
+
+.masthead.logo {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
+  margin: auto;
+  height: 100px;
+  width: 200px;
+  text-align: center;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+}
+
+.masthead.logo p {
+  line-height: 100px;
+  margin: 0px;
+}
+
+.masthead.logo img {
+  width: 75%;
+  margin: auto;
+}
+
+.td-align-top {
+  vertical-align: top;
+}
+
+.create-btn {
+  float: right;
+  background: #568A30 !important;
+  border-color: #2B4213 !important;
+  color: #fff !important;
+}
+
+.create-btn:HOVER {
+  background: #748A30 !important;
+  border-color: #374213 !important;
+}
+
+td.action-link {
+  text-align: center;
+}
+
+span.action-link span, a.action-link span, td.action-link a span, td.action-link span span {
+  font-size: 18px;
+  padding: 2px;
+}
+
+a.action-link:HOVER, td.action-link a:HOVER {
+  color: red;
+}
+
+.selected-column {
+  background-color: #C8DBFF;
+}
+
+.left-align {
+  text-align: left !important;
+}
+
+.right-align {
+  text-align: right !important;
+}
+
+.services-contract-panel .ui-datalist-header, .table-left-header .ui-datatable-header {
+  text-align: left !important;
+}
+
+.lance-input {
+  min-width: 300px;
+}
+
+.lance-info-icon {
+  margin-left: 5px;
+  font-size: 18px;
+  color: #3399ff;
+  cursor: pointer;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.margin-top {
+  margin-top: 10px;
+}
+
+.margin-left {
+  margin-left: 5px;
+}
+
+.lance-container {
+  position: relative;
+}
+
+.entry-total-block {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 20px;
+  color: #fff
+}
+
+#particles-js {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+
+.login-input-pnl {
+  padding: 20px;
+  text-align: center;
+  position: relative;
+}
+
+.login-info {
+  position: absolute;
+  top: -45px;
+  right: 15px;
+  color: #4e88cc;
+  cursor: pointer;
+}
