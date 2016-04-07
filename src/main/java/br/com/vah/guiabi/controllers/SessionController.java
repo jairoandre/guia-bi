@@ -10,11 +10,16 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import br.com.vah.guiabi.constants.RolesEnum;
+import br.com.vah.guiabi.entities.dbamv.Setor;
+import br.com.vah.guiabi.entities.usrdbvah.User;
+import br.com.vah.guiabi.service.UserService;
 import br.com.vah.guiabi.util.DateUtility;
 
 /**
@@ -26,20 +31,26 @@ import br.com.vah.guiabi.util.DateUtility;
 @SuppressWarnings("serial")
 @Named
 @SessionScoped
-public class LoginController implements Serializable {
+public class SessionController implements Serializable {
 
   private
   transient Logger logger = Logger.getLogger("LoginController");
 
+  private
+  @Inject
+  UserService userService;
+
 
   private String username;
   private String password;
+  private User user;
+  private Setor setor;
 
 
   /**
    * Creates a new instance of LoginController
    */
-  public LoginController() {
+  public SessionController() {
   }
 
   // Getters and Setters
@@ -72,6 +83,10 @@ public class LoginController implements Serializable {
     this.password = password;
   }
 
+  public User getUser() {
+    return user;
+  }
+
   /**
    * Listen for button clicks on the #{loginController.login} action,
    * validates the username and password entered by the user and navigates to
@@ -88,17 +103,26 @@ public class LoginController implements Serializable {
       /**
        * Realiza autenticação
        */
-      request.login(username, password);
+      String usernameLC = this.username.toLowerCase();
+
+      request.login(usernameLC, password);
 
       /**
        * Verifica se o usuário já está configurado no sistema
        */
-      
+
+      user = userService.findByLogin(usernameLC);
+
 
       /**
        * Primeiro acesso
        */
-      
+      if (user == null) {
+        user = new User();
+        user.setLogin(username);
+        user = userService.create(user);
+      }
+
       // gets the user principle and navigates to the appropriate page
 
       Principal principal = request.getUserPrincipal();
@@ -106,6 +130,11 @@ public class LoginController implements Serializable {
       try {
         logger.log(Level.INFO, "User ({0}) loging in #" + DateUtility.getCurrentDateTime(),
             request.getUserPrincipal().getName());
+
+        if (RolesEnum.AUTHORIZER.equals(user.getRole())) {
+          navigateString = "/pages/selecionarSetor.xhtml";
+        }
+
         context.getExternalContext().redirect(request.getContextPath() + navigateString);
       } catch (IOException ex) {
         logger.log(Level.SEVERE, "IOException, Login Controller" + "Username : " + principal.getName(), ex);
@@ -136,5 +165,26 @@ public class LoginController implements Serializable {
         .handleNavigation(FacesContext.getCurrentInstance(), null, "/login.xhtml?faces-redirect=true");
   }
 
-  
+  public boolean isUserInRoles(String roles) {
+    boolean atLeastOneRole = false;
+    for (String role : roles.trim().split(",")) {
+      if (user.getRole().equals(RolesEnum.valueOf(role))) {
+        atLeastOneRole = true;
+        break;
+      }
+    }
+    return atLeastOneRole;
+  }
+
+  public String prosseguir() {
+    return "/pages/guia/list.xhtml?faces-redirect=true";
+  }
+
+  public Setor getSetor() {
+    return setor;
+  }
+
+  public void setSetor(Setor setor) {
+    this.setor = setor;
+  }
 }

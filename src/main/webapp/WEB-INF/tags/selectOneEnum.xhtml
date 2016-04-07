@@ -4,8 +4,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 	<h:panelGroup>
-		<h:outputLabel for="#{id}" value="#{label}" style="font-weight:bold"
-			rendered="#{label != null}" />
+		<p:outputLabel for="#{id}" value="#{label}" style="font-weight:bold"
+			rendered="#{label != null}" indicateRequired="false" />
 		<h:outputText value="*" style="font-weight: bold; color: red;"
 			rendered="#{required == null ? false : required}" />
 		<h:outputText value=":" style="font-weight: bold;" />
@@ -18,8 +18,8 @@
 	<h:outputText value="#{value == null ? '-' : value.label}"
 		rendered="#{!editing}" />
 	<p:selectOneMenu id="#{id}" value="#{value}" required="#{required}"
-		label="#{label}" rendered="#{editing}">
-		<f:selectItem itemLabel="Selecione..." />
+		label="#{label}" rendered="#{editing}" style="min-width: 150px;">
+		<ui:insert />
 		<f:selectItems value="#{options}" var="option"
 			itemLabel="#{option.label}" itemValue="#{option}" />
 	</p:selectOneMenu>

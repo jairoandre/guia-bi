@@ -13,29 +13,16 @@
       </p:menuitem>
       <p:menuitem value="Usuários"
                   action="/admin/user/list.xhtml?faces-redirect=true" ajax="false"
+                  rendered="#{sessionController.isUserInRoles('ADMINISTRATOR')}"
                   icon="ui-icon-person"/>
-      <p:submenu label="Cadastro" icon="ui-icon-document">
-        <p:menuitem value="Clientes"
-                    ajax="false"
-                    action="/pages/client/list.xhtml?faces-redirect=true"/>
-        <p:menuitem value="Setores"
-                    ajax="false"
-                    action="/pages/sector/list.xhtml?faces-redirect=true"/>
-        <p:menuitem value="Serviços"
-                    ajax="false"
-                    action="/pages/service/list.xhtml?faces-redirect=true"/>
-        <p:menuitem value="Contratos"
-                    ajax="false"
-                    action="/pages/contract/list.xhtml?faces-redirect=true"/>
-      </p:submenu>
-      <p:menuitem value="Lançamentos"
-                  ajax="false"
-                  action="/pages/entry/list.xhtml?faces-redirect=true"/>
+      <p:menuitem value="Guias"
+                  action="/pages/guia/list.xhtml?faces-redirect=true" ajax="false"
+                  icon="ui-icon-document"/>
       <f:facet name="options">
         <h:panelGroup style="margin-top: 3px;" layout="block">
-          <h:outputText value="Olá, #{loginController.username}     "
+          <h:outputText value="Olá, #{sessionController.username}     "
                         rendered="#{request.getUserPrincipal() != null}"/>
-          <p:commandButton value="Logout" action="#{loginController.logout}"
+          <p:commandButton value="Logout" action="#{sessionController.logout}"
                            icon="fa fa-sign-out"
                            rendered="#{request.getUserPrincipal() != null}"/>
         </h:panelGroup>

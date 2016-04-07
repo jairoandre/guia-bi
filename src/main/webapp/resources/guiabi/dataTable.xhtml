@@ -4,7 +4,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:composite="http://java.sun.com/jsf/composite"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:lance="http://java.sun.com/jsf/composite/lance">
+      xmlns:lance="http://java.sun.com/jsf/composite/guiabi">
 
 <composite:interface>
   <composite:attribute name="id"/>
@@ -20,7 +20,7 @@
 <composite:implementation>
   <h:panelGroup id="#{cc.attrs.id}" layout="block">
     <h:panelGroup id="panel" layout="block"
-                  style="margin-bottom: 10px; position: relative;">
+                  style="margin-bottom: 20px; position: relative;">
       <p:focus context="panel"/>
       <p:inputText id="searchInput"
                    value="#{cc.attrs.controller.searchTerm}"
@@ -32,20 +32,18 @@
                        update="table"
                        title="Procurar #{cc.attrs.controller.entityName}"
                        style="margin-left: 10px;"/>
-      <p:commandButton value="Novo #{cc.attrs.controller.entityName}"
-                       action="#{cc.attrs.controller.add}" icon="fa fa-plus"
+      <p:commandButton value="Nova #{cc.attrs.controller.entityName}"
+                       icon="fa fa-file"
+                       action="#{cc.attrs.controller.add}"
                        title="Criar novo #{cc.attrs.controller.entityName}"
                        rendered="#{cc.attrs.renderAddBtn == null ? true : cc.attrs.renderAddBtn}"
-                       style="position: absolute; right: 0;"/>
+                       style="position: absolute; right: 0; font-size: 20px;"/>
     </h:panelGroup>
     <p:dataTable id="table" var="item" value="#{cc.attrs.controller.lazyModel}"
                  paginator="true" emptyMessage="Sem registros" styleClass="table-left-header"
                  paginatorPosition="bottom" rows="10" rowKey="index" rowIndexVar="indexVar"
                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  lazy="true" rowsPerPageTemplate="10,25,50">
-      <f:facet name="header">
-        <h:outputText value="Listagem"/>
-      </f:facet>
       <composite:insertChildren/>
       <p:column width="100" headerText="Ações" styleClass="action-link"
                 rendered="#{cc.attrs.renderActionColumn == null ? true : cc.attrs.renderActionColumn}">

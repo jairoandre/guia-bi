@@ -13,8 +13,9 @@
         <div class="mdl-tooltip" for="tt1">
           Login LDAP (O mesmo utilizado para as estações de trabalho)
         </div>
+        <div class="login-system-name">Sistema GUIAS</div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <h:inputText id="username" value="#{loginController.username}"
+          <h:inputText id="username" value="#{sessionController.username}"
                        required="true" requiredMessage="Usuário requerido"
                        styleClass="mdl-textfield__input">
             <f:validateLength minimum="1"/>
@@ -22,7 +23,7 @@
           <h:outputLabel value="Usuário" for="username" styleClass="mdl-textfield__label"/>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <h:inputSecret id="password" value="#{loginController.password}"
+          <h:inputSecret id="password" value="#{sessionController.password}"
                          required="true" requiredMessage="Senha requerido"
                          styleClass="mdl-textfield__input">
             <f:validateLength minimum="1"/>
@@ -30,7 +31,7 @@
           <h:outputLabel value="Senha" for="password" styleClass="mdl-textfield__label"/>
         </div>
         <p:commandButton value="Entrar" update="msgs"
-                         actionListener="#{loginController.login}" type="submit"
+                         actionListener="#{sessionController.login}" type="submit"
                          styleClass="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
                          icon="fa fa-sign-in" style="margin:0"/>
       </h:panelGroup>

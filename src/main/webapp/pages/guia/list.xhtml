@@ -1,0 +1,24 @@
+<ui:composition template="/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:guiabi="http://java.sun.com/jsf/composite/guiabi">
+  <ui:define name="content">
+    <h:form id="form">
+      <p:panel header="Guias">
+        <guiabi:dataTable id="dataTable" controller="#{guiaController}"
+                          renderDeleteAction="false" renderAddBtn="true"
+                          renderEditAction="#{loginController.isUserInRoles('ADMINISTRATOR,AUTHORIZER')}">
+          <p:column sortBy="#{item.atendimento.id}" headerText="Atendimento" styleClass="left-align">
+            <h:outputText value="#{item.atendimento.id}"/>
+          </p:column>
+          <p:column sortBy="#{item.atendimento.paciente.name}" headerText="Paciente" styleClass="left-align"
+                    width="100">
+            <h:outputText value="#{item.atendimento.paciente.name}"/>
+          </p:column>
+        </guiabi:dataTable>
+      </p:panel>
+    </h:form>
+  </ui:define>
+</ui:composition>

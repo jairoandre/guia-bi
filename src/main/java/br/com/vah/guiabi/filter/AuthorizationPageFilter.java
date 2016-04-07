@@ -1,7 +1,11 @@
 package br.com.vah.guiabi.filter;
 
 
-import br.com.vah.guiabi.controllers.LoginController;
+import br.com.vah.guiabi.constants.RolesEnum;
+import br.com.vah.guiabi.controllers.SessionController;
+import br.com.vah.guiabi.constants.RestrictViewsEnum;
+import br.com.vah.guiabi.entities.dbamv.Setor;
+import br.com.vah.guiabi.entities.usrdbvah.User;
 
 
 import javax.inject.Inject;
@@ -19,7 +23,12 @@ public class AuthorizationPageFilter implements Filter {
 
   private
   @Inject
-  LoginController loginController;
+  SessionController sessionController;
+
+  public static final String ERROR_ACCESS_DENIED = "/error-access-denied.xhtml";
+  public static final String LOGIN = "/login.xhtml";
+  public static final String SELECIONAR_SETOR = "/selecionarSetor.xhtml";
+
 
   @Override
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
@@ -29,7 +38,8 @@ public class AuthorizationPageFilter implements Filter {
 
     if (request.getUserPrincipal() != null) {
 
-      //User user = loginController.getUser();
+      User user = sessionController.getUser();
+      Setor setor = sessionController.getSetor();
 
       String[] splitPath = request.getRequestURI().split(request.getContextPath());
 
@@ -38,26 +48,28 @@ public class AuthorizationPageFilter implements Filter {
       if (splitPath.length > 1) {
         view = splitPath[1];
       }
-      
-      filterChain.doFilter(servletRequest, servletResponse);
 
       /**
        * Verifica se a view requisitada se encontra na enumeração de views restritas
        */
-      /*RestrictViewsEnum restrictView = RestrictViewsEnum.getByView(view);
+      RestrictViewsEnum restrictView = RestrictViewsEnum.getByView(view);
 
-      if (restrictView == null || restrictView.checkRoles(user.getRoles())) {
-        filterChain.doFilter(servletRequest, servletResponse);
+      if (restrictView == null || restrictView.checkRole(user.getRole())) {
+        if (RolesEnum.AUTHORIZER.equals(user.getRole()) && setor == null) {
+          response.sendRedirect(request.getContextPath() + SELECIONAR_SETOR);
+        } else {
+          filterChain.doFilter(servletRequest, servletResponse);
+        }
       } else {
-        response.sendRedirect(request.getContextPath() + "/error-access-denied.xhtml");
-      }*/
-      
+        response.sendRedirect(request.getContextPath() + ERROR_ACCESS_DENIED);
+      }
+
     } else {
       // Usuário não logado
-      response.sendRedirect(request.getContextPath() + "/login.xhtml");
+      response.sendRedirect(request.getContextPath() + LOGIN);
     }
-    
-    
+
+
   }
 
   @Override

@@ -4,8 +4,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
   <h:panelGroup rendered="#{rendered == null ? true : rendered}">
-    <h:outputLabel
-      for="#{id}Input" value="#{label}"
+    <p:outputLabel
+      for="#{id}Input" value="#{label}" indicateRequired="false"
       style="font-weight:bold" rendered="#{label != null}"/>
     <h:outputText value="*" style="font-weight: bold; color: red;"
                   rendered="#{required == null ? false : required}"/>
@@ -20,28 +20,32 @@
     <h:outputText
       value="#{value == null ? null : value[title]}" rendered="#{!editing}"/>
     <p:inputText
-      id="#{id}Hidden" value="#{value.id}" type="hidden"
-      required="#{required == null ? false : required}" label="#{label}" rendered="#{editing and value.id != null}"/>
+      id="#{id}Hidden"
+      value="#{value.id}"
+      type="hidden"
+      required="#{required == null ? false : required}"
+      label="#{label}"
+      rendered="#{editing and value.id != null}"/>
     <p:inputText
       id="#{id}Input" placeholder="Selecione..."
       styleClass="lance-input"
-      value="#{value == null ? null : value[title]}"
-      readonly="true"
+      value="#{value == null ? '' : value[title]}"
       rendered="#{editing}"
-      required="#{required == null ? false : required}"/>
+      required="#{required}"
+      onkeydown="event.preventDefault()"/>
     <span/>
     <p:commandButton
       id="#{id}OpenDlgBtn" onclick="PF('#{dialog}').show()"
       rendered="#{editing == null ? true : editing}" icon="fa fa-search"/>
-    <p:commandButton ajax="true" process="@this" update=":#{p:component(id)}"
-      id="#{id}ClearBtn" rendered="#{editing == null ? true : editing}" icon="fa fa-trash">
+    <p:commandButton ajax="true" process="@this" update="#{id}"
+                     id="#{id}ClearBtn" rendered="#{editing == null ? true : editing}" icon="fa fa-trash">
       <f:setPropertyActionListener value="#{null}" target="#{value}"/>
     </p:commandButton>
   </h:panelGroup>
   <h:panelGroup rendered="#{rendered == null ? true : rendered}">
     <h:panelGroup
       rendered="#{renderMessage == null ? true : renderMessage}">
-      <p:message id="#{id}Msg" for="#{id}Hidden" rendered="#{value != null}"/>
+      <p:message id="#{id}Msg" for="#{id}Input"/>
     </h:panelGroup>
   </h:panelGroup>
 

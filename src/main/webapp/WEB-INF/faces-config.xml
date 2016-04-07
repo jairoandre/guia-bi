@@ -4,19 +4,18 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
               version="2.2">
-	<application>
-		<message-bundle>resources.application</message-bundle>
-		<locale-config>
-			<default-locale>en</default-locale>
-		</locale-config>
-	</application>
-    <navigation-rule>
-        <display-name>login.xhtml</display-name>
-        <from-view-id>/login.xhtml</from-view-id>
-        <navigation-case>
-            <from-outcome>failure</from-outcome>
-            <to-view-id>/login.xhtml</to-view-id>
-            <redirect />
-        </navigation-case>
-    </navigation-rule>
+  <application>
+    <locale-config>
+      <default-locale>pt_BR</default-locale>
+    </locale-config>
+  </application>
+  <navigation-rule>
+    <display-name>login.xhtml</display-name>
+    <from-view-id>/login.xhtml</from-view-id>
+    <navigation-case>
+      <from-outcome>failure</from-outcome>
+      <to-view-id>/login.xhtml</to-view-id>
+      <redirect/>
+    </navigation-case>
+  </navigation-rule>
 </faces-config>

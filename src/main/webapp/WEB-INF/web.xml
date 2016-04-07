@@ -2,10 +2,10 @@
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-  <display-name>com.nz</display-name>
+  <display-name>guiabi</display-name>
   <context-param>
     <param-name>primefaces.THEME</param-name>
-    <param-value>sunny</param-value>
+    <param-value>redmond</param-value>
   </context-param>
   <context-param>
     <param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
@@ -29,10 +29,6 @@
   <filter-mapping>
     <filter-name>AuthorizationPageFilter</filter-name>
     <url-pattern>/pages/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AuthorizationPageFilter</filter-name>
-    <url-pattern>/admin/*</url-pattern>
   </filter-mapping>
   <filter>
     <filter-name>LoginPageFilter</filter-name>
