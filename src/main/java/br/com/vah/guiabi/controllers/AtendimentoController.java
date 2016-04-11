@@ -30,7 +30,6 @@ public class AtendimentoController extends AbstractController<Atendimento> {
 
   @PostConstruct
   public void init() {
-    setSearchField("id");
     logger.info(this.getClass().getSimpleName() + " created");
     setItem(createNewItem());
     initLazyModel(service);
@@ -64,7 +63,7 @@ public class AtendimentoController extends AbstractController<Atendimento> {
 
   @Override
   public void search() {
-    resetSearchParams();
-    searchById();
+    super.search();
+    setSearchParam("paciente", getSearchTerm());
   }
 }

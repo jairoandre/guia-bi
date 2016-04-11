@@ -32,6 +32,8 @@
         </div>
         <p:commandButton value="Entrar" update="msgs"
                          actionListener="#{sessionController.login}" type="submit"
+                         onstart="PF('changePage').show()"
+                         oncomplete="PF('changePage').hide()"
                          styleClass="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
                          icon="fa fa-sign-in" style="margin:0"/>
       </h:panelGroup>

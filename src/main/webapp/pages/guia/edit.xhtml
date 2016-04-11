@@ -24,9 +24,10 @@
                               update="setor" bean="#{guiaController.item.setor}"/>
 
       <p:dialog id="atendimentoDlg" widgetVar="atendimentoDlg" modal="true"
-                header="SELECIONAR ATENDIMENTO*" appendTo="@parent"
+                header="SELECIONAR ATENDIMENTO*"
                 width="800">
-        <p:ajax event="close" process="@none" update="guiaPnlWrapper"/>
+        <p:ajax event="close" process="@this"
+                update=":#{p:component('atendimentoPnl')},:#{p:component('pacientePnl')}"/>
         <guiabi:dataTable id="atendimentoDlgTable"
                           controller="#{atendimentoController}" renderAddBtn="false"
                           renderActionColumn="false">
@@ -59,7 +60,7 @@
           <uiguiabi:selectOneEnum id="tipo" label="Tipo" value="#{guiaController.item.tipo}" required="true"
                                   editing="#{guiaController.editing}"
                                   options="#{guiaController.tipos}">
-            <p:ajax event="change" update="guiaForm"/>
+            <p:ajax event="change" listener="#{guiaController.onchangeTipo}" process="@this" update="@form"/>
           </uiguiabi:selectOneEnum>
 
           <uiguiabi:manyToOne id="setor" dialog="setorDlg" label="Setor" editing="#{guiaController.editing}"
@@ -71,16 +72,19 @@
             <h:outputText value=":" style="font-weight: bold;"/>
           </h:panelGroup>
 
-          <h:panelGroup>
+          <h:panelGroup id="atendimentoPnl">
+
             <p:inputText
-              id="atendimento" placeholder="Informe o atendimento..."
+              id="atendimento"
+              placeholder="Informe o atendimento..."
               styleClass="lance-input"
               value="#{guiaController.atendimentoId}"
-              readonly="#{!guiaController.editing}"
               required="true">
               <p:ajax event="change" listener="#{guiaController.searchAtendimento}" process="@this"
-                      update=":#{p:component('guiaPnlWrapper')}"/>
+                      oncomplete="nextFocus('#{p:component('descricao')}')"
+                      update="pacientePnl, atendimentoMsg"/>
             </p:inputText>
+
             <span/>
 
             <p:commandButton id="atendimentoOpenDlgBtn"
@@ -93,7 +97,7 @@
             <p:commandButton id="atendimentoClearBtn"
                              ajax="true"
                              process="@this"
-                             update=":#{p:component('guiaPnlWrapper')}"
+                             update="atendimentoPnl,pacientePnl"
                              rendered="#{guiaController.editing}"
                              icon="fa fa-trash">
               <f:setPropertyActionListener value="#{null}" target="#{guiaController.item.atendimento}"/>
@@ -106,24 +110,28 @@
           <p:message id="atendimentoMsg" for="atendimento"/>
 
           <p:outputLabel value="Paciente:" for="paciente" style="font-weight:bold"/>
-          <p:inputText id="pacienteEmpty" value="" placeholder="Informe o atendimento" styleClass="lance-input"
-                       readonly="true" rendered="#{guiaController.item.atendimento.paciente == null}"/>
-          <p:inputText id="paciente" value="#{guiaController.item.atendimento.paciente.name}" styleClass="lance-input"
-                       readonly="true" rendered="#{guiaController.item.atendimento.paciente != null}"/>
+
+          <h:panelGroup id="pacientePnl">
+            <p:inputText id="pacienteEmpty" value="" placeholder="Nome do paciente..." styleClass="lance-input"
+                         readonly="true" rendered="#{guiaController.item.atendimento.paciente == null}"/>
+            <p:inputText id="paciente" value="#{guiaController.item.atendimento.paciente.name}" styleClass="lance-input"
+                         readonly="true" rendered="#{guiaController.item.atendimento.paciente != null}"/>
+          </h:panelGroup>
+
           <h:panelGroup/>
 
-          <uiguiabi:inputDate id="dataSecretaria" label="Data secretaria"
-                              value="#{guiaController.item.dataSecretaria}"/>
+          <uiguiabi:inputText id="descricao" label="Descrição" value="#{guiaController.item.descricao}"
+                              editing="#{guiaController.editing}"/>
 
-          <uiguiabi:inputDate id="dataFaturamento" label="Data faturamento"
-                              value="#{guiaController.item.dataFaturamento}"/>
+          <uiguiabi:inputDate id="data" label="Data da guia" required="true"
+                              value="#{guiaController.item.data}" editing="#{guiaController.editing}"
+                              readonly="#{guiaController.item.tipo == 'PRORROGACAO'}"/>
 
-          <uiguiabi:inputDate id="dataAuditoria" label="Data auditoria"
-                              value="#{guiaController.item.dataAuditoria}"/>
-
-          <uiguiabi:inputDate id="dataConvenio" label="Data resposta convênio"
-                              value="#{guiaController.item.dataRespostaConvenio}"/>
-
+          <uiguiabi:inputDate id="dataRecebimento" label="Data de recebimento"
+                              value="#{guiaController.item.dataRecebimento}"
+                              editing="#{guiaController.editing}"
+                              readonly="#{true}"
+                              rendered="#{guiaController.item.tipo != null and guiaController.item.tipo != 'PRORROGACAO'}"/>
 
         </guiabi:editForm>
 

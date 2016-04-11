@@ -7,7 +7,9 @@ import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Entidade que representa uma guia.
@@ -50,17 +52,26 @@ public class Guia extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private EstadosGuiaEnum estado;
 
-  @Column(name = "DT_SECRETARIA")
-  private Date dataSecretaria;
+  @Column(name = "DT_GUIA")
+  private Date data;
 
-  @Column(name = "DT_FATURAMENTO")
-  private Date dataFaturamento;
+  @Column(name = "DT_RECEBIMENTO")
+  private Date dataRecebimento;
 
   @Column(name = "DT_AUDITORIA")
   private Date dataAuditoria;
 
+  @Column(name = "DT_SOLICITACAO_CONVENIO")
+  private Date dataSolicitacaoConvenio;
+
   @Column(name = "DT_REPOSTA_CONVENIO")
   private Date dataRespostaConvenio;
+
+  @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER)
+  private List<HistoricoGuia> historico = new ArrayList<>();
+
+  @Column(name = "CD_DESCRICAO")
+  private String descricao;
 
   public Guia() {
     this.estado = EstadosGuiaEnum.PENDENTE;
@@ -114,20 +125,20 @@ public class Guia extends BaseEntity {
     this.estado = estado;
   }
 
-  public Date getDataSecretaria() {
-    return dataSecretaria;
+  public Date getData() {
+    return data;
   }
 
-  public void setDataSecretaria(Date dataSecretaria) {
-    this.dataSecretaria = dataSecretaria;
+  public void setData(Date data) {
+    this.data = data;
   }
 
-  public Date getDataFaturamento() {
-    return dataFaturamento;
+  public Date getDataRecebimento() {
+    return dataRecebimento;
   }
 
-  public void setDataFaturamento(Date dataFaturamento) {
-    this.dataFaturamento = dataFaturamento;
+  public void setDataRecebimento(Date dataRecebimento) {
+    this.dataRecebimento = dataRecebimento;
   }
 
   public Date getDataAuditoria() {
@@ -138,12 +149,36 @@ public class Guia extends BaseEntity {
     this.dataAuditoria = dataAuditoria;
   }
 
+  public Date getDataSolicitacaoConvenio() {
+    return dataSolicitacaoConvenio;
+  }
+
+  public void setDataSolicitacaoConvenio(Date dataSolicitacaoConvenio) {
+    this.dataSolicitacaoConvenio = dataSolicitacaoConvenio;
+  }
+
   public Date getDataRespostaConvenio() {
     return dataRespostaConvenio;
   }
 
   public void setDataRespostaConvenio(Date dataRespostaConvenio) {
     this.dataRespostaConvenio = dataRespostaConvenio;
+  }
+
+  public List<HistoricoGuia> getHistorico() {
+    return historico;
+  }
+
+  public void setHistorico(List<HistoricoGuia> historico) {
+    this.historico = historico;
+  }
+
+  public String getDescricao() {
+    return descricao;
+  }
+
+  public void setDescricao(String descricao) {
+    this.descricao = descricao;
   }
 
   @Override

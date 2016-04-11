@@ -34,12 +34,14 @@
           <h:panelGrid id="grid"
                        columns="3"
                        cellpadding="5" style="margin-top: 25px;">
-            <uiguiabi:manyToOne id="setor" dialog="setorDlg" label="Setor" editing="#{true}"
+            <uiguiabi:manyToOne id="setor" dialog="setorDlg" label="Setor" editing="#{true}" required="#{true}"
                                 title="title" value="#{sessionController.setor}"/>
           </h:panelGrid>
         </h:panelGroup>
         <p:commandButton id="prosseguirBtn" value="Prosseguir" action="#{sessionController.prosseguir}"
                          style="font-size: 25px; margin-top: 25px"
+                         onstart="PF('changePage').show()"
+                         onerror="PF('changePage').hide()"
                          disabled="#{sessionController.setor == null or sessionController.setor.id == null}"/>
       </p:panel>
     </h:form>

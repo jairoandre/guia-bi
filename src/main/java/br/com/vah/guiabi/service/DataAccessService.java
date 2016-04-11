@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -25,6 +26,7 @@ import org.hibernate.criterion.*;
  */
 
 @SuppressWarnings({"rawtypes", "unchecked"})
+@Stateless
 public abstract class DataAccessService<T> implements Serializable {
 
   public static final String ID = "id";
@@ -277,4 +279,7 @@ public abstract class DataAccessService<T> implements Serializable {
     return ((Number) criteria.uniqueResult()).intValue();
   }
 
+  public EntityManager getEm() {
+    return em;
+  }
 }

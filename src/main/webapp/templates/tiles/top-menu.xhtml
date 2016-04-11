@@ -8,23 +8,28 @@
     <p:growl id="messages" showDetail="true" showSummary="true"
              autoUpdate="true" globalOnly="true"/>
     <p:menubar rendered="#{request.getUserPrincipal() != null}" toggleEvent="click">
-      <p:menuitem action="/pages/index.xhtml?faces-redirect=true">
+      <p:menuitem action="/pages/index.xhtml?faces-redirect=true" onstart="PF('changePage').show()">
         <h:graphicImage library="img" name="favicon.png" height="15"/>
       </p:menuitem>
       <p:menuitem value="Usuários"
                   action="/admin/user/list.xhtml?faces-redirect=true" ajax="false"
                   rendered="#{sessionController.isUserInRoles('ADMINISTRATOR')}"
-                  icon="ui-icon-person"/>
+                  icon="ui-icon-person" onstart="PF('changePage').show()"/>
       <p:menuitem value="Guias"
                   action="/pages/guia/list.xhtml?faces-redirect=true" ajax="false"
-                  icon="ui-icon-document"/>
+                  icon="fa fa-file-o" onstart="PF('changePage').show()"/>
       <f:facet name="options">
+
         <h:panelGroup style="margin-top: 3px;" layout="block">
-          <h:outputText value="Olá, #{sessionController.username}     "
-                        rendered="#{request.getUserPrincipal() != null}"/>
+          <p:commandButton value="#{sessionController.setor.title}"
+                           action="/selecionarSetor.xhtml?faces-redirect=true" ajax="false"
+                           icon="fa fa-hospital-o" rendered="#{sessionController.setor != null}" onstart="PF('changePage').show()"/>
+          <p:commandButton value="#{sessionController.username}"
+                           action="/pages/guia/index.xhtml?faces-redirect=true" ajax="false"
+                           icon="fa fa-user" rendered="#{request.getUserPrincipal() != null}"/>
           <p:commandButton value="Logout" action="#{sessionController.logout}"
                            icon="fa fa-sign-out"
-                           rendered="#{request.getUserPrincipal() != null}"/>
+                           rendered="#{request.getUserPrincipal() != null}" onstart="PF('changePage').show()"/>
         </h:panelGroup>
       </f:facet>
     </p:menubar>

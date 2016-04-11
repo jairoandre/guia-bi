@@ -1,5 +1,6 @@
 <ui:composition template="/templates/layout.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
@@ -8,14 +9,87 @@
     <h:form id="form">
       <p:panel header="Guias">
         <guiabi:dataTable id="dataTable" controller="#{guiaController}"
-                          renderDeleteAction="false" renderAddBtn="true"
-                          renderEditAction="#{loginController.isUserInRoles('ADMINISTRATOR,AUTHORIZER')}">
-          <p:column sortBy="#{item.atendimento.id}" headerText="Atendimento" styleClass="left-align">
+                          renderActionColumn="false"
+                          renderAddBtn="true">
+          <p:columnGroup type="header">
+            <p:row>
+              <p:column rowspan="2" width="20" style="text-align: center;"/>
+              <p:column rowspan="2" headerText="Setor" styleClass="left-align" sortBy="#{item.setor.title}"
+                        width="150"/>
+              <p:column rowspan="2" headerText="Atend." styleClass="left-align" sortBy="#{item.atendimento.id}"
+                        width="50"/>
+              <p:column rowspan="2" headerText="Paciente" styleClass="left-align"
+                        sortBy="#{item.atendimento.paciente.name}" width="250"/>
+              <p:column rowspan="2" headerText="Descrição" styleClass="left-align" sortBy="#{item.atendimento.id}"
+                        width="150"/>
+              <p:column colspan="5" headerText="Datas" width="375"/>
+              <p:column rowspan="2" style="text-align: center;" width="75"/>
+            </p:row>
+            <p:row>
+              <p:column headerText="Guia" styleClass="left-align" sortBy="#{item.data}" width="75"/>
+              <p:column headerText="Receb." styleClass="left-align" sortBy="#{item.dataRecebimento}" width="75"/>
+              <p:column headerText="Audit." styleClass="left-align" sortBy="#{item.dataAuditoria}" width="75"/>
+              <p:column headerText="Solic." styleClass="left-align" sortBy="#{item.dataRespostaConvenio}" width="75"/>
+              <p:column headerText="Resp." styleClass="left-align" sortBy="#{item.dataRespostaConvenio}" width="75"/>
+            </p:row>
+          </p:columnGroup>
+          <p:column style="padding: 0;">
+            <h:panelGroup id="estado" layout="block" styleClass="#{item.estado.colors}">
+              <h:outputText styleClass="#{item.estado.icon}"/>
+            </h:panelGroup>
+          </p:column>
+          <p:column sortBy="#{item.setor.title}" styleClass="left-align">
+            <h:outputText value="#{item.setor.title}"/>
+          </p:column>
+          <p:column sortBy="#{item.atendimento.id}" styleClass="left-align">
             <h:outputText value="#{item.atendimento.id}"/>
           </p:column>
-          <p:column sortBy="#{item.atendimento.paciente.name}" headerText="Paciente" styleClass="left-align"
-                    width="100">
+          <p:column sortBy="#{item.atendimento.paciente.name}" styleClass="left-align">
             <h:outputText value="#{item.atendimento.paciente.name}"/>
+          </p:column>
+          <p:column sortBy="#{item.descricao}" styleClass="left-align">
+            <h:outputText value="#{item.descricao}"/>
+          </p:column>
+          <p:column sortBy="#{item.data}" styleClass="left-align">
+            <h:outputText value="#{item.data}">
+              <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+          </p:column>
+          <p:column sortBy="#{item.dataRecebimento}" styleClass="left-align">
+            <h:outputText id="dataRecebimento" value="#{item.dataRecebimento}">
+              <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+          </p:column>
+          <p:column sortBy="#{item.dataAuditoria}" styleClass="left-align">
+            <h:outputText id="dataAuditoria" value="#{item.dataAuditoria}">
+              <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+          </p:column>
+          <p:column sortBy="#{item.dataSolicitacaoConvenio}" styleClass="left-align">
+            <h:outputText id="dataSolicitacaoConvenio" value="#{item.dataSolicitacaoConvenio}">
+              <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+          </p:column>
+          <p:column sortBy="#{item.dataRespostaConvenio}" styleClass="left-align">
+            <h:outputText id="dataRespostaConvenio" value="#{item.dataRespostaConvenio}">
+              <f:convertDateTime pattern="dd/MM/yyyy"/>
+            </h:outputText>
+          </p:column>
+          <p:column style="text-align: center">
+            <p:menuButton id="menuButton" value="Ações" disabled="#{item.estado == 'FINALIZADO'}">
+              <p:menuitem value="Recebimento" action="#{guiaController.receber(item)}"
+                          ajax="true" process="@this" update="estado, menuButton, dataRecebimento"
+                          icon="fa fa-thumbs-up" disabled="#{item.dataRecebimento != null}"/>
+              <p:menuitem value="Auditoria" actionListener="#{guiaController.auditar(item)}"
+                          ajax="true" process="@this" update="estado, menuButton, dataAuditoria"
+                          icon="fa fa-gavel" disabled="#{item.dataAuditoria != null}"/>
+              <p:menuitem value="Solicitação convênio" actionListener="#{guiaController.solicitarConvenio(item)}"
+                          ajax="true" process="@this" update="estado, menuButton, dataSolicitacaoConvenio"
+                          icon="fa fa-question-circle" disabled="#{item.dataSolicitacaoConvenio != null}"/>
+              <p:menuitem value="Resposta convênio" actionListener="#{guiaController.respostaConvenio(item)}"
+                          ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
+                          icon="fa fa-check" disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
+            </p:menuButton>
           </p:column>
         </guiabi:dataTable>
       </p:panel>

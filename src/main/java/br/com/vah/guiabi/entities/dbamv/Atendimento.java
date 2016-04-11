@@ -24,6 +24,10 @@ public class Atendimento extends BaseEntity {
   @JoinColumn(name = "CD_PACIENTE")
   private Paciente paciente;
 
+  @ManyToOne
+  @JoinColumn(name = "CD_CONVENIO")
+  private Convenio convenio;
+
   @Override
   public Long getId() {
     return id;
@@ -44,6 +48,14 @@ public class Atendimento extends BaseEntity {
 
   public void setPaciente(Paciente paciente) {
     this.paciente = paciente;
+  }
+
+  public Convenio getConvenio() {
+    return convenio;
+  }
+
+  public void setConvenio(Convenio convenio) {
+    this.convenio = convenio;
   }
 
   @Override

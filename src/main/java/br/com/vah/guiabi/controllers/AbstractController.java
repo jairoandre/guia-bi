@@ -24,7 +24,7 @@ public abstract class AbstractController<T extends BaseEntity> implements Serial
 
   private String searchTerm;
 
-  private String searchField = "title";
+  private String searchField = "id";
 
   private T selectedItem;
 
@@ -117,7 +117,7 @@ public abstract class AbstractController<T extends BaseEntity> implements Serial
    */
   public void search() {
     resetSearchParams();
-    setSearchParam(getSearchField(), getSearchTerm());
+    searchById();
   }
 
   public void searchById() {

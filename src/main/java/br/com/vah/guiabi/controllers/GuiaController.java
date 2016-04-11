@@ -1,12 +1,12 @@
 package br.com.vah.guiabi.controllers;
 
+import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.service.AtendimentoService;
 import br.com.vah.guiabi.service.DataAccessService;
 import br.com.vah.guiabi.service.GuiaService;
-import br.com.vah.guiabi.util.GenericLazyDataModel;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -15,6 +15,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -47,10 +48,7 @@ public class GuiaController extends AbstractController<Guia> {
 
   @PostConstruct
   public void init() {
-    setSearchField("id");
     logger.info(this.getClass().getSimpleName() + " created");
-    setItem(createNewItem());
-    getItem().setSetor(session.getSetor());
     initLazyModel(service);
     tipos = TipoGuiaEnum.getSelectItems();
   }
@@ -60,6 +58,9 @@ public class GuiaController extends AbstractController<Guia> {
     super.onLoad();
     if (getItem().getId() != null) {
       updateAtendimentoId();
+    } else {
+      getItem().setSetor(session.getSetor());
+      service.addHistorico(session.getUser(), getItem());
     }
   }
 
@@ -105,6 +106,17 @@ public class GuiaController extends AbstractController<Guia> {
     FacesContext.getCurrentInstance().addMessage("form:guiaForm:atendimento", new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Não foi possível localizar o atendimento"));
   }
 
+  public void onchangeTipo() {
+    if (TipoGuiaEnum.PRORROGACAO.equals(getItem().getTipo())) {
+      getItem().setData(new Date());
+      getItem().setDataRecebimento(null);
+    } else {
+      getItem().setData(null);
+      getItem().setDataRecebimento(new Date());
+    }
+
+  }
+
   public void searchAtendimento() {
     if (atendimentoId == null) {
       getItem().setAtendimento(null);
@@ -124,16 +136,29 @@ public class GuiaController extends AbstractController<Guia> {
   }
 
   public void updateAtendimentoId() {
-    if(getItem().getAtendimento() == null){
+    if (getItem().getAtendimento() == null) {
       atendimentoId = null;
     } else {
       atendimentoId = getItem().getAtendimento().getId();
     }
   }
 
-  @Override
-  public void search() {
-    resetSearchParams();
-    searchById();
+  public void receber(Guia guia) {
+    guia.setDataRecebimento(new Date());
   }
+
+  public void auditar(Guia guia) {
+    guia.setDataAuditoria(new Date());
+  }
+
+  public void solicitarConvenio(Guia guia) {
+    guia.setDataSolicitacaoConvenio(new Date());
+  }
+
+  public void respostaConvenio(Guia guia) {
+    guia.setDataRespostaConvenio(new Date());
+    guia.setEstado(EstadosGuiaEnum.FINALIZADO);
+  }
+
+
 }

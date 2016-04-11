@@ -15,7 +15,7 @@
 		<p:tooltip id="#{id}InfoTooltip" for="#{id}Info" value="#{info}"
 			rendered="#{info != null}" />
 	</h:panelGroup>
-	<h:outputText value="#{value == null ? '-' : value.label}"
+	<h:outputText value="#{value}"
 		rendered="#{!editing}" />
 	<p:selectOneMenu id="#{id}" value="#{value}" required="#{required}"
 		label="#{label}" rendered="#{editing}" style="min-width: 150px;">

@@ -29,6 +29,16 @@ public class HistoricoGuia extends BaseEntity {
   @Column(name = "DT_ALTERACAO")
   private Date data;
 
+  public HistoricoGuia() {
+    this.data = new Date();
+  }
+
+  public HistoricoGuia(User autor, Guia guia) {
+    this();
+    this.autor = autor;
+    this.guia = guia;
+  }
+
   @Override
   public Long getId() {
     return id;

@@ -229,3 +229,40 @@ a.action-link:HOVER, td.action-link a:HOVER {
   color: #4e88cc;
   cursor: pointer;
 }
+
+
+.warning-bg, .ended-bg {
+  text-align: center;
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 40px;
+}
+
+.warning-bg {
+  animation: blink 3s;
+  animation-iteration-count: infinite;
+}
+
+.ended-bg {
+  background: forestgreen;
+}
+
+@keyframes blink {
+  from {background-color: #fff; color: #cd1e00;}
+  50% {background-color: #cd1e00; color: #fff;}
+  to {background-color: #fff; color: #cd1e00;}
+}
+
+/* PRIMEFACES */
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+  opacity: 0.75 !important;
+}
+
+.ui-menuitem-icon {
+  font-size: 13px !important;
+}
+
+.ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
+  background: #f7ffc6;
+}

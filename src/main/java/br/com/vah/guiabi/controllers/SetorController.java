@@ -26,7 +26,6 @@ public class SetorController extends AbstractController<Setor> {
 
   @PostConstruct
   public void init() {
-    setSearchField("id");
     logger.info(this.getClass().getSimpleName() + " created");
     setItem(createNewItem());
     initLazyModel(service);
@@ -61,6 +60,6 @@ public class SetorController extends AbstractController<Setor> {
   @Override
   public void search() {
     super.search();
-    searchById();
+    setSearchParam("title", getSearchTerm());
   }
 }

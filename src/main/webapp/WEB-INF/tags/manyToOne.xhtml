@@ -27,15 +27,22 @@
       label="#{label}"
       rendered="#{editing and value.id != null}"/>
     <p:inputText
-      id="#{id}Input" placeholder="Selecione..."
+      id="#{id}InputEmpty" placeholder="Selecione..."
       styleClass="lance-input"
-      value="#{value == null ? '' : value[title]}"
-      rendered="#{editing}"
+      value="#{value}"
+      rendered="#{editing and value == null}"
       required="#{required}"
       onkeydown="event.preventDefault()"/>
+    <p:inputText
+      id="#{id}Input" placeholder="Selecione..."
+      styleClass="lance-input"
+      value="#{value[title]}"
+      rendered="#{editing and value != null}"
+      required="#{required}"
+      readonly="true"/>
     <span/>
     <p:commandButton
-      id="#{id}OpenDlgBtn" onclick="PF('#{dialog}').show()"
+      id="#{id}OpenDlgBtn" process="@none" onclick="PF('#{dialog}').show()"
       rendered="#{editing == null ? true : editing}" icon="fa fa-search"/>
     <p:commandButton ajax="true" process="@this" update="#{id}"
                      id="#{id}ClearBtn" rendered="#{editing == null ? true : editing}" icon="fa fa-trash">
@@ -45,7 +52,7 @@
   <h:panelGroup rendered="#{rendered == null ? true : rendered}">
     <h:panelGroup
       rendered="#{renderMessage == null ? true : renderMessage}">
-      <p:message id="#{id}Msg" for="#{id}Input"/>
+      <p:message id="#{id}Msg" for="#{id}InputEmpty"/>
     </h:panelGroup>
   </h:panelGroup>
 
