@@ -3,19 +3,11 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:guiabi="http://java.sun.com/jsf/composite/guiabi"
                 xmlns:uiguiabi="http://vah.com.br/guiabi">
   <ui:define name="content">
     <h:form>
-
-      <guiabi:manyToOneDialog id="setorDlg"
-                              controller="#{setorController}"
-                              header="SELECIONAR SETOR" width="800"
-                              update="setorPnl" bean="#{sessionController.setor}">
-        <p:column headerText="Cód." sortBy="#{item.id}" width="100" styleClass="left-align">
-          <h:outputText value="#{item.id}"/>
-        </p:column>
-      </guiabi:manyToOneDialog>
 
       <p:panel id="setorPnl" header="Selecione o setor">
         <h:panelGroup layout="block" styleClass="margin-top">
@@ -25,17 +17,32 @@
               <ul>
                 <li>
                   <h:panelGroup styleClass="ui-messages-info-detail">
-                    Bem vindo ao Guia-BI, por favor selecione o setor no qual deseja realizar o controle de guias.
+                    Bem vindo ao Guia-BI, por favor informe o setor no qual deseja realizar o controle de guias.
                   </h:panelGroup>
                 </li>
               </ul>
             </div>
           </div>
+          <p:focus context="setorPnl"/>
           <h:panelGrid id="grid"
-                       columns="3"
+                       columns="2"
                        cellpadding="5" style="margin-top: 25px;">
-            <uiguiabi:manyToOne id="setor" dialog="setorDlg" label="Setor" editing="#{true}" required="#{true}"
-                                title="title" value="#{sessionController.setor}"/>
+            <p:outputLabel value="Setor:" styleClass="lance-label"/>
+            <p:autoComplete id="setor" value="#{sessionController.setor}"
+                            var="setor"
+                            itemLabel="#{setor.title}"
+                            itemValue="#{setor}"
+                            converter="#{setorConverter}"
+                            inputStyleClass="lance-input"
+                            completeMethod="#{setorController.completeSetor}" placeholder="Digite o código ou o nome do setor.">
+              <p:ajax event="itemSelect" update="prosseguirBtn" oncomplete="nextFocus('#{p:component('prosseguirBtn')}')"/>
+              <p:column>
+                #{setor.id}
+              </p:column>
+              <p:column>
+                #{setor.title}
+              </p:column>
+            </p:autoComplete>
           </h:panelGrid>
         </h:panelGroup>
         <p:commandButton id="prosseguirBtn" value="Prosseguir" action="#{sessionController.prosseguir}"

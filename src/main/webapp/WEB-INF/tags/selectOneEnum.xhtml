@@ -1,28 +1,24 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
-	<h:panelGroup>
-		<p:outputLabel for="#{id}" value="#{label}" style="font-weight:bold"
-			rendered="#{label != null}" indicateRequired="false" />
-		<h:outputText value="*" style="font-weight: bold; color: red;"
-			rendered="#{required == null ? false : required}" />
-		<h:outputText value=":" style="font-weight: bold;" />
-		<h:panelGroup id="#{id}Info"
-			styleClass="fa fa-info-circle lance-info-icon"
-			rendered="#{info != null}" />
-		<p:tooltip id="#{id}InfoTooltip" for="#{id}Info" value="#{info}"
-			rendered="#{info != null}" />
-	</h:panelGroup>
-	<h:outputText value="#{value}"
-		rendered="#{!editing}" />
-	<p:selectOneMenu id="#{id}" value="#{value}" required="#{required}"
-		label="#{label}" rendered="#{editing}" style="min-width: 150px;">
-		<ui:insert />
-		<f:selectItems value="#{options}" var="option"
-			itemLabel="#{option.label}" itemValue="#{option}" />
-	</p:selectOneMenu>
-	<p:message for="#{id}"
-		rendered="#{renderMessage == null ? true : renderMessage}" />
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+  <h:panelGroup>
+    <p:outputLabel for="#{id}" value="#{label}" styleClass="lance-label"/>
+    <h:panelGroup id="#{id}Info"
+                  styleClass="fa fa-info-circle lance-info-icon"
+                  rendered="#{info != null}"/>
+    <p:tooltip id="#{id}InfoTooltip" for="#{id}Info" value="#{info}"
+               rendered="#{info != null}"/>
+  </h:panelGroup>
+  <h:outputText value="#{value}"
+                rendered="#{!editing}"/>
+  <p:selectOneMenu id="#{id}" value="#{value}" required="#{required}"
+                   label="#{label}" rendered="#{editing}" style="min-width: 150px;">
+    <ui:insert/>
+    <f:selectItems value="#{options}" var="option"
+                   itemLabel="#{option.label}" itemValue="#{option}"/>
+  </p:selectOneMenu>
+  <p:message for="#{id}"
+             rendered="#{renderMessage == null ? true : renderMessage}"/>
 </ui:composition>

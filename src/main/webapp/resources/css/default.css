@@ -178,6 +178,11 @@ a.action-link:HOVER, td.action-link a:HOVER {
   min-width: 300px;
 }
 
+.lance-label {
+  font-weight: bold;
+  font-size: 18px !important;
+}
+
 .lance-info-icon {
   margin-left: 5px;
   font-size: 18px;
@@ -255,7 +260,7 @@ a.action-link:HOVER, td.action-link a:HOVER {
 
 /* PRIMEFACES */
 
-.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+input.ui-state-disabled {
   opacity: 0.75 !important;
 }
 
@@ -265,4 +270,9 @@ a.action-link:HOVER, td.action-link a:HOVER {
 
 .ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
   background: #f7ffc6;
+}
+
+.ui-chkbox-label {
+  font-size: 12px;
+  line-height: 15px;
 }

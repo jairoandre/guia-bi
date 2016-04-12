@@ -10,7 +10,15 @@
       <p:panel header="Guias">
         <guiabi:dataTable id="dataTable" controller="#{guiaController}"
                           renderActionColumn="false"
+                          placeholder="Nº atendimento ou Nome do paciente"
                           renderAddBtn="true">
+          <f:facet name="customFilters">
+            <div class="margin-top">
+              <p:selectBooleanCheckbox id="somenteSetor" value="#{guiaController.somenteDoSetor}" itemLabel="Somente [#{sessionController.setor.title}]"/>
+              <p:selectBooleanCheckbox id="somentePendentes" value="#{guiaController.somentePendentes}" itemLabel="Somente pendentes" styleClass="margin-left"/>
+              <p:selectBooleanCheckbox id="somenteMinhaAutoria" value="#{guiaController.somenteMinhaAutoria}" itemLabel="Somente minha autoria" styleClass="margin-left"/>
+            </div>
+          </f:facet>
           <p:columnGroup type="header">
             <p:row>
               <p:column rowspan="2" width="20" style="text-align: center;"/>

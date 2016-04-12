@@ -1,5 +1,6 @@
 package br.com.vah.guiabi.entities.usrdbvah;
 
+import br.com.vah.guiabi.constants.AcoesGuiaEnum;
 import br.com.vah.guiabi.entities.BaseEntity;
 
 import javax.persistence.*;
@@ -29,14 +30,20 @@ public class HistoricoGuia extends BaseEntity {
   @Column(name = "DT_ALTERACAO")
   private Date data;
 
+  @Column(name = "CD_ACAO", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private AcoesGuiaEnum acao;
+
+
   public HistoricoGuia() {
     this.data = new Date();
   }
 
-  public HistoricoGuia(User autor, Guia guia) {
+  public HistoricoGuia(User autor, Guia guia, AcoesGuiaEnum acao) {
     this();
     this.autor = autor;
     this.guia = guia;
+    this.acao = acao;
   }
 
   @Override
@@ -71,6 +78,14 @@ public class HistoricoGuia extends BaseEntity {
 
   public void setData(Date data) {
     this.data = data;
+  }
+
+  public AcoesGuiaEnum getAcao() {
+    return acao;
+  }
+
+  public void setAcao(AcoesGuiaEnum acao) {
+    this.acao = acao;
   }
 
   @Override

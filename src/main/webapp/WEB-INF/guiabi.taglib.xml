@@ -388,4 +388,44 @@
             <name>info</name>
         </attribute>
     </tag>
+    <tag>
+        <tag-name>autoComplete</tag-name>
+        <source>tags/autoComplete.xhtml</source>
+        <attribute>
+            <description>Id</description>
+            <name>id</name>
+        </attribute>
+        <attribute>
+            <description>Label</description>
+            <name>label</name>
+        </attribute>
+        <attribute>
+            <description>Value</description>
+            <name>value</name>
+        </attribute>
+        <attribute>
+            <description>Item Label</description>
+            <name>itemLabel</name>
+        </attribute>
+        <attribute>
+            <description>Converter</description>
+            <name>converter</name>
+        </attribute>
+        <attribute>
+            <description>Required</description>
+            <name>required</name>
+        </attribute>
+        <attribute>
+            <description>Controller</description>
+            <name>controller</name>
+        </attribute>
+        <attribute>
+            <description>Complete method</description>
+            <name>completeMethod</name>
+        </attribute>
+        <attribute>
+            <description>Placeholder</description>
+            <name>placeholder</name>
+        </attribute>
+    </tag>
 </facelet-taglib>

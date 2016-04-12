@@ -5,11 +5,7 @@
                 xmlns:p="http://primefaces.org/ui">
   <h:panelGroup rendered="#{rendered == null ? true : rendered}">
     <p:outputLabel
-      for="#{id}Input" value="#{label}" indicateRequired="false"
-      style="font-weight:bold" rendered="#{label != null}"/>
-    <h:outputText value="*" style="font-weight: bold; color: red;"
-                  rendered="#{required == null ? false : required}"/>
-    <h:outputText value=":" style="font-weight: bold;"/>
+      for="#{id}Input" value="#{label}" styleClass="lance-label"/>
     <h:panelGroup id="#{id}Info"
                   styleClass="fa fa-info-circle lance-info-icon"
                   rendered="#{info != null}"/>

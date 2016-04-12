@@ -1,16 +1,14 @@
 package br.com.vah.guiabi.controllers;
 
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
-import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.service.AtendimentoService;
 import br.com.vah.guiabi.service.DataAccessService;
-import br.com.vah.guiabi.service.SetorService;
-import br.com.vah.guiabi.util.GenericLazyDataModel;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -62,8 +60,15 @@ public class AtendimentoController extends AbstractController<Atendimento> {
   }
 
   @Override
-  public void search() {
-    super.search();
+  public void prepareSearch() {
+    super.prepareSearch();
     setSearchParam("paciente", getSearchTerm());
+  }
+
+  public List<Atendimento> completeAtendimento(String query) {
+    setSearchTerm(query);
+    super.prepareSearch();
+    setSearchParam("paciente", query);
+    return getLazyModel().load(10);
   }
 }

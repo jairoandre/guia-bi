@@ -21,6 +21,7 @@ import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.User;
 import br.com.vah.guiabi.service.UserService;
 import br.com.vah.guiabi.util.DateUtility;
+import org.primefaces.event.SelectEvent;
 
 /**
  * Login Controller class allows only authenticated users to log in to the web
@@ -186,5 +187,9 @@ public class SessionController implements Serializable {
 
   public void setSetor(Setor setor) {
     this.setor = setor;
+  }
+
+  public void onSetorSelect(SelectEvent event) {
+    this.setor = (Setor) event.getObject();
   }
 }

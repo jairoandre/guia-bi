@@ -67,7 +67,7 @@ public class Guia extends BaseEntity {
   @Column(name = "DT_REPOSTA_CONVENIO")
   private Date dataRespostaConvenio;
 
-  @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL )
   private List<HistoricoGuia> historico = new ArrayList<>();
 
   @Column(name = "CD_DESCRICAO")

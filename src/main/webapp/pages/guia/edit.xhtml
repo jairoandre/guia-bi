@@ -18,98 +18,45 @@
 
     <h:form id="form">
 
-      <guiabi:manyToOneDialog id="setorDlg"
-                              controller="#{setorController}"
-                              header="SELECIONAR SETOR" width="800"
-                              update="setor" bean="#{guiaController.item.setor}"/>
-
-      <p:dialog id="atendimentoDlg" widgetVar="atendimentoDlg" modal="true"
-                header="SELECIONAR ATENDIMENTO*"
-                width="800">
-        <p:ajax event="close" process="@this"
-                update=":#{p:component('atendimentoPnl')},:#{p:component('pacientePnl')}"/>
-        <guiabi:dataTable id="atendimentoDlgTable"
-                          controller="#{atendimentoController}" renderAddBtn="false"
-                          renderActionColumn="false">
-          <p:column style="text-align: center;" width="50">
-            <p:commandLink id="radio" ajax="true" styleClass="action-link"
-                           process="@this" update="@(.action-link)">
-              <f:setPropertyActionListener value="#{item}"
-                                           target="#{guiaController.item.atendimento}"/>
-              <f:setPropertyActionListener value="#{item.id}"
-                                           target="#{guiaController.atendimentoId}"/>
-              <h:panelGroup
-                styleClass="fa fa#{(guiaController.item.atendimento == null ? false : guiaController.item.atendimento.id == item.id) ? '-dot' : ''}-circle-o"/>
-            </p:commandLink>
-          </p:column>
-          <p:column sortBy="#{item.title}" headerText="Descrição"
-                    style="text-align: left;">
-            <h:outputText value="#{item.title}"/>
-          </p:column>
-        </guiabi:dataTable>
-        <f:facet name="footer">
-          <p:commandButton id="atendimentoDlgCloseBtn" ajax="true"
-                           onclick="PF('atendimentoDlg').hide()" value="Fechar diálogo"/>
-        </f:facet>
-      </p:dialog>
-
       <h:panelGroup id="guiaPnlWrapper">
+        <p:focus context="guiaPnlWrapper"/>
         <guiabi:editForm id="guiaForm" controller="#{guiaController}"
                          columns="3">
 
           <uiguiabi:selectOneEnum id="tipo" label="Tipo" value="#{guiaController.item.tipo}" required="true"
                                   editing="#{guiaController.editing}"
                                   options="#{guiaController.tipos}">
-            <p:ajax event="change" listener="#{guiaController.onchangeTipo}" process="@this" update="@form"/>
+            <p:ajax event="change" listener="#{guiaController.onchangeTipo}" process="@this" update="@form"
+                    oncomplete="nextFocus('#{p:component('setor')}')"/>
           </uiguiabi:selectOneEnum>
 
-          <uiguiabi:manyToOne id="setor" dialog="setorDlg" label="Setor" editing="#{guiaController.editing}"
-                              title="title" required="true" value="#{guiaController.item.setor}"/>
+          <uiguiabi:autoComplete id="setor" value="#{guiaController.item.setor}" label="Setor" required="true"
+                                 controller="#{setorController}" completeMethod="completeSetor"
+                                 converter="#{setorConverter}" itemLabel="title"
+                                 placeholder="Número/Nome setor">
+            <p:column>
+              #{item.id}
+            </p:column>
+            <p:column>
+              #{item.title}
+            </p:column>
+          </uiguiabi:autoComplete>
 
-          <h:panelGroup>
-            <p:outputLabel value="Atendimento" for="atendimento" style="font-weight:bold" indicateRequired="false"/>
-            <h:outputText value="*" style="font-weight: bold; color: red;"/>
-            <h:outputText value=":" style="font-weight: bold;"/>
-          </h:panelGroup>
+          <uiguiabi:autoComplete id="atendimento" value="#{guiaController.item.atendimento}" label="Atendimento"
+                                 required="true"
+                                 controller="#{atendimentoController}" completeMethod="completeAtendimento"
+                                 converter="#{atendimentoConverter}" itemLabel="id"
+                                 placeholder="Número/Nome paciente">
+            <p:ajax event="itemSelect" update="pacientePnl"/>
+            <p:column>
+              #{item.id}
+            </p:column>
+            <p:column>
+              #{item.paciente.name}
+            </p:column>
+          </uiguiabi:autoComplete>
 
-          <h:panelGroup id="atendimentoPnl">
-
-            <p:inputText
-              id="atendimento"
-              placeholder="Informe o atendimento..."
-              styleClass="lance-input"
-              value="#{guiaController.atendimentoId}"
-              required="true">
-              <p:ajax event="change" listener="#{guiaController.searchAtendimento}" process="@this"
-                      oncomplete="nextFocus('#{p:component('descricao')}')"
-                      update="pacientePnl, atendimentoMsg"/>
-            </p:inputText>
-
-            <span/>
-
-            <p:commandButton id="atendimentoOpenDlgBtn"
-                             ajax="true"
-                             onclick="PF('atendimentoDlg').show()"
-                             process="@none"
-                             rendered="#{guiaController.editing}"
-                             icon="fa fa-search"/>
-
-            <p:commandButton id="atendimentoClearBtn"
-                             ajax="true"
-                             process="@this"
-                             update="atendimentoPnl,pacientePnl"
-                             rendered="#{guiaController.editing}"
-                             icon="fa fa-trash">
-              <f:setPropertyActionListener value="#{null}" target="#{guiaController.item.atendimento}"/>
-              <f:setPropertyActionListener value="#{null}" target="#{guiaController.atendimentoId}"/>
-            </p:commandButton>
-
-          </h:panelGroup>
-
-
-          <p:message id="atendimentoMsg" for="atendimento"/>
-
-          <p:outputLabel value="Paciente:" for="paciente" style="font-weight:bold"/>
+          <p:outputLabel value="Paciente:" for="paciente" styleClass="lance-label"/>
 
           <h:panelGroup id="pacientePnl">
             <p:inputText id="pacienteEmpty" value="" placeholder="Nome do paciente..." styleClass="lance-input"

@@ -3,12 +3,12 @@ package br.com.vah.guiabi.controllers;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.service.DataAccessService;
 import br.com.vah.guiabi.service.SetorService;
-import br.com.vah.guiabi.util.GenericLazyDataModel;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -58,8 +58,15 @@ public class SetorController extends AbstractController<Setor> {
   }
 
   @Override
-  public void search() {
-    super.search();
+  public void prepareSearch() {
+    super.prepareSearch();
     setSearchParam("title", getSearchTerm());
+  }
+
+  public List<Setor> completeSetor(String query) {
+    setSearchTerm(query);
+    super.prepareSearch();
+    setSearchParam("title", query);
+    return getLazyModel().load(10);
   }
 }

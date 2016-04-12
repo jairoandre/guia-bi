@@ -115,7 +115,7 @@ public abstract class AbstractController<T extends BaseEntity> implements Serial
   /**
    *
    */
-  public void search() {
+  public void prepareSearch() {
     resetSearchParams();
     searchById();
   }

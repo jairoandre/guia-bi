@@ -4,11 +4,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
   <h:panelGroup id="#{id}Pnl" rendered="#{rendered == null ? true : rendered}">
-    <p:outputLabel for="#{id}" value="#{label}" style="font-weight:bold"
-                   rendered="#{label != null}" indicateRequired="false"/>
-    <h:outputText value="*" style="font-weight: bold; color: red;"
-                  rendered="#{required == null ? false : required}"/>
-    <h:outputText value=":" style="font-weight: bold;"/>
+    <p:outputLabel for="#{id}" value="#{label}" styleClass="lance-label"/>
     <h:panelGroup id="#{id}Info"
                   styleClass="fa fa-info-circle lance-info-icon"
                   rendered="#{info != null}"/>

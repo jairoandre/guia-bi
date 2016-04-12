@@ -1,5 +1,6 @@
 package br.com.vah.guiabi.controllers;
 
+import br.com.vah.guiabi.constants.AcoesGuiaEnum;
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
@@ -9,8 +10,6 @@ import br.com.vah.guiabi.service.DataAccessService;
 import br.com.vah.guiabi.service.GuiaService;
 
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -42,25 +41,29 @@ public class GuiaController extends AbstractController<Guia> {
   @Inject
   AtendimentoService atendimentoService;
 
-  private Long atendimentoId;
-
   private List<SelectItem> tipos;
+
+  private Boolean somenteDoSetor = true;
+
+  private Boolean somentePendentes = false;
+
+  private Boolean somenteMinhaAutoria = true;
 
   @PostConstruct
   public void init() {
     logger.info(this.getClass().getSimpleName() + " created");
     initLazyModel(service);
+    getLazyModel().getSearchParams().addRelations("historico");
+    prepareSearch();
     tipos = TipoGuiaEnum.getSelectItems();
   }
 
   @Override
   public void onLoad() {
     super.onLoad();
-    if (getItem().getId() != null) {
-      updateAtendimentoId();
-    } else {
+    if (getItem().getId() == null) {
       getItem().setSetor(session.getSetor());
-      service.addHistorico(session.getUser(), getItem());
+      service.addHistorico(session.getUser(), getItem(), AcoesGuiaEnum.CRIACAO);
     }
   }
 
@@ -94,16 +97,28 @@ public class GuiaController extends AbstractController<Guia> {
     return tipos;
   }
 
-  public Long getAtendimentoId() {
-    return atendimentoId;
+  public Boolean getSomenteMinhaAutoria() {
+    return somenteMinhaAutoria;
   }
 
-  public void setAtendimentoId(Long atendimentoId) {
-    this.atendimentoId = atendimentoId;
+  public void setSomenteMinhaAutoria(Boolean somenteMinhaAutoria) {
+    this.somenteMinhaAutoria = somenteMinhaAutoria;
   }
 
-  private void inserirMensagemAtendimentoNaoEncontrado() {
-    FacesContext.getCurrentInstance().addMessage("form:guiaForm:atendimento", new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Não foi possível localizar o atendimento"));
+  public Boolean getSomentePendentes() {
+    return somentePendentes;
+  }
+
+  public void setSomentePendentes(Boolean somentePendentes) {
+    this.somentePendentes = somentePendentes;
+  }
+
+  public Boolean getSomenteDoSetor() {
+    return somenteDoSetor;
+  }
+
+  public void setSomenteDoSetor(Boolean somenteDoSetor) {
+    this.somenteDoSetor = somenteDoSetor;
   }
 
   public void onchangeTipo() {
@@ -117,48 +132,52 @@ public class GuiaController extends AbstractController<Guia> {
 
   }
 
-  public void searchAtendimento() {
-    if (atendimentoId == null) {
-      getItem().setAtendimento(null);
-    } else {
-      try {
-        Atendimento atendimento = atendimentoService.find(atendimentoId);
-        if (atendimento == null) {
-          getItem().setAtendimento(null);
-          inserirMensagemAtendimentoNaoEncontrado();
-        } else {
-          getItem().setAtendimento(atendimento);
-        }
-      } catch (Exception e) {
-        inserirMensagemAtendimentoNaoEncontrado();
-      }
-    }
-  }
-
-  public void updateAtendimentoId() {
-    if (getItem().getAtendimento() == null) {
-      atendimentoId = null;
-    } else {
-      atendimentoId = getItem().getAtendimento().getId();
-    }
-  }
-
   public void receber(Guia guia) {
     guia.setDataRecebimento(new Date());
+    service.addHistorico(session.getUser(), guia, AcoesGuiaEnum.RECEBIMENTO);
+    setItem(guia);
+    doSave();
   }
 
   public void auditar(Guia guia) {
     guia.setDataAuditoria(new Date());
+    service.addHistorico(session.getUser(), guia, AcoesGuiaEnum.AUDITORIA);
+    setItem(guia);
+    doSave();
   }
 
   public void solicitarConvenio(Guia guia) {
     guia.setDataSolicitacaoConvenio(new Date());
+    service.addHistorico(session.getUser(), guia, AcoesGuiaEnum.SOLICITACAO);
+    setItem(guia);
+    doSave();
   }
 
   public void respostaConvenio(Guia guia) {
     guia.setDataRespostaConvenio(new Date());
     guia.setEstado(EstadosGuiaEnum.FINALIZADO);
+    service.addHistorico(session.getUser(), guia, AcoesGuiaEnum.RESPOSTA);
+    setItem(guia);
+    doSave();
   }
 
-
+  @Override
+  public void prepareSearch() {
+    resetSearchParams();
+    String regex = "[0-9]+";
+    if (getSearchTerm() != null && getSearchTerm().matches(regex)) {
+      setSearchParam("atendimento", Long.valueOf(getSearchTerm()));
+    }else {
+      setSearchParam("paciente", getSearchTerm());
+    }
+    if(somenteDoSetor){
+      setSearchParam("setor", session.getSetor());
+    }
+    if(somentePendentes){
+      setSearchParam("estado", EstadosGuiaEnum.PENDENTE);
+    }
+    if(somenteMinhaAutoria){
+      setSearchParam("autor", session.getUser());
+    }
+  }
 }
