@@ -5,14 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum RolesEnum {
-  ADMINISTRATOR("Administrador"),
   USER("Usuário"),
-  AUTHORIZER("Autorizadora");
+  AUTHORIZER("Autorizador", USER),
+  MANAGER("Gestor", AUTHORIZER),
+  ADMINISTRATOR("Administrador", MANAGER);
 
   private String label;
+  private RolesEnum[] subroles;
 
-  private RolesEnum(String label) {
+  private RolesEnum(String label, RolesEnum... subroles) {
     this.label = label;
+    this.subroles = subroles;
   }
 
   public String getLabel() {
@@ -26,5 +29,19 @@ public enum RolesEnum {
       items.add(new SelectItem(role, role.getLabel()));
     }
     return items;
+  }
+
+  public boolean hasSubRole(RolesEnum role) {
+    if (this.equals(role)) {
+      return true;
+    } else if (this.subroles != null) {
+      for (RolesEnum subrole : this.subroles) {
+        if (subrole.hasSubRole(role)) {
+          return true;
+        }
+      }
+
+    }
+    return false;
   }
 }

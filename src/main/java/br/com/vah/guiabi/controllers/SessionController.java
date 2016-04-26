@@ -168,8 +168,10 @@ public class SessionController implements Serializable {
 
   public boolean isUserInRoles(String roles) {
     boolean atLeastOneRole = false;
-    for (String role : roles.trim().split(",")) {
-      if (user.getRole().equals(RolesEnum.valueOf(role))) {
+    for (String roleStr : roles.trim().split(",")) {
+      RolesEnum role = RolesEnum.valueOf(roleStr);
+      RolesEnum userRole = user.getRole();
+      if (userRole.equals(role) || userRole.hasSubRole(role)) {
         atLeastOneRole = true;
         break;
       }

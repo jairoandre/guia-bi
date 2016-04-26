@@ -9,7 +9,10 @@ import java.util.List;
  */
 public enum EstadosGuiaEnum {
   PENDENTE("Pendente", "fa fa-warning", "warning-bg"),
-  FINALIZADO("Finalizado", "fa fa-thumbs-up", "ended-bg");
+  NEGADO("Negado", "fa fa-thumbs-down", "deny-bg"),
+  REVISAO("Revisao", "fa fa-thumb-tack", "review-bg"),
+  PARCIAL("Autorizado parcialmente", "fa fa-thumbs-up", "partial-bg"),
+  AUTORIZADO("Autorizado", "fa fa-thumbs-up", "authorized-bg");
 
   private String label;
   private String icon;

@@ -1,8 +1,8 @@
 package br.com.vah.guiabi.controllers;
 
-import br.com.vah.guiabi.entities.dbamv.Setor;
+import br.com.vah.guiabi.entities.dbamv.Especialidade;
 import br.com.vah.guiabi.service.DataAccessService;
-import br.com.vah.guiabi.service.SetorService;
+import br.com.vah.guiabi.service.EspecialidadeService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -16,13 +16,15 @@ import java.util.logging.Logger;
  */
 @Named
 @ViewScoped
-public class SetorController extends AbstractController<Setor> {
+public class EspecialidadeController extends AbstractController<Especialidade> {
 
-  private @Inject
+  private
+  @Inject
   transient Logger logger;
 
-  private @Inject
-  SetorService service;
+  private
+  @Inject
+  EspecialidadeService service;
 
   @PostConstruct
   public void init() {
@@ -33,7 +35,7 @@ public class SetorController extends AbstractController<Setor> {
 
 
   @Override
-  public DataAccessService<Setor> getService() {
+  public DataAccessService<Especialidade> getService() {
     return service;
   }
 
@@ -43,18 +45,18 @@ public class SetorController extends AbstractController<Setor> {
   }
 
   @Override
-  public Setor createNewItem() {
-    return new Setor();
+  public Especialidade createNewItem() {
+    return new Especialidade();
   }
 
   @Override
   public String path() {
-    return "setor";
+    return "especialidade";
   }
 
   @Override
   public String getEntityName() {
-    return "Setor";
+    return "Especialidade";
   }
 
   @Override
@@ -63,9 +65,10 @@ public class SetorController extends AbstractController<Setor> {
     setSearchParam("title", getSearchTerm());
   }
 
-  public List<Setor> completeSetor(String query) {
+  public List<Especialidade> completeEspecialidade(String query) {
     setSearchTerm(query);
-    prepareSearch();
+    super.prepareSearch();
+    setSearchParam("title", query);
     return getLazyModel().load(10);
   }
 }

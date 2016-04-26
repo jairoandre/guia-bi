@@ -34,6 +34,7 @@
                             itemValue="#{setor}"
                             converter="#{setorConverter}"
                             inputStyleClass="lance-input"
+                            queryDelay="250"
                             completeMethod="#{setorController.completeSetor}" placeholder="Digite o código ou o nome do setor.">
               <p:ajax event="itemSelect" update="prosseguirBtn" oncomplete="nextFocus('#{p:component('prosseguirBtn')}')"/>
               <p:column>

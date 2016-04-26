@@ -8,30 +8,118 @@
   <ui:define name="content">
     <h:form id="form">
       <p:panel header="Guias">
+
         <guiabi:dataTable id="dataTable" controller="#{guiaController}"
                           renderActionColumn="false"
                           placeholder="Nº atendimento ou Nome do paciente"
                           renderAddBtn="true">
+
+          <!-- ################### -->
+          <!-- FILTROS DE CONSULTA -->
+          <!-- ################### -->
+
           <f:facet name="customFilters">
             <div class="margin-top">
-              <p:selectBooleanCheckbox id="somenteSetor" value="#{guiaController.somenteDoSetor}" itemLabel="Somente [#{sessionController.setor.title}]"/>
-              <p:selectBooleanCheckbox id="somentePendentes" value="#{guiaController.somentePendentes}" itemLabel="Somente pendentes" styleClass="margin-left"/>
-              <p:selectBooleanCheckbox id="somenteMinhaAutoria" value="#{guiaController.somenteMinhaAutoria}" itemLabel="Somente minha autoria" styleClass="margin-left"/>
+              <p:commandButton id="convBtn" value="Filtrar por Convênios" type="button"/>
+              <p:overlayPanel id="convPnl" widgetVar="convPnl" for="convBtn" hideEffect="fade">
+                <p:commandButton id="clearConvBtn" value="Limpar Filtro"
+                                 actionListener="#{guiaController.clearSelectedConvenios}" ajax="true"
+                                 process="@this" update="table, manyMenuConv"/>
+                <p:separator/>
+                <p:selectManyMenu id="manyMenuConv" value="#{guiaController.selectedConvenios}" showCheckbox="true"
+                                  filter="true" filterMatchMode="contains"
+                                  converter="#{convenioConverter}" styleClass="margin-top">
+                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+                  <f:selectItems value="#{guiaController.convenios}" var="conv" itemLabel="#{conv.title}"
+                                 itemValue="#{conv}"/>
+                </p:selectManyMenu>
+              </p:overlayPanel>
+              <p:commandButton id="dataFilterBtn" value="Filtar por Data" type="button" styleClass="margin-left"/>
+              <p:overlayPanel id="dataFilterPnl" widgetVar="dataFilterPnl" for="dataFilterBtn" hideEffect="fade"
+                              dismissable="false">
+                <p:commandButton id="currentMonthBtn" value="Mês corrente"
+                                 actionListener="#{guiaController.filterCurrentMonth}" ajax="true"
+                                 process="@this, dateField" update="table, dateFilterInputs"/>
+                <p:commandButton id="dataFilterConvOverlay" value="Fechar" onclick="PF('dataFilterPnl').hide()"
+                                 ajax="true" styleClass="margin-left"/>
+                <p:separator/>
+                <h:panelGrid id="dateFilterInputs" columns="3">
+                  <p:outputLabel value="Data" for="dateField"/>
+                  <p:outputLabel value="Início" for="inicioDate"/>
+                  <p:outputLabel value="Término" for="terminoDate"/>
+                  <p:selectOneMenu id="dateField" value="#{guiaController.dateField}" style="min-width: 100px">
+                    <f:selectItem itemValue="G" itemLabel="Guia"/>
+                    <f:selectItem itemValue="R" itemLabel="Recebimento"/>
+                    <f:selectItem itemValue="A" itemLabel="Auditoria"/>
+                    <f:selectItem itemValue="S" itemLabel="Solicitação"/>
+                    <f:selectItem itemValue="F" itemLabel="Resposta"/>
+                  </p:selectOneMenu>
+                  <p:calendar id="inicioDate" value="#{guiaController.inicioDate}" pattern="dd/MM/yyyy"/>
+                  <p:calendar id="terminoDate" value="#{guiaController.terminoDate}" pattern="dd/MM/yyyy"/>
+                </h:panelGrid>
+                <p:separator/>
+                <p:commandButton id="filterByDate" value="Filtrar"
+                                 actionListener="#{guiaController.prepareSearch}" ajax="true"
+                                 process="@this, dateFilterInputs" update="table"/>
+              </p:overlayPanel>
+              <p:commandButton id="estadoFilterBtn" value="Filtrar por Estado" type="button" styleClass="margin-left"/>
+              <p:overlayPanel id="estadoFilterOverlay" widgetVar="estadoFilterOverlay" for="estadoFilterBtn"
+                              hideEffect="fade">
+                <p:commandButton id="estadoClearBtn" value="Limpar Filtro"
+                                 actionListener="#{guiaController.clearSelectedEstados}" ajax="true"
+                                 process="@this" update="table, estadoMany"/>
+                <p:separator/>
+                <p:selectManyMenu id="estadoMany" value="#{guiaController.selectedEstados}" showCheckbox="true"
+                                  styleClass="margin-top">
+                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+                  <f:selectItems value="#{guiaController.estados}" var="estado" itemLabel="#{estado.label}"
+                                 itemValue="#{estado}"/>
+                </p:selectManyMenu>
+              </p:overlayPanel>
+              <p:commandButton id="tipoFilterBtn" value="Filtrar por Tipo" type="button" styleClass="margin-left"/>
+              <p:overlayPanel id="tipoFilterOverlay" widgetVar="tipoFilterOverlay" for="tipoFilterBtn"
+                              hideEffect="fade">
+                <p:commandButton id="tipoClearBtn" value="Limpar Filtro"
+                                 actionListener="#{guiaController.clearSelectedTipos}" ajax="true"
+                                 process="@this" update="table, tipoMany"/>
+                <p:separator/>
+                <p:selectManyMenu id="tipoMany" value="#{guiaController.selectedTipos}" showCheckbox="true"
+                                  style="min-width: 200px"
+                                  styleClass="margin-top">
+                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+                  <f:selectItems value="#{guiaController.tiposEnum}" var="tipo" itemLabel="#{tipo.label}" itemValue="#{tipo}"/>
+                </p:selectManyMenu>
+              </p:overlayPanel>
+              <p:selectBooleanCheckbox id="somenteSetor" value="#{guiaController.somenteDoSetor}"
+                                       itemLabel="Somente [#{sessionController.setor.title}]"
+                                       rendered="#{sessionController.setor != null and sessionController.isUserInRoles('MANAGER')}">
+                <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+              </p:selectBooleanCheckbox>
+              <p:selectBooleanCheckbox id="somenteMinhaAutoria" value="#{guiaController.somenteMinhaAutoria}"
+                                       itemLabel="Somente minha autoria" styleClass="margin-left">
+                <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+              </p:selectBooleanCheckbox>
             </div>
           </f:facet>
+
+          <!-- ################ -->
+          <!-- CABEÇALHO TABELA -->
+          <!-- ################ -->
+
           <p:columnGroup type="header">
             <p:row>
-              <p:column rowspan="2" width="20" style="text-align: center;"/>
-              <p:column rowspan="2" headerText="Setor" styleClass="left-align" sortBy="#{item.setor.title}"
-                        width="150"/>
+              <p:column rowspan="2" width="10" style="text-align: center;"/>
+              <p:column rowspan="2" headerText="Setor" styleClass="left-align ellipsis-text"
+                        width="75"/>
               <p:column rowspan="2" headerText="Atend." styleClass="left-align" sortBy="#{item.atendimento.id}"
-                        width="50"/>
-              <p:column rowspan="2" headerText="Paciente" styleClass="left-align"
-                        sortBy="#{item.atendimento.paciente.name}" width="250"/>
-              <p:column rowspan="2" headerText="Descrição" styleClass="left-align" sortBy="#{item.atendimento.id}"
-                        width="150"/>
+                        width="65"/>
+              <p:column rowspan="2" headerText="Paciente" styleClass="left-align" width="100"/>
+              <p:column rowspan="2" headerText="Convênio" styleClass="left-align" width="100"/>
+              <p:column rowspan="2" headerText="Tipo" styleClass="left-align" width="75"/>
+              <p:column rowspan="2" headerText="Descrição" styleClass="left-align" sortBy="#{item.descricao}"
+                        width="100"/>
               <p:column colspan="5" headerText="Datas" width="375"/>
-              <p:column rowspan="2" style="text-align: center;" width="75"/>
+              <p:column rowspan="2" style="text-align: center;" width="70"/>
             </p:row>
             <p:row>
               <p:column headerText="Guia" styleClass="left-align" sortBy="#{item.data}" width="75"/>
@@ -41,65 +129,244 @@
               <p:column headerText="Resp." styleClass="left-align" sortBy="#{item.dataRespostaConvenio}" width="75"/>
             </p:row>
           </p:columnGroup>
-          <p:column style="padding: 0;">
+
+          <!-- ############## -->
+          <!-- VALORES TABELA -->
+          <!-- ############## -->
+
+
+          <p:column style="padding: 0; height: 1px">
             <h:panelGroup id="estado" layout="block" styleClass="#{item.estado.colors}">
               <h:outputText styleClass="#{item.estado.icon}"/>
             </h:panelGroup>
           </p:column>
-          <p:column sortBy="#{item.setor.title}" styleClass="left-align">
-            <h:outputText value="#{item.setor.title}"/>
+          <p:column sortBy="#{item.setor.title}" styleClass="left-align ellipsis-text">
+            <h:outputText id="setorOutput" value="#{item.setor.title}"/>
+            <guiabi:toolTip id="setorToolTip" value="#{item.setor.title}" index="#{indexVar}"
+                            for="#{p:component('setorOutput')}"/>
           </p:column>
           <p:column sortBy="#{item.atendimento.id}" styleClass="left-align">
             <h:outputText value="#{item.atendimento.id}"/>
           </p:column>
-          <p:column sortBy="#{item.atendimento.paciente.name}" styleClass="left-align">
-            <h:outputText value="#{item.atendimento.paciente.name}"/>
+          <p:column styleClass="left-align ellipsis-text">
+            <h:outputText id="pacienteOutput" value="#{item.atendimento.paciente.name}"/>
+            <guiabi:toolTip id="pacienteToolTip" value="#{item.atendimento.paciente.name}" index="#{indexVar}"
+                            for="#{p:component('pacienteOutput')}"/>
+          </p:column>
+          <p:column styleClass="left-align ellipsis-text">
+            <h:outputText id="convenioOutput" value="#{item.atendimento.convenio.title}"
+                          title="#{item.atendimento.convenio.title}"/>
+            <guiabi:toolTip id="convenioToolTip" value="#{item.atendimento.convenio.title}" index="#{indexVar}"
+                            for="#{p:component('convenioOutput')}"/>
+          </p:column>
+          <p:column styleClass="left-align">
+            <h:outputText id="tipoOutput" value="#{item.tipo.label}"/>
           </p:column>
           <p:column sortBy="#{item.descricao}" styleClass="left-align">
-            <h:outputText value="#{item.descricao}"/>
+            <h:outputText id="descricaoOutput" value="#{item.descricao}"/>
+            <guiabi:toolTip id="descricaoToolTip" value="#{item.descricao}" index="#{indexVar}"
+                            for="#{p:component('descricaoOutput')}"/>
           </p:column>
           <p:column sortBy="#{item.data}" styleClass="left-align">
             <h:outputText value="#{item.data}">
-              <f:convertDateTime pattern="dd/MM/yyyy"/>
+              <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT-3"/>
             </h:outputText>
           </p:column>
           <p:column sortBy="#{item.dataRecebimento}" styleClass="left-align">
             <h:outputText id="dataRecebimento" value="#{item.dataRecebimento}">
-              <f:convertDateTime pattern="dd/MM/yyyy"/>
+              <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT-3"/>
             </h:outputText>
           </p:column>
           <p:column sortBy="#{item.dataAuditoria}" styleClass="left-align">
             <h:outputText id="dataAuditoria" value="#{item.dataAuditoria}">
-              <f:convertDateTime pattern="dd/MM/yyyy"/>
+              <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT-3"/>
             </h:outputText>
           </p:column>
           <p:column sortBy="#{item.dataSolicitacaoConvenio}" styleClass="left-align">
             <h:outputText id="dataSolicitacaoConvenio" value="#{item.dataSolicitacaoConvenio}">
-              <f:convertDateTime pattern="dd/MM/yyyy"/>
+              <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT-3"/>
             </h:outputText>
           </p:column>
           <p:column sortBy="#{item.dataRespostaConvenio}" styleClass="left-align">
             <h:outputText id="dataRespostaConvenio" value="#{item.dataRespostaConvenio}">
-              <f:convertDateTime pattern="dd/MM/yyyy"/>
+              <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT-3"/>
             </h:outputText>
           </p:column>
           <p:column style="text-align: center">
-            <p:menuButton id="menuButton" value="Ações" disabled="#{item.estado == 'FINALIZADO'}">
+            <p:menuButton id="menuButton" value="Ações">
               <p:menuitem value="Recebimento" action="#{guiaController.receber(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataRecebimento"
                           icon="fa fa-thumbs-up" disabled="#{item.dataRecebimento != null}"/>
               <p:menuitem value="Auditoria" actionListener="#{guiaController.auditar(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataAuditoria"
-                          icon="fa fa-gavel" disabled="#{item.dataAuditoria != null}"/>
+                          icon="fa fa-gavel"
+                          disabled="#{item.dataAuditoria != null or item.dataRespostaConvenio != null}"/>
               <p:menuitem value="Solicitação convênio" actionListener="#{guiaController.solicitarConvenio(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataSolicitacaoConvenio"
-                          icon="fa fa-question-circle" disabled="#{item.dataSolicitacaoConvenio != null}"/>
-              <p:menuitem value="Resposta convênio" actionListener="#{guiaController.respostaConvenio(item)}"
+                          icon="fa fa-leaf"
+                          disabled="#{item.dataSolicitacaoConvenio != null or item.dataRespostaConvenio != null}"/>
+              <p:separator/>
+              <p:menuitem value="Negado" actionListener="#{guiaController.negar(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
-                          icon="fa fa-check" disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
+                          icon="fa fa-ban"
+                          disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
+              <p:menuitem value="Em revisão"
+                          actionListener="#{guiaController.preRevisao(item)}"
+                          ajax="true" process="@this" update="#{p:component('commentDialog')}"
+                          oncomplete="PF('commentDialog').show()"
+                          icon="fa fa-clock-o"
+                          disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null or item.estado == 'REVISAO'}"/>
+              <p:menuitem value="Parcialmente"
+                          actionListener="#{guiaController.preParcial(item)}"
+                          ajax="true" process="@this" update="#{p:component('commentDialog')}"
+                          oncomplete="PF('commentDialog').show()"
+                          icon="fa fa-check-circle"
+                          disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null or item.estado == 'PARCIAL'}"/>
+              <p:menuitem value="Autorizado" actionListener="#{guiaController.autorizar(item)}"
+                          ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
+                          icon="fa fa-check"
+                          disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
+              <p:separator rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
+              <p:menuitem value="Visualizar histórico" action="#{guiaController.setItem(item)}"
+                          process="@this" update="#{p:component('historicoDlg')}" oncomplete="PF('historicoDlg').show()"
+                          icon="fa fa-tags" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
+              <p:menuitem value="Visualizar comentários" action="#{guiaController.setItem(item)}"
+                          process="@this" update="#{p:component('comentarioDlg')}"
+                          oncomplete="PF('comentarioDlg').show()"
+                          icon="fa fa-comments" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
+              <p:menuitem value="Editar" action="#{guiaController.edit(item)}"
+                          process="@this" onstart="PF('changePage').show()"
+                          disabled="#{item.dataRespostaConvenio != null}"
+                          icon="fa fa-pencil" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
+              <p:menuitem value="Excluir" actionListener="#{guiaController.preDelete(item.id, index)}"
+                          process="@this" update="#{p:component('deleteDlg')}" oncomplete="PF('deleteDlg').show()"
+                          disabled="#{item.dataRespostaConvenio != null}"
+                          icon="fa fa-trash" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
             </p:menuButton>
           </p:column>
         </guiabi:dataTable>
+
+        <p:dialog id="commentDialog" widgetVar="commentDialog" modal="true">
+          <f:facet name="header">
+            <h:outputText value="Guia em revisão - #{guiaController.item.labelForSelectItem}"/>
+          </f:facet>
+          <h:panelGrid id="commentGrid" columns="1">
+            <p:outputLabel value="Comentário" for="commentTextArea" styleClass="lance-label"/>
+            <p:inputTextarea id="commentTextArea" value="#{guiaController.comentario}" rows="5" cols="75"/>
+            <p:message for="commentTextArea"/>
+          </h:panelGrid>
+          <f:facet name="footer">
+            <p:commandButton id="saveRevisao" value="Salvar"
+                             action="#{guiaController.emRevisao}"
+                             ajax="true"
+                             process="@this, commentGrid"
+                             update="#{p:component('table')}"
+                             rendered="#{guiaController.dialogoRevisao}"
+                             onsuccess="PF('commentDialog').hide()"/>
+            <p:commandButton id="saveParcial" value="Salvar"
+                             action="#{guiaController.autorizarParcialmente}"
+                             ajax="true"
+                             process="@this, commentGrid"
+                             update="#{p:component('table')}"
+                             rendered="#{!guiaController.dialogoRevisao}"
+                             onsuccess="PF('commentDialog').hide()"/>
+            <p:commandButton id="cancelRevisao" value="Cancelar"
+                             ajax="true"
+                             process="@this"
+                             oncomplete="PF('commentDialog').hide()"/>
+          </f:facet>
+        </p:dialog>
+
+        <p:dialog id="deleteDlg" header="Atenção"
+                  widgetVar="deleteDlg" modal="true">
+
+          <div class="ui-messages ui-widget" aria-live="polite">
+            <div class="ui-messages-warn ui-corner-all">
+              <span class="ui-messages-warn-icon"></span>
+              <ul>
+                <li>
+                  <h:panelGroup styleClass="ui-messages-warn-detail">
+                    <h:outputText
+                      value="#{guiaController.deleteConfirmMessage}"
+                      escape="false"/>
+                  </h:panelGroup>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <h:panelGroup layout="block" style="text-align: center; margin: 10px;">
+            <p:inputText id="deleteConfirmAnswer" value="#{guiaController.deleteConfirmAnswer}">
+              <p:ajax event="keyup" process="@this" update="deleteConfirmBtn" global="false"/>
+            </p:inputText>
+          </h:panelGroup>
+          <f:facet name="footer">
+            <p:commandButton id="deleteConfirmBtn" value="Excluir" ajax="true" update="@form"
+                             action="#{guiaController.doDelete}"
+                             oncomplete="PF('deleteDlg').hide();"
+                             disabled="#{guiaController.deleteConfirmAnswer.toUpperCase() != 'DELETAR'}"/>
+            <p:commandButton value="Cancelar"
+                             oncomplete="PF('deleteDlg').hide();"
+                             style="margin-left: 5px"/>
+          </f:facet>
+        </p:dialog>
+
+        <p:dialog id="historicoDlg"
+                  widgetVar="historicoDlg" modal="true" width="500">
+          <f:facet name="header">
+            <h:outputText value="Histórico - #{guiaController.item.labelForSelectItem}"/>
+          </f:facet>
+
+          <p:dataTable id="historicoTable" value="#{guiaController.item.historico}" var="hist" sortBy="#{hist.data}"  scrollRows="5" emptyMessage="Sem histórico">
+            <p:column headerText="Usuário" width="100" styleClass="left-align">
+              <h:outputText value="#{hist.autor.login}"/>
+            </p:column>
+            <p:column headerText="Ação" width="100" styleClass="left-align">
+              <h:outputText value="#{hist.acao.name()}"/>
+            </p:column>
+            <p:column headerText="Data" width="100" styleClass="left-align">
+              <h:outputText value="#{hist.data}">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT-3"/>
+              </h:outputText>
+            </p:column>
+          </p:dataTable>
+
+          <f:facet name="footer">
+            <p:commandButton id="closeHistorico" value="Fechar"
+                             ajax="true"
+                             process="@this"
+                             oncomplete="PF('historicoDlg').hide()"/>
+          </f:facet>
+        </p:dialog>
+
+        <p:dialog id="comentarioDlg"
+                  widgetVar="comentarioDlg" modal="true" width="500">
+          <f:facet name="header">
+            <h:outputText value="Comentários - #{guiaController.item.labelForSelectItem}"/>
+          </f:facet>
+
+          <p:dataTable id="comentarioTable" value="#{guiaController.item.comentarios}"  var="coment" sortBy="#{coment.data}" scrollRows="5" emptyMessage="Sem comentários">
+            <p:column headerText="Usuário" width="100" styleClass="left-align">
+              <h:outputText value="#{coment.autor.login}"/>
+            </p:column>
+            <p:column headerText="Comentário" width="100" styleClass="left-align">
+              <h:outputText value="#{coment.comentario}"/>
+            </p:column>
+            <p:column headerText="Data" width="100" styleClass="left-align">
+              <h:outputText value="#{coment.data}">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT-3"/>
+              </h:outputText>
+            </p:column>
+          </p:dataTable>
+
+          <f:facet name="footer">
+            <p:commandButton id="closeComent" value="Fechar"
+                             ajax="true"
+                             process="@this"
+                             oncomplete="PF('comentarioDlg').hide()"/>
+          </f:facet>
+        </p:dialog>
+
       </p:panel>
     </h:form>
   </ui:define>

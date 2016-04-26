@@ -4,10 +4,12 @@ import br.com.vah.guiabi.constants.AcoesGuiaEnum;
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
+import br.com.vah.guiabi.entities.dbamv.Convenio;
+import br.com.vah.guiabi.entities.dbamv.Especialidade;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
-import br.com.vah.guiabi.service.AtendimentoService;
-import br.com.vah.guiabi.service.DataAccessService;
-import br.com.vah.guiabi.service.GuiaService;
+import br.com.vah.guiabi.service.*;
+import br.com.vah.guiabi.util.DateUtility;
+import br.com.vah.guiabi.util.ViewUtils;
 
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
@@ -41,21 +43,55 @@ public class GuiaController extends AbstractController<Guia> {
   @Inject
   AtendimentoService atendimentoService;
 
+  private
+  @Inject
+  ConvenioService convenioService;
+
+  private
+  @Inject
+  EspecialidadeService especialidadeService;
+
   private List<SelectItem> tipos;
+
+  private List<Convenio> convenios;
+
+  private EstadosGuiaEnum[] estados;
+
+  private TipoGuiaEnum[] tiposEnum;
+
+  private Convenio[] selectedConvenios;
 
   private Boolean somenteDoSetor = true;
 
-  private Boolean somentePendentes = false;
-
   private Boolean somenteMinhaAutoria = true;
+
+  private String comentario;
+
+  private Date inicioDate;
+
+  private Date terminoDate;
+
+  private String dateField = "G";
+
+  private EstadosGuiaEnum[] selectedEstados;
+
+  private TipoGuiaEnum[] selectedTipos;
+
+  private Boolean dialogoRevisao = true;
+
+  private Guia detachedGuia;
+
+  public static final String[] RELATIONS = {"comentarios", "historico"};
 
   @PostConstruct
   public void init() {
     logger.info(this.getClass().getSimpleName() + " created");
-    initLazyModel(service);
-    getLazyModel().getSearchParams().addRelations("historico");
+    initLazyModel(service, RELATIONS);
     prepareSearch();
     tipos = TipoGuiaEnum.getSelectItems();
+    convenios = convenioService.findWithNamedQuery(Convenio.ALL);
+    estados = EstadosGuiaEnum.values();
+    tiposEnum = TipoGuiaEnum.values();
   }
 
   @Override
@@ -65,6 +101,13 @@ public class GuiaController extends AbstractController<Guia> {
       getItem().setSetor(session.getSetor());
       service.addHistorico(session.getUser(), getItem(), AcoesGuiaEnum.CRIACAO);
     }
+  }
+
+  public void filterCurrentMonth() {
+    Date[] thisMonth = ViewUtils.getDateRangeForThisMonth();
+    inicioDate = thisMonth[0];
+    terminoDate = thisMonth[1];
+    prepareSearch();
   }
 
 
@@ -105,20 +148,92 @@ public class GuiaController extends AbstractController<Guia> {
     this.somenteMinhaAutoria = somenteMinhaAutoria;
   }
 
-  public Boolean getSomentePendentes() {
-    return somentePendentes;
-  }
-
-  public void setSomentePendentes(Boolean somentePendentes) {
-    this.somentePendentes = somentePendentes;
-  }
-
   public Boolean getSomenteDoSetor() {
     return somenteDoSetor;
   }
 
   public void setSomenteDoSetor(Boolean somenteDoSetor) {
     this.somenteDoSetor = somenteDoSetor;
+  }
+
+  public String getComentario() {
+    return comentario;
+  }
+
+  public void setComentario(String comentario) {
+    this.comentario = comentario;
+  }
+
+  public List<Convenio> getConvenios() {
+    return convenios;
+  }
+
+  public Convenio[] getSelectedConvenios() {
+    return selectedConvenios;
+  }
+
+  public void setSelectedConvenios(Convenio[] selectedConvenios) {
+    this.selectedConvenios = selectedConvenios;
+  }
+
+  public String getDateField() {
+    return dateField;
+  }
+
+  public void setDateField(String dateField) {
+    this.dateField = dateField;
+  }
+
+  public Date getInicioDate() {
+    return inicioDate;
+  }
+
+  public void setInicioDate(Date inicioDate) {
+    this.inicioDate = inicioDate;
+  }
+
+  public Date getTerminoDate() {
+    return terminoDate;
+  }
+
+  public void setTerminoDate(Date terminoDate) {
+    this.terminoDate = terminoDate;
+  }
+
+  public EstadosGuiaEnum[] getEstados() {
+    return estados;
+  }
+
+  public TipoGuiaEnum[] getTiposEnum() {
+    return tiposEnum;
+  }
+
+  public EstadosGuiaEnum[] getSelectedEstados() {
+    return selectedEstados;
+  }
+
+  public void setSelectedEstados(EstadosGuiaEnum[] selectedEstados) {
+    this.selectedEstados = selectedEstados;
+  }
+
+  public TipoGuiaEnum[] getSelectedTipos() {
+    return selectedTipos;
+  }
+
+  public void setSelectedTipos(TipoGuiaEnum[] selectedTipos) {
+    this.selectedTipos = selectedTipos;
+  }
+
+  public Boolean getDialogoRevisao() {
+    return dialogoRevisao;
+  }
+
+  public Guia getDetachedGuia() {
+    return detachedGuia;
+  }
+
+  public void setDetachedGuia(Guia detachedGuia) {
+    this.detachedGuia = detachedGuia;
   }
 
   public void onchangeTipo() {
@@ -129,36 +244,106 @@ public class GuiaController extends AbstractController<Guia> {
       getItem().setData(null);
       getItem().setDataRecebimento(new Date());
     }
+  }
 
+  public void clearSelectedConvenios() {
+    this.selectedConvenios = null;
+    prepareSearch();
+  }
+
+  public void clearSelectedEstados() {
+    this.selectedEstados = null;
+    prepareSearch();
+  }
+
+  public void clearSelectedTipos() {
+    this.selectedTipos = null;
+    prepareSearch();
   }
 
   public void receber(Guia guia) {
-    guia.setDataRecebimento(new Date());
-    service.addHistorico(session.getUser(), guia, AcoesGuiaEnum.RECEBIMENTO);
-    setItem(guia);
+    Guia attachedGuia = service.find(guia.getId());
+    attachedGuia.setDataRecebimento(new Date());
+    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.RECEBIMENTO);
+    setItem(attachedGuia);
     doSave();
+    guia.setDataRecebimento(getItem().getDataRecebimento());
+    guia.setHistorico(getItem().getHistorico());
   }
 
   public void auditar(Guia guia) {
-    guia.setDataAuditoria(new Date());
-    service.addHistorico(session.getUser(), guia, AcoesGuiaEnum.AUDITORIA);
-    setItem(guia);
+    Guia attachedGuia = service.find(guia.getId());
+    attachedGuia.setDataAuditoria(new Date());
+    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.AUDITORIA);
+    setItem(attachedGuia);
     doSave();
+    guia.setDataAuditoria(getItem().getDataRecebimento());
+    guia.setHistorico(getItem().getHistorico());
   }
 
   public void solicitarConvenio(Guia guia) {
-    guia.setDataSolicitacaoConvenio(new Date());
-    service.addHistorico(session.getUser(), guia, AcoesGuiaEnum.SOLICITACAO);
+    Guia attachedGuia = service.find(guia.getId());
+    attachedGuia.setDataSolicitacaoConvenio(new Date());
+    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.SOLICITACAO);
     setItem(guia);
     doSave();
+    guia.setDataAuditoria(getItem().getDataRecebimento());
+    guia.setHistorico(getItem().getHistorico());
   }
 
-  public void respostaConvenio(Guia guia) {
-    guia.setDataRespostaConvenio(new Date());
-    guia.setEstado(EstadosGuiaEnum.FINALIZADO);
-    service.addHistorico(session.getUser(), guia, AcoesGuiaEnum.RESPOSTA);
-    setItem(guia);
+  public void negar(Guia guia) {
+    Guia attachedGuia = service.find(guia.getId());
+    attachedGuia.setDataRespostaConvenio(new Date());
+    attachedGuia.setEstado(EstadosGuiaEnum.NEGADO);
+    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.NEGADO);
+    setItem(attachedGuia);
     doSave();
+    guia.setDataAuditoria(getItem().getDataRespostaConvenio());
+    guia.setEstado(EstadosGuiaEnum.NEGADO);
+    guia.setHistorico(getItem().getHistorico());
+  }
+
+  public void preRevisao(Guia guia) {
+    dialogoRevisao = true;
+    detachedGuia = guia;
+  }
+
+  public void preParcial(Guia guia) {
+    dialogoRevisao = false;
+    detachedGuia = guia;
+  }
+
+  private void saveAddingComment(EstadosGuiaEnum estado, AcoesGuiaEnum acao) {
+    Guia attachedGuia = service.find(detachedGuia.getId());
+    attachedGuia.setEstado(estado);
+    service.addComentario(attachedGuia, session.getUser(), comentario);
+    service.addHistorico(session.getUser(), attachedGuia, acao);
+    comentario = null;
+    setItem(attachedGuia);
+    doSave();
+    detachedGuia.setEstado(estado);
+    detachedGuia.setComentarios(attachedGuia.getComentarios());
+    detachedGuia.setHistorico(attachedGuia.getHistorico());
+  }
+
+  public void emRevisao() {
+    saveAddingComment(EstadosGuiaEnum.REVISAO, AcoesGuiaEnum.REVISAO);
+  }
+
+  public void autorizarParcialmente() {
+    saveAddingComment(EstadosGuiaEnum.PARCIAL, AcoesGuiaEnum.PARCIAL);
+  }
+
+  public void autorizar(Guia guia) {
+    Guia attachedGuia = service.find(guia.getId());
+    attachedGuia.setDataRespostaConvenio(new Date());
+    attachedGuia.setEstado(EstadosGuiaEnum.AUTORIZADO);
+    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.AUTORIZADO);
+    setItem(attachedGuia);
+    doSave();
+    guia.setEstado(EstadosGuiaEnum.AUTORIZADO);
+    guia.setDataRespostaConvenio(attachedGuia.getDataRespostaConvenio());
+    guia.setHistorico(attachedGuia.getHistorico());
   }
 
   @Override
@@ -173,11 +358,21 @@ public class GuiaController extends AbstractController<Guia> {
     if(somenteDoSetor){
       setSearchParam("setor", session.getSetor());
     }
-    if(somentePendentes){
-      setSearchParam("estado", EstadosGuiaEnum.PENDENTE);
+    if(selectedEstados != null && selectedEstados.length > 0){
+      setSearchParam("estados", selectedEstados);
+    }
+    if(selectedTipos != null && selectedTipos.length > 0){
+      setSearchParam("tipos", selectedTipos);
     }
     if(somenteMinhaAutoria){
       setSearchParam("autor", session.getUser());
+    }
+    if(selectedConvenios != null &&  selectedConvenios.length > 0) {
+      setSearchParam("convenios", selectedConvenios);
+    }
+    if(inicioDate != null || terminoDate != null){
+      setSearchParam("dateRange", new Date[] {inicioDate, terminoDate});
+      setSearchParam("dateField", dateField);
     }
   }
 }

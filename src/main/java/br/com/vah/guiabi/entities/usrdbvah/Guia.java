@@ -4,12 +4,13 @@ import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.BaseEntity;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
+import br.com.vah.guiabi.entities.dbamv.Especialidade;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Entidade que representa uma guia.
@@ -48,6 +49,10 @@ public class Guia extends BaseEntity {
   @JoinColumn(name = "CD_ATENDIMENTO")
   private Atendimento atendimento;
 
+  @ManyToOne
+  @JoinColumn(name = "CD_ESPECIALIDADE")
+  private Especialidade especialidade;
+
   @Column(name = "CD_ESTADO", nullable = false)
   @Enumerated(EnumType.STRING)
   private EstadosGuiaEnum estado;
@@ -67,14 +72,19 @@ public class Guia extends BaseEntity {
   @Column(name = "DT_REPOSTA_CONVENIO")
   private Date dataRespostaConvenio;
 
-  @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL )
-  private List<HistoricoGuia> historico = new ArrayList<>();
-
   @Column(name = "CD_DESCRICAO")
   private String descricao;
 
+  @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private Set<HistoricoGuia> historico;
+
+  @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  private Set<Comentario> comentarios;
+
   public Guia() {
     this.estado = EstadosGuiaEnum.PENDENTE;
+    this.historico = new LinkedHashSet<>();
+    this.comentarios = new LinkedHashSet<>();
   }
 
   public Guia(Atendimento atendimento, TipoGuiaEnum tipo) {
@@ -115,6 +125,14 @@ public class Guia extends BaseEntity {
 
   public void setAtendimento(Atendimento atendimento) {
     this.atendimento = atendimento;
+  }
+
+  public Especialidade getEspecialidade() {
+    return especialidade;
+  }
+
+  public void setEspecialidade(Especialidade especialidade) {
+    this.especialidade = especialidade;
   }
 
   public EstadosGuiaEnum getEstado() {
@@ -165,11 +183,11 @@ public class Guia extends BaseEntity {
     this.dataRespostaConvenio = dataRespostaConvenio;
   }
 
-  public List<HistoricoGuia> getHistorico() {
+  public Set<HistoricoGuia> getHistorico() {
     return historico;
   }
 
-  public void setHistorico(List<HistoricoGuia> historico) {
+  public void setHistorico(Set<HistoricoGuia> historico) {
     this.historico = historico;
   }
 
@@ -181,8 +199,22 @@ public class Guia extends BaseEntity {
     this.descricao = descricao;
   }
 
+  public Set<Comentario> getComentarios() {
+    return comentarios;
+  }
+
+  public void setComentarios(Set<Comentario> comentarios) {
+    this.comentarios = comentarios;
+  }
+
   @Override
   public String getLabelForSelectItem() {
-    return null;
+    StringBuffer buffer = new StringBuffer();
+    if (atendimento != null) {
+      buffer.append(atendimento.getId());
+      buffer.append(" - ");
+      buffer.append(atendimento.getConvenio().getTitle());
+    }
+    return buffer.toString();
   }
 }

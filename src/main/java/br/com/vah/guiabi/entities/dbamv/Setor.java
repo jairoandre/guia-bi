@@ -28,6 +28,12 @@ public class Setor extends BaseEntity {
   @Column(name = "NM_SETOR")
   private String title;
 
+  @Column(name = "CD_MULTI_EMPRESA")
+  private Integer multiEmpresa;
+
+  @Column(name = "CD_GRUPO_DE_CUSTO")
+  private Integer grupoCusto;
+
   /**
    * @return the id
    */
@@ -56,6 +62,22 @@ public class Setor extends BaseEntity {
    */
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public Integer getMultiEmpresa() {
+    return multiEmpresa;
+  }
+
+  public void setMultiEmpresa(Integer multiEmpresa) {
+    this.multiEmpresa = multiEmpresa;
+  }
+
+  public Integer getGrupoCusto() {
+    return grupoCusto;
+  }
+
+  public void setGrupoCusto(Integer grupoCusto) {
+    this.grupoCusto = grupoCusto;
   }
 
   @Override

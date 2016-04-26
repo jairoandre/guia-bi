@@ -235,12 +235,28 @@ a.action-link:HOVER, td.action-link a:HOVER {
   cursor: pointer;
 }
 
+.ellipsis-text {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-.warning-bg, .ended-bg {
+
+.warning-bg, .authorized-bg, .review-bg, .deny-bg, .partial-bg {
   text-align: center;
   color: #ffffff;
-  font-size: 18px;
-  line-height: 40px;
+  font-size: 16px;
+  height: 100%;
+  position: relative;
+}
+
+.warning-bg span, .authorized-bg span, .review-bg span, .deny-bg span, .partial-bg span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  margin-left: -10px;
+  line-height: 10px;
+  margin-top: -5px;
 }
 
 .warning-bg {
@@ -248,14 +264,25 @@ a.action-link:HOVER, td.action-link a:HOVER {
   animation-iteration-count: infinite;
 }
 
-.ended-bg {
-  background: forestgreen;
+.review-bg {
+  background: #ffb56b;
 }
 
+.deny-bg {
+  background: #863ac9;
+}
+
+.authorized-bg {
+  background: #498b47;
+}
+
+.partial-bg {
+  background-color: #4dd0e1;
+}
 @keyframes blink {
-  from {background-color: #fff; color: #cd1e00;}
-  50% {background-color: #cd1e00; color: #fff;}
-  to {background-color: #fff; color: #cd1e00;}
+  from {background-color: #fff; color: #cd4502;}
+  50% {background-color: #cd4502; color: #fff;}
+  to {background-color: #fff; color: #cd4502;}
 }
 
 /* PRIMEFACES */
@@ -275,4 +302,12 @@ input.ui-state-disabled {
 .ui-chkbox-label {
   font-size: 12px;
   line-height: 15px;
+}
+
+.ui-widget-content a {
+  color: #637AA5;
+}
+
+.ui-chkbox {
+  vertical-align: middle !important;
 }

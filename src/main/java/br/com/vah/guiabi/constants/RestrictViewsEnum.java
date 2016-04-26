@@ -12,8 +12,8 @@ import static br.com.vah.guiabi.constants.RolesEnum.*;
 public enum RestrictViewsEnum {
   USER_LIST("/pages/user/edit.xhtml", ADMINISTRATOR),
   USER_EDIT("/pages/user/list.xhtml", ADMINISTRATOR),
-  CLIENT_EDIT("/pages/guia/edit.xhtml", ADMINISTRATOR, AUTHORIZER),
-  SERVICE_EDIT("/pages/guia/edit.xhtml", ADMINISTRATOR, AUTHORIZER);
+  CLIENT_EDIT("/pages/guia/edit.xhtml", AUTHORIZER),
+  SERVICE_EDIT("/pages/guia/edit.xhtml", AUTHORIZER);
 
   private String view;
 
@@ -40,7 +40,7 @@ public enum RestrictViewsEnum {
   public boolean checkRole(RolesEnum role) {
     boolean atLeastOne = false;
     for (RolesEnum thisRole : this.roles) {
-      if(thisRole.equals(role)) {
+      if(thisRole.equals(role) || role.hasSubRole(thisRole)) {
         atLeastOne = true;
         break;
       }

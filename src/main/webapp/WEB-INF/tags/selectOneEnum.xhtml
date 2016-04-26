@@ -11,10 +11,8 @@
     <p:tooltip id="#{id}InfoTooltip" for="#{id}Info" value="#{info}"
                rendered="#{info != null}"/>
   </h:panelGroup>
-  <h:outputText value="#{value}"
-                rendered="#{!editing}"/>
-  <p:selectOneMenu id="#{id}" value="#{value}" required="#{required}"
-                   label="#{label}" rendered="#{editing}" style="min-width: 150px;">
+  <p:selectOneMenu id="#{id}" value="#{value}" required="#{required}" disabled="#{editing == null ? false : !editing}"
+                   label="#{label}" style="min-width: 150px;">
     <ui:insert/>
     <f:selectItems value="#{options}" var="option"
                    itemLabel="#{option.label}" itemValue="#{option}"/>

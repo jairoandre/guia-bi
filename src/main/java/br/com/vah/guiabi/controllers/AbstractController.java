@@ -155,9 +155,9 @@ public abstract class AbstractController<T extends BaseEntity> implements Serial
   public String doSave() {
     try {
       if (item.getId() == null) {
-        getService().create(item);
+        item = getService().create(item);
       } else {
-        getService().update(item);
+        item = getService().update(item);
       }
       addMsg(new FacesMessage("Sucesso!", "Registro salvo"), true);
       return back();

@@ -404,6 +404,10 @@
             <name>value</name>
         </attribute>
         <attribute>
+            <description>Editing</description>
+            <name>editing</name>
+        </attribute>
+        <attribute>
             <description>Item Label</description>
             <name>itemLabel</name>
         </attribute>

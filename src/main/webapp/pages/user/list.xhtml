@@ -9,17 +9,12 @@
       <p:panel header="Usuários">
         <guiabi:dataTable id="dataTable" controller="#{userController}"
                          renderDeleteAction="false" renderAddBtn="false">
-          <p:column sortBy="#{item.id}" headerText="Código" width="100"
-                    style="text-align: left;">
-            <h:outputText value="#{item.id}"/>
+          <p:column sortBy="#{item.title}" headerText="Login"
+                    style="text-align: left;" width="200">
+            <h:outputText value="#{item.login}"/>
           </p:column>
-          <p:column sortBy="#{item.title}" headerText="Nome"
-                    style="text-align: left;">
-            <h:outputText value="#{item.title}"/>
-          </p:column>
-          <p:column headerText="Setores" style="text-align: left;"
-                    width="100">
-            <h:outputText value="#{item.sectors.size()}"/>
+          <p:column headerText="Perfil" style="text-align: left;">
+            <h:outputText value="#{item.role.label}"/>
           </p:column>
         </guiabi:dataTable>
       </p:panel>

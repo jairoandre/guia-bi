@@ -40,12 +40,15 @@
                        icon="fa fa-file"
                        action="#{cc.attrs.controller.add}"
                        title="Criar novo #{cc.attrs.controller.entityName}"
+                       onstart="PF('changePage').show();"
                        rendered="#{cc.attrs.renderAddBtn == null ? true : cc.attrs.renderAddBtn}"
                        style="position: absolute; right: 0; top: 0; font-size: 20px;"/>
+      <p:hotkey bind="ctrl+shift+n" onstart="PF('changePage').show();" action="#{cc.attrs.controller.add}"
+                rendered="#{cc.attrs.renderAddBtn == null ? true : cc.attrs.renderAddBtn}"/>
     </h:panelGroup>
     <p:dataTable id="table" var="item" value="#{cc.attrs.controller.lazyModel}"
                  paginator="true" emptyMessage="Sem registros" styleClass="table-left-header"
-                 paginatorPosition="bottom" rows="10" rowKey="index" rowIndexVar="indexVar"
+                 paginatorPosition="bottom" rows="25" rowKey="index" rowIndexVar="indexVar"
                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  lazy="true" rowsPerPageTemplate="25,50,100">
       <composite:insertChildren/>

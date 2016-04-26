@@ -11,13 +11,11 @@
                rendered="#{info != null}"/>
   </h:panelGroup>
   <h:panelGroup>
-    <h:outputText value="#{value}"
-                  rendered="#{editing == null ? false : !editing}"/>
     <p:inputText id="#{id}" value="#{value}"
                  required="#{required == null ? false : required}" label="#{label}"
-                 rendered="#{editing == null ? true : editing}"
-                 styleClass="lance-input"
-                 readonly="#{readonly == null ? false : readonly}">
+                 rendered="#{rendered == null ? true : rendered}"
+                 disabled="#{editing == null ? false : !editing}"
+                 styleClass="lance-input">
       <ui:insert/>
     </p:inputText>
   </h:panelGroup>

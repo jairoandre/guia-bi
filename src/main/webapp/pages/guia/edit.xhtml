@@ -24,14 +24,30 @@
                          columns="3">
 
           <uiguiabi:selectOneEnum id="tipo" label="Tipo" value="#{guiaController.item.tipo}" required="true"
-                                  editing="#{guiaController.editing}"
+                                  editing="#{guiaController.editing and guiaController.item.id == null}"
                                   options="#{guiaController.tipos}">
             <p:ajax event="change" listener="#{guiaController.onchangeTipo}" process="@this" update="@form"
                     oncomplete="nextFocus('#{p:component('setor')}')"/>
           </uiguiabi:selectOneEnum>
 
+          <uiguiabi:autoComplete id="especialidade" value="#{guiaController.item.especialidade}" label="Especialidade"
+                                 required="true"
+                                 controller="#{especialidadeController}" completeMethod="completeEspecialidade"
+                                 editing="#{guiaController.editing and guiaController.item.id == null}"
+                                 converter="#{especialidadeConverter}" itemLabel="title"
+                                 rendered="#{guiaController.item.tipo == 'PARECER'}"
+                                 placeholder="Número/Nome especialidade">
+            <p:column>
+              #{item.id}
+            </p:column>
+            <p:column>
+              #{item.title}
+            </p:column>
+          </uiguiabi:autoComplete>
+
           <uiguiabi:autoComplete id="setor" value="#{guiaController.item.setor}" label="Setor" required="true"
                                  controller="#{setorController}" completeMethod="completeSetor"
+                                 editing="#{guiaController.editing and guiaController.item.id == null}"
                                  converter="#{setorConverter}" itemLabel="title"
                                  placeholder="Número/Nome setor">
             <p:column>
@@ -45,9 +61,10 @@
           <uiguiabi:autoComplete id="atendimento" value="#{guiaController.item.atendimento}" label="Atendimento"
                                  required="true"
                                  controller="#{atendimentoController}" completeMethod="completeAtendimento"
+                                 editing="#{guiaController.editing and guiaController.item.id == null}"
                                  converter="#{atendimentoConverter}" itemLabel="id"
                                  placeholder="Número/Nome paciente">
-            <p:ajax event="itemSelect" update="pacientePnl"/>
+            <p:ajax event="itemSelect" update="pacientePnl" oncomplete="nextFocus('#{p:component('descricao')}')"/>
             <p:column>
               #{item.id}
             </p:column>
@@ -71,14 +88,28 @@
                               editing="#{guiaController.editing}"/>
 
           <uiguiabi:inputDate id="data" label="Data da guia" required="true"
-                              value="#{guiaController.item.data}" editing="#{guiaController.editing}"
-                              readonly="#{guiaController.item.tipo == 'PRORROGACAO'}"/>
+                              value="#{guiaController.item.data}"
+                              pattern="dd/MM/yyyy HH:mm"
+                              editing="#{guiaController.editing and (guiaController.item.tipo != 'PRORROGACAO' or sessionController.isUserInRoles('MANAGER'))}"/>
 
           <uiguiabi:inputDate id="dataRecebimento" label="Data de recebimento"
                               value="#{guiaController.item.dataRecebimento}"
+                              pattern="dd/MM/yyyy HH:mm"
+                              editing="#{guiaController.editing and sessionController.isUserInRoles('MANAGER')}"
+                              rendered="#{guiaController.item.id != null or guiaController.item.tipo != 'PRORROGACAO'}"/>
+
+          <uiguiabi:inputDate id="dataAuditoria" label="Data de auditoria"
+                              value="#{guiaController.item.dataAuditoria}"
                               editing="#{guiaController.editing}"
-                              readonly="#{true}"
-                              rendered="#{guiaController.item.tipo != null and guiaController.item.tipo != 'PRORROGACAO'}"/>
+                              pattern="dd/MM/yyyy HH:mm"
+                              rendered="#{guiaController.item.id != null}"/>
+
+          <uiguiabi:inputDate id="dataSolicitacaoConvenio" label="Data de solicitação"
+                              value="#{guiaController.item.dataSolicitacaoConvenio}"
+                              editing="#{guiaController.editing}"
+                              pattern="dd/MM/yyyy HH:mm"
+                              rendered="#{guiaController.item.id != null}"/>
+
 
         </guiabi:editForm>
 
