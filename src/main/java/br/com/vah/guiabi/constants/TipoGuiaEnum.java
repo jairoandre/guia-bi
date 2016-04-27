@@ -9,12 +9,10 @@ import java.util.List;
  */
 public enum TipoGuiaEnum {
   INTERNACAO("Internação"),
-  CONSULTA("Consulta"),
   PRORROGACAO("Prorrogação"),
   PROCEDIMENTO("Procedimento"),
-  OPME("OPME"),
-  QUIMIOTERAPIA("Quimioterapia"),
-  RADIOTERAPIA("Radioterapia"),
+  MATMEDALTOCUSTO("Mat./Med. Alto Custo"),
+  HOMECARE("Home Care"),
   PARECER("Parecer"),
   BIBAP("Bibap"),
   OUTROS("Outros");

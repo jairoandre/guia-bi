@@ -87,7 +87,8 @@
                                   style="min-width: 200px"
                                   styleClass="margin-top">
                   <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
-                  <f:selectItems value="#{guiaController.tiposEnum}" var="tipo" itemLabel="#{tipo.label}" itemValue="#{tipo}"/>
+                  <f:selectItems value="#{guiaController.tiposEnum}" var="tipo" itemLabel="#{tipo.label}"
+                                 itemValue="#{tipo}"/>
                 </p:selectManyMenu>
               </p:overlayPanel>
               <p:selectBooleanCheckbox id="somenteSetor" value="#{guiaController.somenteDoSetor}"
@@ -99,6 +100,11 @@
                                        itemLabel="Somente minha autoria" styleClass="margin-left">
                 <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
               </p:selectBooleanCheckbox>
+              <p:fileUpload mode="advanced" skinSimple="false"
+                            fileUploadListener="#{guiaController.uploadValues}" uploadLabel="Submeter"
+                            label="Importar CSV"
+                            cancelLabel="Cancelar" styleClass="margin-top"
+                            update="dataTable"/>
             </div>
           </f:facet>
 
@@ -135,7 +141,7 @@
           <!-- ############## -->
 
 
-          <p:column style="padding: 0; height: 1px">
+          <p:column style="padding: 0; height: 50px">
             <h:panelGroup id="estado" layout="block" styleClass="#{item.estado.colors}">
               <h:outputText styleClass="#{item.estado.icon}"/>
             </h:panelGroup>
@@ -154,13 +160,16 @@
                             for="#{p:component('pacienteOutput')}"/>
           </p:column>
           <p:column styleClass="left-align ellipsis-text">
-            <h:outputText id="convenioOutput" value="#{item.atendimento.convenio.title}"
-                          title="#{item.atendimento.convenio.title}"/>
+            <h:outputText id="convenioOutput" value="#{item.atendimento.convenio.title}"/>
             <guiabi:toolTip id="convenioToolTip" value="#{item.atendimento.convenio.title}" index="#{indexVar}"
                             for="#{p:component('convenioOutput')}"/>
           </p:column>
           <p:column styleClass="left-align">
             <h:outputText id="tipoOutput" value="#{item.tipo.label}"/>
+            <h:panelGroup rendered="#{item.tipo == 'PARECER' and item.especialidade != null}">
+              <guiabi:toolTip id="parecerToolTip" value="#{item.especialidade.title}" index="#{indexVar}"
+                              for="#{p:component('tipoOutput')}"/>
+            </h:panelGroup>
           </p:column>
           <p:column sortBy="#{item.descricao}" styleClass="left-align">
             <h:outputText id="descricaoOutput" value="#{item.descricao}"/>
@@ -200,11 +209,11 @@
               <p:menuitem value="Auditoria" actionListener="#{guiaController.auditar(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataAuditoria"
                           icon="fa fa-gavel"
-                          disabled="#{item.dataAuditoria != null or item.dataRespostaConvenio != null}"/>
+                          disabled="#{item.dataAuditoria != null or item.dataRespostaConvenio != null or item.dataRecebimento == null}"/>
               <p:menuitem value="Solicitação convênio" actionListener="#{guiaController.solicitarConvenio(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataSolicitacaoConvenio"
                           icon="fa fa-leaf"
-                          disabled="#{item.dataSolicitacaoConvenio != null or item.dataRespostaConvenio != null}"/>
+                          disabled="#{item.dataSolicitacaoConvenio != null or item.dataRespostaConvenio != null or item.dataRecebimento == null}"/>
               <p:separator/>
               <p:menuitem value="Negado" actionListener="#{guiaController.negar(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
@@ -226,14 +235,14 @@
                           ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
                           icon="fa fa-check"
                           disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
-              <p:separator rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
-              <p:menuitem value="Visualizar histórico" action="#{guiaController.setItem(item)}"
+              <p:separator/>
+              <p:menuitem value="Histórico" action="#{guiaController.setItem(item)}"
                           process="@this" update="#{p:component('historicoDlg')}" oncomplete="PF('historicoDlg').show()"
                           icon="fa fa-tags" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
-              <p:menuitem value="Visualizar comentários" action="#{guiaController.setItem(item)}"
+              <p:menuitem value="Comentários" action="#{guiaController.setItem(item)}"
                           process="@this" update="#{p:component('comentarioDlg')}"
                           oncomplete="PF('comentarioDlg').show()"
-                          icon="fa fa-comments" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
+                          icon="fa fa-comments" rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"/>
               <p:menuitem value="Editar" action="#{guiaController.edit(item)}"
                           process="@this" onstart="PF('changePage').show()"
                           disabled="#{item.dataRespostaConvenio != null}"
@@ -248,7 +257,7 @@
 
         <p:dialog id="commentDialog" widgetVar="commentDialog" modal="true">
           <f:facet name="header">
-            <h:outputText value="Guia em revisão - #{guiaController.item.labelForSelectItem}"/>
+            <h:outputText value="Guia - #{guiaController.item.labelForSelectItem}"/>
           </f:facet>
           <h:panelGrid id="commentGrid" columns="1">
             <p:outputLabel value="Comentário" for="commentTextArea" styleClass="lance-label"/>
@@ -317,7 +326,8 @@
             <h:outputText value="Histórico - #{guiaController.item.labelForSelectItem}"/>
           </f:facet>
 
-          <p:dataTable id="historicoTable" value="#{guiaController.item.historico}" var="hist" sortBy="#{hist.data}"  scrollRows="5" emptyMessage="Sem histórico">
+          <p:dataTable id="historicoTable" value="#{guiaController.item.historico}" var="hist" sortBy="#{hist.data}"
+                       scrollRows="5" emptyMessage="Sem histórico">
             <p:column headerText="Usuário" width="100" styleClass="left-align">
               <h:outputText value="#{hist.autor.login}"/>
             </p:column>
@@ -345,7 +355,8 @@
             <h:outputText value="Comentários - #{guiaController.item.labelForSelectItem}"/>
           </f:facet>
 
-          <p:dataTable id="comentarioTable" value="#{guiaController.item.comentarios}"  var="coment" sortBy="#{coment.data}" scrollRows="5" emptyMessage="Sem comentários">
+          <p:dataTable id="comentarioTable" value="#{guiaController.item.comentarios}" var="coment"
+                       sortBy="#{coment.data}" scrollRows="5" emptyMessage="Sem comentários">
             <p:column headerText="Usuário" width="100" styleClass="left-align">
               <h:outputText value="#{coment.autor.login}"/>
             </p:column>

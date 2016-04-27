@@ -6,18 +6,26 @@ import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.Especialidade;
+import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.service.*;
 import br.com.vah.guiabi.util.DateUtility;
 import br.com.vah.guiabi.util.ViewUtils;
+import com.opencsv.CSVReader;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Date;
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -261,6 +269,54 @@ public class GuiaController extends AbstractController<Guia> {
     prepareSearch();
   }
 
+  public void uploadValues(FileUploadEvent evt) {
+    UploadedFile file = evt.getFile();
+    byte[] data = file.getContents();
+    CSVReader reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(data)), ';');
+    try {
+      List<Guia> guias = new ArrayList<>();
+      Integer line = 1;
+      try {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        for (String[] str : reader.readAll()) {
+          Long idSector = Long.valueOf(str[0]);
+          Long idConvenio = Long.valueOf(str[1]);
+          Long cdAtendimento = Long.valueOf(str[2]);
+          TipoGuiaEnum tipoGuia = TipoGuiaEnum.valueOf(str[3]);
+          String descricao = str[4];
+          Date dataGuia = str[5] == null || str[5].isEmpty() ? null : sdf.parse(str[5]);
+          Date dataReceb = str[6] == null || str[6].isEmpty() ? null : sdf.parse(str[6]);
+          Date dataAudit = str[7] == null || str[7].isEmpty() ? null : sdf.parse(str[7]);
+          Date dataSolic = str[8] == null || str[8].isEmpty() ? null : sdf.parse(str[8]);
+          Date dataRespo = str[9] == null || str[9].isEmpty() ? null : sdf.parse(str[9]);
+
+
+          Guia guia = new Guia();
+
+          Setor setor = new Setor();
+          setor.setId(idSector);
+
+
+
+          line++;
+
+          guias.add(guia);
+        }
+
+        // service.saveAll(guias);
+
+        Integer importedValues = guias.size();
+        addMsg(new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", String.format("Importação realizada com sucesso: %d importados.", importedValues)), false);
+      } catch (Exception e) {
+        addMsg(new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", String.format("Erro na importação: linha %s.", line)), false);
+      }
+    } catch (Exception e) {
+      addMsg(new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", String.format("Erro na importação:\n%s", e.getMessage())), false);
+    }
+
+  }
+
   public void receber(Guia guia) {
     Guia attachedGuia = service.find(guia.getId());
     attachedGuia.setDataRecebimento(new Date());
@@ -277,7 +333,7 @@ public class GuiaController extends AbstractController<Guia> {
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.AUDITORIA);
     setItem(attachedGuia);
     doSave();
-    guia.setDataAuditoria(getItem().getDataRecebimento());
+    guia.setDataAuditoria(getItem().getDataAuditoria());
     guia.setHistorico(getItem().getHistorico());
   }
 
@@ -285,8 +341,9 @@ public class GuiaController extends AbstractController<Guia> {
     Guia attachedGuia = service.find(guia.getId());
     attachedGuia.setDataSolicitacaoConvenio(new Date());
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.SOLICITACAO);
-    setItem(guia);
+    setItem(attachedGuia);
     doSave();
+    guia.setDataSolicitacaoConvenio(getItem().getDataSolicitacaoConvenio());
     guia.setDataAuditoria(getItem().getDataRecebimento());
     guia.setHistorico(getItem().getHistorico());
   }
@@ -316,6 +373,10 @@ public class GuiaController extends AbstractController<Guia> {
   private void saveAddingComment(EstadosGuiaEnum estado, AcoesGuiaEnum acao) {
     Guia attachedGuia = service.find(detachedGuia.getId());
     attachedGuia.setEstado(estado);
+    if(estado.equals(EstadosGuiaEnum.PARCIAL)) {
+      attachedGuia.setDataRespostaConvenio(new Date());
+      detachedGuia.setDataRespostaConvenio(attachedGuia.getDataRespostaConvenio());
+    }
     service.addComentario(attachedGuia, session.getUser(), comentario);
     service.addHistorico(session.getUser(), attachedGuia, acao);
     comentario = null;

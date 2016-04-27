@@ -8,9 +8,9 @@ import br.com.vah.guiabi.entities.dbamv.Especialidade;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Entidade que representa uma guia.
@@ -76,15 +76,15 @@ public class Guia extends BaseEntity {
   private String descricao;
 
   @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  private Set<HistoricoGuia> historico;
+  private List<HistoricoGuia> historico;
 
   @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  private Set<Comentario> comentarios;
+  private List<Comentario> comentarios;
 
   public Guia() {
     this.estado = EstadosGuiaEnum.PENDENTE;
-    this.historico = new LinkedHashSet<>();
-    this.comentarios = new LinkedHashSet<>();
+    this.historico = new ArrayList<>();
+    this.comentarios = new ArrayList<>();
   }
 
   public Guia(Atendimento atendimento, TipoGuiaEnum tipo) {
@@ -183,11 +183,11 @@ public class Guia extends BaseEntity {
     this.dataRespostaConvenio = dataRespostaConvenio;
   }
 
-  public Set<HistoricoGuia> getHistorico() {
+  public List<HistoricoGuia> getHistorico() {
     return historico;
   }
 
-  public void setHistorico(Set<HistoricoGuia> historico) {
+  public void setHistorico(List<HistoricoGuia> historico) {
     this.historico = historico;
   }
 
@@ -199,11 +199,11 @@ public class Guia extends BaseEntity {
     this.descricao = descricao;
   }
 
-  public Set<Comentario> getComentarios() {
+  public List<Comentario> getComentarios() {
     return comentarios;
   }
 
-  public void setComentarios(Set<Comentario> comentarios) {
+  public void setComentarios(List<Comentario> comentarios) {
     this.comentarios = comentarios;
   }
 
