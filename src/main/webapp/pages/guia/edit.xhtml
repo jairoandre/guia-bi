@@ -25,7 +25,8 @@
 
           <uiguiabi:selectOneEnum id="tipo" label="Tipo" value="#{guiaController.item.tipo}" required="true"
                                   editing="#{guiaController.editing and guiaController.item.id == null}"
-                                  options="#{guiaController.tipos}">
+                                  options="#{guiaController.tipos}"
+                                  info="#{guiaController.tipoInfo}">
             <p:ajax event="change" listener="#{guiaController.onchangeTipo}" process="@this" update="@form"
                     oncomplete="nextFocus('#{p:component('setor')}')"/>
           </uiguiabi:selectOneEnum>
@@ -39,6 +40,21 @@
                                  placeholder="Número/Nome especialidade">
             <p:column>
               #{item.id}
+            </p:column>
+            <p:column>
+              #{item.title}
+            </p:column>
+          </uiguiabi:autoComplete>
+
+          <uiguiabi:autoComplete id="proFat" value="#{guiaController.item.proFat}" label="Procedimento"
+                                 required="true"
+                                 controller="#{proFatController}" completeMethod="completeProFat"
+                                 editing="#{guiaController.editing and guiaController.item.id == null}"
+                                 converter="#{proFatConverter}" itemLabel="title"
+                                 rendered="#{guiaController.item.tipo == 'PROCEDIMENTO'}"
+                                 placeholder="Número/Nome procedimento">
+            <p:column>
+              #{item.idStr}
             </p:column>
             <p:column>
               #{item.title}

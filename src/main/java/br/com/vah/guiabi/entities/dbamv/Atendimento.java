@@ -3,6 +3,7 @@ package br.com.vah.guiabi.entities.dbamv;
 import br.com.vah.guiabi.entities.BaseEntity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by Jairoportela on 05/04/2016.
@@ -27,6 +28,9 @@ public class Atendimento extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "CD_CONVENIO")
   private Convenio convenio;
+
+  @Column(name = "DT_ALTA")
+  private Date dataAlta;
 
   @Override
   public Long getId() {
@@ -56,6 +60,14 @@ public class Atendimento extends BaseEntity {
 
   public void setConvenio(Convenio convenio) {
     this.convenio = convenio;
+  }
+
+  public Date getDataAlta() {
+    return dataAlta;
+  }
+
+  public void setDataAlta(Date dataAlta) {
+    this.dataAlta = dataAlta;
   }
 
   @Override

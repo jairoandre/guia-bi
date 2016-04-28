@@ -19,6 +19,7 @@ import org.hibernate.sql.JoinType;
 
 import javax.ejb.Stateless;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Jairoportela on 06/04/2016.
@@ -72,7 +73,7 @@ public class GuiaService extends DataAccessService<Guia> {
     }
     if (autor != null) {
       DetachedCriteria histCriteria = DetachedCriteria.forClass(HistoricoGuia.class, "h").add(Restrictions.eq("h.autor", autor)).add(Restrictions.eq("h.acao", AcoesGuiaEnum.CRIACAO)).setProjection(Projections.property("h.guia"));
-      criteria.add(Subqueries.exists(histCriteria));
+      criteria.add(Subqueries.propertyIn("id", histCriteria));
     }
     if (dateRange != null) {
       String property = "data";
@@ -103,6 +104,12 @@ public class GuiaService extends DataAccessService<Guia> {
       }
     }
     return criteria;
+  }
+
+  public void saveAll(List<Guia> guias) {
+    for (Guia guia : guias) {
+      create(guia);
+    }
   }
 
 }

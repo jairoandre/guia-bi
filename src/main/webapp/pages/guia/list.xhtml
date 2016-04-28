@@ -91,11 +91,29 @@
                                  itemValue="#{tipo}"/>
                 </p:selectManyMenu>
               </p:overlayPanel>
-              <p:selectBooleanCheckbox id="somenteSetor" value="#{guiaController.somenteDoSetor}"
-                                       itemLabel="Somente [#{sessionController.setor.title}]"
-                                       rendered="#{sessionController.setor != null and sessionController.isUserInRoles('MANAGER')}">
-                <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
-              </p:selectBooleanCheckbox>
+              <p:commandButton id="setorFilterBtn" value="Filtrar por Setor" type="button" styleClass="margin-left"/>
+              <p:overlayPanel id="setorFilterPnl" widgetVar="setorFilterPnl" for="setorFilterBtn" hideEffect="fade">
+                <p:commandButton id="setorClearFilterBtn" value="Limpar Filtro"
+                                 actionListener="#{guiaController.clearSetor}" ajax="true"
+                                 process="@this" update="table, setorFilter" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
+                <p:separator/>
+                <p:autoComplete id="setorFilter" value="#{guiaController.setor}"
+                                var="setor"
+                                itemLabel="#{setor.title}"
+                                itemValue="#{setor}"
+                                converter="#{setorConverter}"
+                                inputStyleClass="lance-input"
+                                queryDelay="250"
+                                completeMethod="#{setorController.completeSetor}" placeholder="Digite o código ou o nome do setor.">
+                  <p:ajax event="itemSelect" listener="#{guiaController.prepareSearch}" update="table"/>
+                  <p:column>
+                    #{setor.id}
+                  </p:column>
+                  <p:column>
+                    #{setor.title}
+                  </p:column>
+                </p:autoComplete>
+              </p:overlayPanel>
               <p:selectBooleanCheckbox id="somenteMinhaAutoria" value="#{guiaController.somenteMinhaAutoria}"
                                        itemLabel="Somente minha autoria" styleClass="margin-left">
                 <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
@@ -104,6 +122,7 @@
                             fileUploadListener="#{guiaController.uploadValues}" uploadLabel="Submeter"
                             label="Importar CSV"
                             cancelLabel="Cancelar" styleClass="margin-top"
+                            rendered="#{sessionController.isUserInRoles('ADMINISTRATOR')}"
                             update="dataTable"/>
             </div>
           </f:facet>
@@ -170,8 +189,12 @@
               <guiabi:toolTip id="parecerToolTip" value="#{item.especialidade.title}" index="#{indexVar}"
                               for="#{p:component('tipoOutput')}"/>
             </h:panelGroup>
+            <h:panelGroup rendered="#{item.tipo == 'PROCEDIMENTO' and item.proFat != null}">
+              <guiabi:toolTip id="proFatToolTip" value="#{item.proFat.title}" index="#{indexVar}"
+                              for="#{p:component('tipoOutput')}"/>
+            </h:panelGroup>
           </p:column>
-          <p:column sortBy="#{item.descricao}" styleClass="left-align">
+          <p:column sortBy="#{item.descricao}" styleClass="left-align ellipsis-text">
             <h:outputText id="descricaoOutput" value="#{item.descricao}"/>
             <guiabi:toolTip id="descricaoToolTip" value="#{item.descricao}" index="#{indexVar}"
                             for="#{p:component('descricaoOutput')}"/>
@@ -236,6 +259,10 @@
                           icon="fa fa-check"
                           disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
               <p:separator/>
+              <p:menuitem value="Novo comentário" action="#{guiaController.setItem(item)}"
+                          process="@this" update="#{p:component('novoComentarioDlg')}"
+                          oncomplete="PF('novoComentarioDlg').show()"
+                          icon="fa fa-comment" rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"/>
               <p:menuitem value="Histórico" action="#{guiaController.setItem(item)}"
                           process="@this" update="#{p:component('historicoDlg')}" oncomplete="PF('historicoDlg').show()"
                           icon="fa fa-tags" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
@@ -254,6 +281,29 @@
             </p:menuButton>
           </p:column>
         </guiabi:dataTable>
+
+        <p:dialog id="novoComentarioDlg" widgetVar="novoComentarioDlg" modal="true">
+          <f:facet name="header">
+            <h:outputText value="Guia - #{guiaController.item.labelForSelectItem}"/>
+          </f:facet>
+          <h:panelGrid id="novoComentarioGrid" columns="1">
+            <p:outputLabel value="Comentário" for="novoComentarioTextArea" styleClass="lance-label"/>
+            <p:inputTextarea id="novoComentarioTextArea" value="#{guiaController.comentario}" rows="5" cols="75"/>
+            <p:message for="novoComentarioTextArea"/>
+          </h:panelGrid>
+          <f:facet name="footer">
+            <p:commandButton id="saveComentario" value="Salvar"
+                             action="#{guiaController.salvarNovoComentario}"
+                             ajax="true"
+                             process="@this, novoComentarioGrid"
+                             update="#{p:component('table')}"
+                             onsuccess="PF('novoComentarioDlg').hide()"/>
+            <p:commandButton id="cancelarNovoComentario" value="Cancelar"
+                             ajax="true"
+                             process="@this"
+                             oncomplete="PF('novoComentarioDlg').hide()"/>
+          </f:facet>
+        </p:dialog>
 
         <p:dialog id="commentDialog" widgetVar="commentDialog" modal="true">
           <f:facet name="header">

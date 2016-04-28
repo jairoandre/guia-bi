@@ -9,7 +9,7 @@
                   styleClass="fa fa-info-circle lance-info-icon"
                   rendered="#{info != null}"/>
     <p:tooltip id="#{id}InfoTooltip" for="#{id}Info" value="#{info}"
-               rendered="#{info != null}"/>
+               rendered="#{info != null}" escape="false"/>
   </h:panelGroup>
   <p:selectOneMenu id="#{id}" value="#{value}" required="#{required}" disabled="#{editing == null ? false : !editing}"
                    label="#{label}" style="min-width: 150px;">

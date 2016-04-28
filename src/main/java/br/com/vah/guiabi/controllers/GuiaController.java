@@ -8,6 +8,7 @@ import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.Especialidade;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
+import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
 import br.com.vah.guiabi.service.*;
 import br.com.vah.guiabi.util.DateUtility;
 import br.com.vah.guiabi.util.ViewUtils;
@@ -69,7 +70,7 @@ public class GuiaController extends AbstractController<Guia> {
 
   private Convenio[] selectedConvenios;
 
-  private Boolean somenteDoSetor = true;
+  private Setor setor;
 
   private Boolean somenteMinhaAutoria = true;
 
@@ -95,6 +96,8 @@ public class GuiaController extends AbstractController<Guia> {
   public void init() {
     logger.info(this.getClass().getSimpleName() + " created");
     initLazyModel(service, RELATIONS);
+    getLazyModel().getSearchParams().setOrderBy("data");
+    getLazyModel().getSearchParams().setAsc(false);
     prepareSearch();
     tipos = TipoGuiaEnum.getSelectItems();
     convenios = convenioService.findWithNamedQuery(Convenio.ALL);
@@ -156,12 +159,12 @@ public class GuiaController extends AbstractController<Guia> {
     this.somenteMinhaAutoria = somenteMinhaAutoria;
   }
 
-  public Boolean getSomenteDoSetor() {
-    return somenteDoSetor;
+  public Setor getSetor() {
+    return setor;
   }
 
-  public void setSomenteDoSetor(Boolean somenteDoSetor) {
-    this.somenteDoSetor = somenteDoSetor;
+  public void setSetor(Setor setor) {
+    this.setor = setor;
   }
 
   public String getComentario() {
@@ -275,39 +278,59 @@ public class GuiaController extends AbstractController<Guia> {
     CSVReader reader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(data)), ';');
     try {
       List<Guia> guias = new ArrayList<>();
-      Integer line = 1;
+      Integer line = 0;
       try {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
         for (String[] str : reader.readAll()) {
-          Long idSector = Long.valueOf(str[0]);
-          Long idConvenio = Long.valueOf(str[1]);
-          Long cdAtendimento = Long.valueOf(str[2]);
-          TipoGuiaEnum tipoGuia = TipoGuiaEnum.valueOf(str[3]);
-          String descricao = str[4];
-          Date dataGuia = str[5] == null || str[5].isEmpty() ? null : sdf.parse(str[5]);
-          Date dataReceb = str[6] == null || str[6].isEmpty() ? null : sdf.parse(str[6]);
-          Date dataAudit = str[7] == null || str[7].isEmpty() ? null : sdf.parse(str[7]);
-          Date dataSolic = str[8] == null || str[8].isEmpty() ? null : sdf.parse(str[8]);
-          Date dataRespo = str[9] == null || str[9].isEmpty() ? null : sdf.parse(str[9]);
-
-
-          Guia guia = new Guia();
-
-          Setor setor = new Setor();
-          setor.setId(idSector);
-
-
 
           line++;
 
+          Long idSector = Long.valueOf(str[0]);
+          Long cdAtendimento = Long.valueOf(str[1]);
+          if(cdAtendimento == null) {
+            continue;
+          }
+          Atendimento atendimento = new Atendimento();
+          atendimento.setId(cdAtendimento);
+
+          TipoGuiaEnum tipoGuia = TipoGuiaEnum.valueOf(str[2]);
+
+          String descricao = str[3];
+
+          Date dataGuia = str[4] == null || str[4].isEmpty() ? null : sdf.parse(str[4]);
+          Date dataReceb = str[5] == null || str[5].isEmpty() ? null : sdf.parse(str[5]);
+          Date dataAudit = str[6] == null || str[6].isEmpty() ? null : sdf.parse(str[6]);
+          Date dataSolic = str[7] == null || str[7].isEmpty() ? null : sdf.parse(str[7]);
+          Date dataRespo = str[8] == null || str[8].isEmpty() ? null : sdf.parse(str[8]);
+
+
+          Guia guia = new Guia(atendimento, tipoGuia);
+
+          Setor setor = new Setor();
+          setor.setId(idSector);
+          guia.setSetor(setor);
+          guia.setDescricao(descricao);
+          guia.setData(dataGuia);
+          guia.setDataRecebimento(dataReceb);
+          guia.setDataAuditoria(dataAudit);
+          guia.setDataSolicitacaoConvenio(dataSolic);
+
+          guia.getHistorico().add(new HistoricoGuia(session.getUser(), guia, AcoesGuiaEnum.CRIACAO));
+
+          if(dataRespo != null){
+            guia.setEstado(EstadosGuiaEnum.AUTORIZADO);
+            guia.getHistorico().add(new HistoricoGuia(session.getUser(), guia, AcoesGuiaEnum.AUTORIZADO));
+            guia.setDataRespostaConvenio(dataRespo);
+          }
           guias.add(guia);
         }
 
-        // service.saveAll(guias);
+        service.saveAll(guias);
 
         Integer importedValues = guias.size();
-        addMsg(new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", String.format("Importação realizada com sucesso: %d importados.", importedValues)), false);
+        Integer ignoredValues = line - importedValues;
+        addMsg(new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", String.format("Importação realizada com sucesso: %d importados, %d ignorados.", importedValues, ignoredValues)), false);
       } catch (Exception e) {
         addMsg(new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", String.format("Erro na importação: linha %s.", line)), false);
       }
@@ -370,6 +393,18 @@ public class GuiaController extends AbstractController<Guia> {
     detachedGuia = guia;
   }
 
+  public void salvarNovoComentario() {
+    Guia detachedGuia = getItem();
+    Guia attachedGuia = service.find(getItem().getId());
+    service.addComentario(attachedGuia, session.getUser(), comentario);
+    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.COMENTARIO);
+    comentario = null;
+    setItem(attachedGuia);
+    doSave();
+    detachedGuia.setComentarios(attachedGuia.getComentarios());
+    detachedGuia.setHistorico(attachedGuia.getHistorico());
+  }
+
   private void saveAddingComment(EstadosGuiaEnum estado, AcoesGuiaEnum acao) {
     Guia attachedGuia = service.find(detachedGuia.getId());
     attachedGuia.setEstado(estado);
@@ -407,6 +442,11 @@ public class GuiaController extends AbstractController<Guia> {
     guia.setHistorico(attachedGuia.getHistorico());
   }
 
+  public void clearSetor() {
+    setor = null;
+    prepareSearch();
+  }
+
   @Override
   public void prepareSearch() {
     resetSearchParams();
@@ -416,8 +456,8 @@ public class GuiaController extends AbstractController<Guia> {
     }else {
       setSearchParam("paciente", getSearchTerm());
     }
-    if(somenteDoSetor){
-      setSearchParam("setor", session.getSetor());
+    if(setor != null){
+      setSearchParam("setor", setor);
     }
     if(selectedEstados != null && selectedEstados.length > 0){
       setSearchParam("estados", selectedEstados);
@@ -435,5 +475,18 @@ public class GuiaController extends AbstractController<Guia> {
       setSearchParam("dateRange", new Date[] {inicioDate, terminoDate});
       setSearchParam("dateField", dateField);
     }
+  }
+
+  public String getTipoInfo() {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("<b>Internação</b> - Guias de Internação<br/>");
+    buffer.append("<b>Prorrogação</b> - Guias de Prorrogação<br/>");
+    buffer.append("<b>Procedimento</b> - Guias de Procedimento (necessário informar o procedimento realizado)<br/>");
+    buffer.append("<b>Mat./Med. de Alto Custo</b> - Guias de materiais ou medicamentos de alto custo<br/>");
+    buffer.append("<b>Home Care</b> - Guias de serviço de <i>home care</i><br/>");
+    buffer.append("<b>Parecer</b> - Guias de parecer (necessário informar especialidade)<br/>");
+    buffer.append("<b>Bibap</b> - Guias BIBAP<br/>");
+    buffer.append("<b>Outros</b> - Outras situações (radioterapia, quimioterapia, fono, acompanhamento nutricional, etc...)<br/>");
+    return buffer.toString();
   }
 }

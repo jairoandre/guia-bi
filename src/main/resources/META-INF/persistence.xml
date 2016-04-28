@@ -6,13 +6,13 @@
     <!--<provider>org.hibernate.ejb.HibernatePersistence</provider>-->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <!--<jta-data-source>java:jboss/datasources/lanceH2</jta-data-source>-->
-    <jta-data-source>java:jboss/datasources/mvSimula</jta-data-source>
+    <jta-data-source>java:jboss/datasources/mvProd</jta-data-source>
     <properties>
       <!--<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />-->
       <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
       <!--<property name="hibernate.hbm2ddl.auto" value="create-drop" />-->
-      <property name="hibernate.show_sql" value="true"/>
-      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.format_sql" value="false"/>
       <property name="hibernate.query.substitutions" value="true 'S', false 'N'"/>
       <!--<property name="hibernate.hbm2ddl.import_files" value="initial.sql" />-->
     </properties>

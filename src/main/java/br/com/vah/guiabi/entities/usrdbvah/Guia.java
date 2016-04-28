@@ -5,6 +5,7 @@ import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.BaseEntity;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Especialidade;
+import br.com.vah.guiabi.entities.dbamv.ProFat;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 
 import javax.persistence.*;
@@ -53,6 +54,10 @@ public class Guia extends BaseEntity {
   @JoinColumn(name = "CD_ESPECIALIDADE")
   private Especialidade especialidade;
 
+  @ManyToOne
+  @JoinColumn(name = "CD_PRO_FAT")
+  private ProFat proFat;
+
   @Column(name = "CD_ESTADO", nullable = false)
   @Enumerated(EnumType.STRING)
   private EstadosGuiaEnum estado;
@@ -69,7 +74,7 @@ public class Guia extends BaseEntity {
   @Column(name = "DT_SOLICITACAO_CONVENIO")
   private Date dataSolicitacaoConvenio;
 
-  @Column(name = "DT_REPOSTA_CONVENIO")
+  @Column(name = "DT_RESPOSTA_CONVENIO")
   private Date dataRespostaConvenio;
 
   @Column(name = "CD_DESCRICAO")
@@ -133,6 +138,14 @@ public class Guia extends BaseEntity {
 
   public void setEspecialidade(Especialidade especialidade) {
     this.especialidade = especialidade;
+  }
+
+  public ProFat getProFat() {
+    return proFat;
+  }
+
+  public void setProFat(ProFat proFat) {
+    this.proFat = proFat;
   }
 
   public EstadosGuiaEnum getEstado() {
