@@ -5,12 +5,11 @@ import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
-import br.com.vah.guiabi.entities.dbamv.Especialidade;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
+import br.com.vah.guiabi.exceptions.GuiaPersistException;
 import br.com.vah.guiabi.service.*;
-import br.com.vah.guiabi.util.DateUtility;
 import br.com.vah.guiabi.util.ViewUtils;
 import com.opencsv.CSVReader;
 import org.primefaces.event.FileUploadEvent;
@@ -24,9 +23,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -280,7 +280,7 @@ public class GuiaController extends AbstractController<Guia> {
       List<Guia> guias = new ArrayList<>();
       Integer line = 0;
       try {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
 
         for (String[] str : reader.readAll()) {
 
@@ -288,7 +288,7 @@ public class GuiaController extends AbstractController<Guia> {
 
           Long idSector = Long.valueOf(str[0]);
           Long cdAtendimento = Long.valueOf(str[1]);
-          if(cdAtendimento == null) {
+          if (cdAtendimento == null) {
             continue;
           }
           Atendimento atendimento = new Atendimento();
@@ -318,7 +318,7 @@ public class GuiaController extends AbstractController<Guia> {
 
           guia.getHistorico().add(new HistoricoGuia(session.getUser(), guia, AcoesGuiaEnum.CRIACAO));
 
-          if(dataRespo != null){
+          if (dataRespo != null) {
             guia.setEstado(EstadosGuiaEnum.AUTORIZADO);
             guia.getHistorico().add(new HistoricoGuia(session.getUser(), guia, AcoesGuiaEnum.AUTORIZADO));
             guia.setDataRespostaConvenio(dataRespo);
@@ -331,6 +331,9 @@ public class GuiaController extends AbstractController<Guia> {
         Integer importedValues = guias.size();
         Integer ignoredValues = line - importedValues;
         addMsg(new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", String.format("Importação realizada com sucesso: %d importados, %d ignorados.", importedValues, ignoredValues)), false);
+      } catch (GuiaPersistException g) {
+        addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", g.getMessage()), false);
+
       } catch (Exception e) {
         addMsg(new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", String.format("Erro na importação: linha %s.", line)), false);
       }
@@ -458,6 +461,8 @@ public class GuiaController extends AbstractController<Guia> {
     }
     if(setor != null){
       setSearchParam("setor", setor);
+    } if (session.getSetor() != null) {
+      setSearchParam("setor", session.getSetor());
     }
     if(selectedEstados != null && selectedEstados.length > 0){
       setSearchParam("estados", selectedEstados);

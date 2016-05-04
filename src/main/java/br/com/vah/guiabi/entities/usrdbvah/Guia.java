@@ -9,9 +9,7 @@ import br.com.vah.guiabi.entities.dbamv.ProFat;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Entidade que representa uma guia.
@@ -57,6 +55,11 @@ public class Guia extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "CD_PRO_FAT")
   private ProFat proFat;
+
+  @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
+  @JoinTable(name = "TB_GUIABI_GUIA_PROFAT", joinColumns = {
+      @JoinColumn(name = "ID")}, inverseJoinColumns = {@JoinColumn(name = "CD_PRO_FAT")}, schema = "USRDBVAH")
+  private Set<ProFat> procedimentos = new LinkedHashSet<>();
 
   @Column(name = "CD_ESTADO", nullable = false)
   @Enumerated(EnumType.STRING)

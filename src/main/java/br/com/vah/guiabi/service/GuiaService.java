@@ -10,6 +10,7 @@ import br.com.vah.guiabi.entities.usrdbvah.Comentario;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
 import br.com.vah.guiabi.entities.usrdbvah.User;
+import br.com.vah.guiabi.exceptions.GuiaPersistException;
 import br.com.vah.guiabi.util.PaginatedSearchParam;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -106,10 +107,16 @@ public class GuiaService extends DataAccessService<Guia> {
     return criteria;
   }
 
-  public void saveAll(List<Guia> guias) {
+  public void saveAll(List<Guia> guias) throws GuiaPersistException {
     for (Guia guia : guias) {
-      create(guia);
+      try {
+        create(guia);
+      } catch (Exception e) {
+        throw new GuiaPersistException(String.format("Erro ao criar guia para o atendimento %s", guia.getAtendimento().getId().toString()));
+      }
+
     }
+
   }
 
 }
