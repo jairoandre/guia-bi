@@ -9,7 +9,11 @@
       <p:panel header="Usuários">
         <guiabi:dataTable id="dataTable" controller="#{userController}"
                          renderDeleteAction="false" renderAddBtn="false">
-          <p:column sortBy="#{item.title}" headerText="Login"
+          <p:column sortBy="#{item.id}" headerText="Id"
+                    style="text-align: left;" width="100">
+            <h:outputText value="#{item.id}"/>
+          </p:column>
+          <p:column sortBy="#{item.login}" headerText="Login"
                     style="text-align: left;" width="200">
             <h:outputText value="#{item.login}"/>
           </p:column>

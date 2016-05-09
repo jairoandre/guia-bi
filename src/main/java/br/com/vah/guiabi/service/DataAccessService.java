@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import br.com.vah.guiabi.exceptions.GuiaPersistException;
 import br.com.vah.guiabi.util.PaginatedSearchParam;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -69,7 +70,12 @@ public abstract class DataAccessService<T> implements Serializable {
    * @return
    */
   public T find(Object id) {
-    return this.em.find(this.type, id);
+    try {
+      T attachedObj = this.em.find(this.type, id);
+      return attachedObj;
+    } catch (Exception e) {
+      throw new GuiaPersistException(String.format("Objeto da classe [%s] para o id [%s]", type.toString(), id.toString()));
+    }
   }
 
   /**

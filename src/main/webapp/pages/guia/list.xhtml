@@ -120,10 +120,12 @@
               </p:selectBooleanCheckbox>
               <p:fileUpload mode="advanced" skinSimple="false"
                             fileUploadListener="#{guiaController.uploadValues}" uploadLabel="Submeter"
+                            onstart="PF('changePage').show()"
+                            oncomplete="PF('changePage').hide()"
                             label="Importar CSV"
                             cancelLabel="Cancelar" styleClass="margin-top"
                             rendered="#{sessionController.isUserInRoles('ADMINISTRATOR')}"
-                            update="dataTable"/>
+                            update="dataTable @this"/>
             </div>
           </f:facet>
 

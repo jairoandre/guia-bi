@@ -8,6 +8,7 @@ import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
+import br.com.vah.guiabi.entities.usrdbvah.User;
 import br.com.vah.guiabi.exceptions.GuiaPersistException;
 import br.com.vah.guiabi.service.*;
 import br.com.vah.guiabi.util.ViewUtils;
@@ -291,8 +292,7 @@ public class GuiaController extends AbstractController<Guia> {
           if (cdAtendimento == null) {
             continue;
           }
-          Atendimento atendimento = new Atendimento();
-          atendimento.setId(cdAtendimento);
+          Atendimento atendimento = atendimentoService.find(cdAtendimento);
 
           TipoGuiaEnum tipoGuia = TipoGuiaEnum.valueOf(str[2]);
 
@@ -303,7 +303,11 @@ public class GuiaController extends AbstractController<Guia> {
           Date dataAudit = str[6] == null || str[6].isEmpty() ? null : sdf.parse(str[6]);
           Date dataSolic = str[7] == null || str[7].isEmpty() ? null : sdf.parse(str[7]);
           Date dataRespo = str[8] == null || str[8].isEmpty() ? null : sdf.parse(str[8]);
+          Long idUser = Long.valueOf(str[9]);
 
+          User user = new User();
+
+          user.setId(idUser);
 
           Guia guia = new Guia(atendimento, tipoGuia);
 
@@ -316,11 +320,11 @@ public class GuiaController extends AbstractController<Guia> {
           guia.setDataAuditoria(dataAudit);
           guia.setDataSolicitacaoConvenio(dataSolic);
 
-          guia.getHistorico().add(new HistoricoGuia(session.getUser(), guia, AcoesGuiaEnum.CRIACAO));
+          guia.getHistorico().add(new HistoricoGuia(user, guia, AcoesGuiaEnum.CRIACAO));
 
           if (dataRespo != null) {
             guia.setEstado(EstadosGuiaEnum.AUTORIZADO);
-            guia.getHistorico().add(new HistoricoGuia(session.getUser(), guia, AcoesGuiaEnum.AUTORIZADO));
+            guia.getHistorico().add(new HistoricoGuia(user, guia, AcoesGuiaEnum.AUTORIZADO));
             guia.setDataRespostaConvenio(dataRespo);
           }
           guias.add(guia);
@@ -332,7 +336,7 @@ public class GuiaController extends AbstractController<Guia> {
         Integer ignoredValues = line - importedValues;
         addMsg(new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", String.format("Importação realizada com sucesso: %d importados, %d ignorados.", importedValues, ignoredValues)), false);
       } catch (GuiaPersistException g) {
-        addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", g.getMessage()), false);
+        addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, String.format("Erro (linha %s)",line.toString()), g.getMessage()), false);
 
       } catch (Exception e) {
         addMsg(new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", String.format("Erro na importação: linha %s.", line)), false);
