@@ -191,8 +191,8 @@
               <guiabi:toolTip id="parecerToolTip" value="#{item.especialidade.title}" index="#{indexVar}"
                               for="#{p:component('tipoOutput')}"/>
             </h:panelGroup>
-            <h:panelGroup rendered="#{item.tipo == 'PROCEDIMENTO' and item.proFat != null}">
-              <guiabi:toolTip id="proFatToolTip" value="#{item.proFat.title}" index="#{indexVar}"
+            <h:panelGroup rendered="#{item.tipo == 'PROCEDIMENTO' and item.procedimentos != null}">
+              <guiabi:toolTip id="proFatToolTip" value="#{item.procedimentosStr}" index="#{indexVar}"
                               for="#{p:component('tipoOutput')}"/>
             </h:panelGroup>
           </p:column>

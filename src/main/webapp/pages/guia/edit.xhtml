@@ -46,20 +46,43 @@
             </p:column>
           </uiguiabi:autoComplete>
 
-          <uiguiabi:autoComplete id="proFat" value="#{guiaController.item.proFat}" label="Procedimento"
-                                 required="true"
-                                 controller="#{proFatController}" completeMethod="completeProFat"
-                                 editing="#{guiaController.editing and guiaController.item.id == null}"
-                                 converter="#{proFatConverter}" itemLabel="title"
-                                 rendered="#{guiaController.item.tipo == 'PROCEDIMENTO'}"
-                                 placeholder="Número/Nome procedimento">
-            <p:column>
-              #{item.idStr}
-            </p:column>
-            <p:column>
-              #{item.title}
-            </p:column>
-          </uiguiabi:autoComplete>
+
+          <p:outputLabel value="Procedimentos" for="proFat" styleClass="lance-label"
+                         rendered="#{guiaController.item.tipo == 'PROCEDIMENTO'}"/>
+          <h:panelGroup rendered="#{guiaController.item.tipo == 'PROCEDIMENTO'}">
+            <p:autoComplete id="proFat" value="#{guiaController.proFatToAdd}"
+                            widgetVar="proFat"
+                            queryDelay="200"
+                            var="item"
+                            readonly="#{!(guiaController.editing and guiaController.item.id == null)}"
+                            itemLabel="#{item['title']}"
+                            itemValue="#{item}"
+                            converter="#{proFatConverter}"
+                            inputStyleClass="lance-input"
+                            completeMethod="#{proFatController.completeProFat}"
+                            placeholder="Número/Nome procedimento">
+              <p:ajax event="itemSelect" listener="#{guiaController.addProFatToList}" process="@this"
+                      update="proFatList" oncomplete="$(PF('proFat').jqId + '_input').val('')"/>
+              <p:column>
+                #{item.idStr}
+              </p:column>
+              <p:column>
+                #{item.title}
+              </p:column>
+            </p:autoComplete>
+            <h:panelGroup id="proFatList" layout="block">
+              <ui:repeat value="#{guiaController.item.procedimentos.toArray()}" var="proc">
+                <h:panelGroup layout="block" styleClass="proFatBlock">
+                  <p:commandLink styleClass="fa fa-close" action="#{guiaController.removeProFat(proc)}"
+                                 process="@this" update="#{p:component('proFatList')}"/>
+                  <h:outputText value="#{proc.title}"/>
+                </h:panelGroup>
+              </ui:repeat>
+            </h:panelGroup>
+
+          </h:panelGroup>
+          <p:message for="proFat" rendered="#{guiaController.item.tipo == 'PROCEDIMENTO'}"/>
+
 
           <uiguiabi:autoComplete id="setor" value="#{guiaController.item.setor}" label="Setor" required="true"
                                  controller="#{setorController}" completeMethod="completeSetor"
@@ -88,6 +111,7 @@
               #{item.paciente.name}
             </p:column>
           </uiguiabi:autoComplete>
+
 
           <p:outputLabel value="Paciente:" for="paciente" styleClass="lance-label"/>
 
@@ -128,7 +152,6 @@
 
 
         </guiabi:editForm>
-
       </h:panelGroup>
     </h:form>
   </ui:define>

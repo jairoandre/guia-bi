@@ -223,6 +223,14 @@ public class Guia extends BaseEntity {
     this.comentarios = comentarios;
   }
 
+  public Set<ProFat> getProcedimentos() {
+    return procedimentos;
+  }
+
+  public void setProcedimentos(Set<ProFat> procedimentos) {
+    this.procedimentos = procedimentos;
+  }
+
   @Override
   public String getLabelForSelectItem() {
     StringBuffer buffer = new StringBuffer();
@@ -232,5 +240,20 @@ public class Guia extends BaseEntity {
       buffer.append(atendimento.getConvenio().getTitle());
     }
     return buffer.toString();
+  }
+
+  public String getProcedimentosStr() {
+    if (procedimentos != null) {
+      StringBuffer buffer = new StringBuffer();
+      for (ProFat procedimento : procedimentos) {
+        buffer.append(procedimento.getTitle());
+        buffer.append(", ");
+      }
+      String bufferStr = buffer.toString();
+      if (bufferStr.length() > 2) {
+        return bufferStr.substring(0, bufferStr.length() - 2);
+      }
+    }
+    return "Sem procedimentos";
   }
 }

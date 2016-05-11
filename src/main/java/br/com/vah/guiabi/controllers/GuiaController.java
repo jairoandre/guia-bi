@@ -5,6 +5,7 @@ import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
+import br.com.vah.guiabi.entities.dbamv.ProFat;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
@@ -91,7 +92,9 @@ public class GuiaController extends AbstractController<Guia> {
 
   private Guia detachedGuia;
 
-  public static final String[] RELATIONS = {"comentarios", "historico"};
+  public static final String[] RELATIONS = {"comentarios", "historico", "procedimentos"};
+
+  private ProFat proFatToAdd;
 
   @PostConstruct
   public void init() {
@@ -248,6 +251,14 @@ public class GuiaController extends AbstractController<Guia> {
     this.detachedGuia = detachedGuia;
   }
 
+  public ProFat getProFatToAdd() {
+    return proFatToAdd;
+  }
+
+  public void setProFatToAdd(ProFat proFatToAdd) {
+    this.proFatToAdd = proFatToAdd;
+  }
+
   public void onchangeTipo() {
     if (TipoGuiaEnum.PRORROGACAO.equals(getItem().getTipo())) {
       getItem().setData(new Date());
@@ -336,7 +347,7 @@ public class GuiaController extends AbstractController<Guia> {
         Integer ignoredValues = line - importedValues;
         addMsg(new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", String.format("Importação realizada com sucesso: %d importados, %d ignorados.", importedValues, ignoredValues)), false);
       } catch (GuiaPersistException g) {
-        addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, String.format("Erro (linha %s)",line.toString()), g.getMessage()), false);
+        addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, String.format("Erro (linha %s)", line.toString()), g.getMessage()), false);
 
       } catch (Exception e) {
         addMsg(new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", String.format("Erro na importação: linha %s.", line)), false);
@@ -345,6 +356,19 @@ public class GuiaController extends AbstractController<Guia> {
       addMsg(new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", String.format("Erro na importação:\n%s", e.getMessage())), false);
     }
 
+  }
+
+  public void addProFatToList() {
+    if (proFatToAdd != null) {
+      if (!getItem().getProcedimentos().contains(proFatToAdd)) {
+        getItem().getProcedimentos().add(proFatToAdd);
+      }
+      proFatToAdd = null;
+    }
+  }
+
+  public void removeProFat(ProFat proFatToRemove) {
+    getItem().getProcedimentos().remove(proFatToRemove);
   }
 
   public void receber(Guia guia) {
@@ -415,7 +439,7 @@ public class GuiaController extends AbstractController<Guia> {
   private void saveAddingComment(EstadosGuiaEnum estado, AcoesGuiaEnum acao) {
     Guia attachedGuia = service.find(detachedGuia.getId());
     attachedGuia.setEstado(estado);
-    if(estado.equals(EstadosGuiaEnum.PARCIAL)) {
+    if (estado.equals(EstadosGuiaEnum.PARCIAL)) {
       attachedGuia.setDataRespostaConvenio(new Date());
       detachedGuia.setDataRespostaConvenio(attachedGuia.getDataRespostaConvenio());
     }
@@ -460,28 +484,29 @@ public class GuiaController extends AbstractController<Guia> {
     String regex = "[0-9]+";
     if (getSearchTerm() != null && getSearchTerm().matches(regex)) {
       setSearchParam("atendimento", Long.valueOf(getSearchTerm()));
-    }else {
+    } else {
       setSearchParam("paciente", getSearchTerm());
     }
-    if(setor != null){
+    if (setor != null) {
       setSearchParam("setor", setor);
-    } if (session.getSetor() != null) {
+    }
+    if (session.getSetor() != null) {
       setSearchParam("setor", session.getSetor());
     }
-    if(selectedEstados != null && selectedEstados.length > 0){
+    if (selectedEstados != null && selectedEstados.length > 0) {
       setSearchParam("estados", selectedEstados);
     }
-    if(selectedTipos != null && selectedTipos.length > 0){
+    if (selectedTipos != null && selectedTipos.length > 0) {
       setSearchParam("tipos", selectedTipos);
     }
-    if(somenteMinhaAutoria){
+    if (somenteMinhaAutoria) {
       setSearchParam("autor", session.getUser());
     }
-    if(selectedConvenios != null &&  selectedConvenios.length > 0) {
+    if (selectedConvenios != null && selectedConvenios.length > 0) {
       setSearchParam("convenios", selectedConvenios);
     }
-    if(inicioDate != null || terminoDate != null){
-      setSearchParam("dateRange", new Date[] {inicioDate, terminoDate});
+    if (inicioDate != null || terminoDate != null) {
+      setSearchParam("dateRange", new Date[]{inicioDate, terminoDate});
       setSearchParam("dateField", dateField);
     }
   }

@@ -240,7 +240,6 @@ a.action-link:HOVER, td.action-link a:HOVER {
   white-space: nowrap;
 }
 
-
 .warning-bg, .authorized-bg, .review-bg, .deny-bg, .partial-bg {
   text-align: center;
   color: #ffffff;
@@ -279,10 +278,38 @@ a.action-link:HOVER, td.action-link a:HOVER {
 .partial-bg {
   background-color: #4dd0e1;
 }
+
 @keyframes blink {
-  from {background-color: #fff; color: #cd4502;}
-  50% {background-color: #cd4502; color: #fff;}
-  to {background-color: #fff; color: #cd4502;}
+  from {
+    background-color: #fff;
+    color: #cd4502;
+  }
+  50% {
+    background-color: #cd4502;
+    color: #fff;
+  }
+  to {
+    background-color: #fff;
+    color: #cd4502;
+  }
+}
+
+.proFatBlock a {
+  color: white !important;
+  margin-right: 5px;
+  text-decoration: none;
+}
+
+.proFatBlock {
+  border-radius: 5px;
+  padding: 0 8px;
+  width: 200px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: #5e68ff;
+  color: white;
+  margin-top: 5px;
+  overflow: hidden;
 }
 
 /* PRIMEFACES */

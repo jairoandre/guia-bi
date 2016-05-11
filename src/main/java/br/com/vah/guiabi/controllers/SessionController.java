@@ -120,7 +120,7 @@ public class SessionController implements Serializable {
        */
       if (user == null) {
         user = new User();
-        user.setLogin(username);
+        user.setLogin(usernameLC);
         user = userService.create(user);
       }
 
