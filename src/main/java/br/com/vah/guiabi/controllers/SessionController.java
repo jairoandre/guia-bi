@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import br.com.vah.guiabi.constants.RolesEnum;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.User;
+import br.com.vah.guiabi.reports.ReportLoader;
 import br.com.vah.guiabi.service.UserService;
 import br.com.vah.guiabi.util.DateUtility;
 import org.primefaces.event.SelectEvent;

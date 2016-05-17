@@ -11,10 +11,12 @@ import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
 import br.com.vah.guiabi.entities.usrdbvah.User;
 import br.com.vah.guiabi.exceptions.GuiaPersistException;
+import br.com.vah.guiabi.reports.ReportLoader;
 import br.com.vah.guiabi.service.*;
 import br.com.vah.guiabi.util.ViewUtils;
 import com.opencsv.CSVReader;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
 import javax.annotation.PostConstruct;
@@ -522,5 +524,17 @@ public class GuiaController extends AbstractController<Guia> {
     buffer.append("<b>Bibap</b> - Guias BIBAP<br/>");
     buffer.append("<b>Outros</b> - Outras situações (radioterapia, quimioterapia, fono, acompanhamento nutricional, etc...)<br/>");
     return buffer.toString();
+  }
+
+
+  public StreamedContent getRelatorio() {
+
+    try {
+      ReportLoader loader = new ReportLoader();
+      return loader.imprimeRelatorio();
+    } catch (Exception e) {
+      addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, "erro", "relatório"), false);
+    }
+    return null;
   }
 }

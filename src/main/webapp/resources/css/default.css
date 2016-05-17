@@ -312,6 +312,10 @@ a.action-link:HOVER, td.action-link a:HOVER {
   overflow: hidden;
 }
 
+.guia-tooltip {
+  white-space: normal;
+}
+
 /* PRIMEFACES */
 
 input.ui-state-disabled {

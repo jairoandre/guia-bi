@@ -14,7 +14,7 @@ public enum TipoGuiaEnum {
   MATMEDALTOCUSTO("Mat./Med. Alto Custo"),
   HOMECARE("Home Care"),
   PARECER("Parecer"),
-  BIBAP("Bibap"),
+  BIPAP("Bipap"),
   OUTROS("Outros");
 
   private String label;
