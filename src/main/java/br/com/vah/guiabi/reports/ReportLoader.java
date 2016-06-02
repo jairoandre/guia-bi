@@ -1,5 +1,6 @@
 package br.com.vah.guiabi.reports;
 
+import br.com.vah.guiabi.service.GuiaService;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -10,11 +11,14 @@ import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
+import javax.ejb.Stateless;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,17 +26,12 @@ import java.util.List;
 /**
  * Created by jairoportela on 29/04/2016.
  */
-public class ReportLoader {
+@Stateless
+public class ReportLoader implements Serializable {
 
-  public StreamedContent imprimeRelatorio() {
+  public StreamedContent imprimeRelatorio(String reportName, List list) {
 
-    List<ReportTotalPorSetor> lista = new ArrayList<>();
-
-    lista.add(new ReportTotalPorSetor("Rubem Braga", "BRADESCO"));
-    lista.add(new ReportTotalPorSetor("Rubem Braga", "Unimed"));
-    lista.add(new ReportTotalPorSetor("Cora Coralina", "Unimed"));
-
-    JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(lista);
+    JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(list);
 
     HashMap parameters = new HashMap();
 
@@ -46,7 +45,7 @@ public class ReportLoader {
 
       ServletContext scontext = (ServletContext) facesContext.getExternalContext().getContext();
 
-      JasperPrint jasperPrint = JasperFillManager.fillReport(scontext.getRealPath("/resources/reports/medias.jasper"), parameters, ds);
+      JasperPrint jasperPrint = JasperFillManager.fillReport(scontext.getRealPath(String.format("/resources/reports/%s.jasper", reportName)), parameters, ds);
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -68,7 +67,7 @@ public class ReportLoader {
 
     DefaultStreamedContent dsc = new DefaultStreamedContent(report);
     dsc.setContentType("application/pdf");
-    dsc.setName("relatorio.pdf");
+    dsc.setName(String.format("%s.pdf", reportName));
 
     return dsc;
 

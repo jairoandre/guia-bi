@@ -525,16 +525,4 @@ public class GuiaController extends AbstractController<Guia> {
     buffer.append("<b>Outros</b> - Outras situações (radioterapia, quimioterapia, fono, acompanhamento nutricional, etc...)<br/>");
     return buffer.toString();
   }
-
-
-  public StreamedContent getRelatorio() {
-
-    try {
-      ReportLoader loader = new ReportLoader();
-      return loader.imprimeRelatorio();
-    } catch (Exception e) {
-      addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, "erro", "relatório"), false);
-    }
-    return null;
-  }
 }

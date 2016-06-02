@@ -294,13 +294,13 @@ a.action-link:HOVER, td.action-link a:HOVER {
   }
 }
 
-.proFatBlock a {
+.list-block a {
   color: white !important;
   margin-right: 5px;
   text-decoration: none;
 }
 
-.proFatBlock {
+.list-block {
   border-radius: 5px;
   padding: 0 8px;
   width: 200px;

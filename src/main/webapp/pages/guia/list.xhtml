@@ -9,10 +9,6 @@
     <h:form id="form">
       <p:panel header="Guias">
 
-        <p:commandButton rendered="true" id="exportar1" value="Gerar PDF" ajax="false">
-          <p:fileDownload value="#{guiaController.relatorio}" />
-        </p:commandButton>
-
         <guiabi:dataTable id="dataTable" controller="#{guiaController}"
                           renderActionColumn="false"
                           placeholder="Nº atendimento ou Nome do paciente"
@@ -283,7 +279,7 @@
               <p:menuitem value="Excluir" actionListener="#{guiaController.preDelete(item.id, index)}"
                           process="@this" update="#{p:component('deleteDlg')}" oncomplete="PF('deleteDlg').show()"
                           disabled="#{item.dataRespostaConvenio != null}"
-                          icon="fa fa-trash" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
+                          icon="fa fa-trash" rendered="#{sessionController.isUserInRoles('MANAGER') or (sessionController.isUserInRoles('AUTHORIZER') and item.tipo == 'PRORROGACAO')}"/>
             </p:menuButton>
           </p:column>
         </guiabi:dataTable>

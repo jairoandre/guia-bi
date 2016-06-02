@@ -72,7 +72,7 @@
             </p:autoComplete>
             <h:panelGroup id="proFatList" layout="block">
               <ui:repeat value="#{guiaController.item.procedimentos.toArray()}" var="proc">
-                <h:panelGroup layout="block" styleClass="proFatBlock">
+                <h:panelGroup layout="block" styleClass="list-block">
                   <p:commandLink styleClass="fa fa-close" action="#{guiaController.removeProFat(proc)}"
                                  process="@this" update="#{p:component('proFatList')}"/>
                   <h:outputText value="#{proc.title}"/>

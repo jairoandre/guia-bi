@@ -4,6 +4,7 @@ package br.com.vah.guiabi.service;
 import br.com.vah.guiabi.constants.AcoesGuiaEnum;
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
+import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Comentario;
@@ -11,22 +12,28 @@ import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
 import br.com.vah.guiabi.entities.usrdbvah.User;
 import br.com.vah.guiabi.exceptions.GuiaPersistException;
+import br.com.vah.guiabi.reports.ReportLoader;
+import br.com.vah.guiabi.reports.ReportTotalPorSetor;
 import br.com.vah.guiabi.util.PaginatedSearchParam;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
-import org.hibernate.sql.JoinType;
+import org.primefaces.model.StreamedContent;
 
 import javax.ejb.Stateless;
-import java.util.Date;
-import java.util.List;
+import javax.inject.Inject;
+import java.util.*;
 
 /**
  * Created by Jairoportela on 06/04/2016.
  */
 @Stateless
 public class GuiaService extends DataAccessService<Guia> {
+
+  private
+  @Inject
+  ReportLoader reportLoader;
 
   public GuiaService() {
     super(Guia.class);
@@ -40,6 +47,111 @@ public class GuiaService extends DataAccessService<Guia> {
   public void addComentario(Guia guia, User author, String comentario) {
     Comentario newComment = new Comentario(guia, author, comentario, new Date());
     guia.getComentarios().add(newComment);
+  }
+
+  public StreamedContent relatorioTotalPorSetor(Date inicio, Date termino, List<Setor> setores, String[] relations) {
+    Session session = getEm().unwrap(Session.class);
+    Criteria criteria = session.createCriteria(Guia.class);
+
+    Calendar beginCl = Calendar.getInstance();
+    beginCl.setTime(inicio);
+    beginCl.set(Calendar.HOUR_OF_DAY, 0);
+    beginCl.set(Calendar.MINUTE, 0);
+    beginCl.set(Calendar.SECOND, 0);
+
+    Calendar endCl = Calendar.getInstance();
+    endCl.setTime(termino);
+    endCl.set(Calendar.HOUR_OF_DAY, 23);
+    endCl.set(Calendar.MINUTE, 59);
+    endCl.set(Calendar.SECOND, 59);
+
+
+    criteria.add(Restrictions.between("data", beginCl.getTime(), endCl.getTime()));
+
+    if (setores != null && !setores.isEmpty()) {
+      criteria.add(Restrictions.in("setor", setores));
+    }
+
+    for (String relation : relations) {
+      criteria.setFetchMode(relation, FetchMode.SELECT);
+    }
+
+    List<Guia> guias = criteria.list();
+
+    Map<String, ReportTotalPorSetor> map = new HashMap<>();
+
+    for (Guia guia : guias) {
+      String setor = guia.getSetor().getTitle();
+      Atendimento atendimento = guia.getAtendimento();
+      String strConv = "SEM CONVÊNIO";
+      if (atendimento != null) {
+        Convenio convenio = atendimento.getConvenio();
+        if (convenio != null) {
+          strConv = convenio.getTitle();
+        }
+      }
+      String key = setor + strConv;
+      ReportTotalPorSetor report = map.get(key);
+      if (report == null) {
+        report = new ReportTotalPorSetor(setor, strConv);
+        map.put(key, report);
+      }
+
+      report.setTotalCriadas(report.getTotalCriadas() + 1);
+
+      switch (guia.getEstado()) {
+        case PENDENTE:
+          report.setTotalPendentes(report.getTotalPendentes() + 1);
+          break;
+        case NEGADO:
+        case AUTORIZADO:
+          report.setTotalFechadas(report.getTotalFechadas() + 1);
+          break;
+      }
+
+      Date data = guia.getData();
+      Date dataReceb = guia.getDataRecebimento();
+      Date dataAudit = guia.getDataAuditoria();
+      Date dataSolic = guia.getDataSolicitacaoConvenio();
+      Date dataRespo = guia.getDataRespostaConvenio();
+
+      if (dataReceb != null) {
+        long diasReceb = (dataReceb.getTime() - data.getTime()) / 1000 / 60 / 60 / 24;
+        report.setTempoMedioRecebimento(report.getTempoMedioRecebimento() + Float.valueOf(diasReceb / report.getTotalCriadas()));
+
+      }
+
+      if (dataAudit != null) {
+        long diasAudit = (dataAudit.getTime() - data.getTime()) / 1000 / 60 / 60 / 24;
+        report.setTempoMedioAuditoria(report.getTempoMedioAuditoria() + Float.valueOf(diasAudit / report.getTotalCriadas()));
+      }
+
+      if (dataSolic != null) {
+        long diasSolic = (dataSolic.getTime() - data.getTime()) / 1000 / 60 / 60 / 24;
+        report.setTempoMedioSolicitacao(report.getTempoMedioSolicitacao() + Float.valueOf(diasSolic / report.getTotalCriadas()));
+      }
+
+      if (dataRespo != null) {
+        long diasRespo = (dataRespo.getTime() - data.getTime()) / 1000 / 60 / 60 / 24;
+        report.setTempoMedioResposta(report.getTempoMedioResposta() + Float.valueOf(diasRespo / report.getTotalCriadas()));
+      }
+    }
+
+
+    List<ReportTotalPorSetor> list = new ArrayList<>(map.values());
+    Collections.sort(list, new Comparator<ReportTotalPorSetor>() {
+      @Override
+      public int compare(ReportTotalPorSetor o1, ReportTotalPorSetor o2) {
+        int compareSetor = o1.getSetor().compareTo(o2.getSetor());
+        if (compareSetor == 0) {
+          return o2.getTotalCriadas().compareTo(o1.getTotalCriadas());
+        }
+        return compareSetor;
+      }
+    });
+
+    return reportLoader.imprimeRelatorio("medias", list);
+
   }
 
   public Criteria createCriteria(PaginatedSearchParam params) {
