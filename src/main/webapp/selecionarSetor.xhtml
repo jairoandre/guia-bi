@@ -32,6 +32,7 @@
                             var="setor"
                             itemLabel="#{setor.title}"
                             itemValue="#{setor}"
+                            onclick="this.setSelectionRange(0, this.value.length)"
                             converter="#{setorConverter}"
                             inputStyleClass="lance-input"
                             queryDelay="250"

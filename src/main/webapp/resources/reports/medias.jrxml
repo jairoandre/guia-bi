@@ -312,10 +312,6 @@
 				</textElement>
 				<text><![CDATA[RELATÓRIO DE GUIAS]]></text>
 			</staticText>
-			<image>
-				<reportElement x="0" y="0" width="30" height="30" uuid="8ed6faaa-bfa9-4309-a033-5e0677bf40d2"/>
-				<imageExpression><![CDATA["C:\\Users\\jairoportela\\projects\\guia-bi\\src\\main\\webapp\\resources\\img\\logo-simpler.png"]]></imageExpression>
-			</image>
 			<textField>
 				<reportElement x="495" y="0" width="60" height="30" uuid="0e65a592-0a84-4942-bc94-d93b904c97f8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>

@@ -11,7 +11,6 @@ import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
 import br.com.vah.guiabi.entities.usrdbvah.User;
 import br.com.vah.guiabi.exceptions.GuiaPersistException;
-import br.com.vah.guiabi.reports.ReportLoader;
 import br.com.vah.guiabi.service.*;
 import br.com.vah.guiabi.util.ViewUtils;
 import com.opencsv.CSVReader;
@@ -78,6 +77,8 @@ public class GuiaController extends AbstractController<Guia> {
 
   private Boolean somenteMinhaAutoria = true;
 
+  private Boolean somenteSemRecebimentos = false;
+
   private String comentario;
 
   private Date inicioDate;
@@ -97,6 +98,8 @@ public class GuiaController extends AbstractController<Guia> {
   public static final String[] RELATIONS = {"comentarios", "historico", "procedimentos"};
 
   private ProFat proFatToAdd;
+
+  private String textoFiltros;
 
   @PostConstruct
   public void init() {
@@ -163,6 +166,14 @@ public class GuiaController extends AbstractController<Guia> {
 
   public void setSomenteMinhaAutoria(Boolean somenteMinhaAutoria) {
     this.somenteMinhaAutoria = somenteMinhaAutoria;
+  }
+
+  public Boolean getSomenteSemRecebimentos() {
+    return somenteSemRecebimentos;
+  }
+
+  public void setSomenteSemRecebimentos(Boolean somenteSemRecebimentos) {
+    this.somenteSemRecebimentos = somenteSemRecebimentos;
   }
 
   public Setor getSetor() {
@@ -259,6 +270,14 @@ public class GuiaController extends AbstractController<Guia> {
 
   public void setProFatToAdd(ProFat proFatToAdd) {
     this.proFatToAdd = proFatToAdd;
+  }
+
+  public String getTextoFiltros() {
+    return textoFiltros;
+  }
+
+  public void setTextoFiltros(String textoFiltros) {
+    this.textoFiltros = textoFiltros;
   }
 
   public void onchangeTipo() {
@@ -484,33 +503,76 @@ public class GuiaController extends AbstractController<Guia> {
   public void prepareSearch() {
     resetSearchParams();
     String regex = "[0-9]+";
+    Boolean searchByAtendimento = false;
+    StringBuilder builder = new StringBuilder();
+    builder.append("<b><i>FILTROS</i></b>: ");
     if (getSearchTerm() != null && getSearchTerm().matches(regex)) {
       setSearchParam("atendimento", Long.valueOf(getSearchTerm()));
+      searchByAtendimento = true;
+      builder.append("<b>Atendimento:</b> " );
+      builder.append(getSearchTerm());
+      builder.append(" ");
     } else {
       setSearchParam("paciente", getSearchTerm());
+      if (getSearchTerm() != null) {
+        builder.append("<b>Paciente:</b> ");
+        builder.append(getSearchTerm());
+        builder.append(" ");
+      }
     }
-    if (setor != null) {
-      setSearchParam("setor", setor);
+    setSearchParam("semRecebimentos", somenteSemRecebimentos);
+    if (!searchByAtendimento) {
+      if (setor != null) {
+        setSearchParam("setor", setor);
+        builder.append("<b>Setor:</b> " );
+        builder.append(setor.getTitle());
+        builder.append(" ");
+      }
+      if (session.getSetor() != null) {
+        setSearchParam("setor", session.getSetor());
+        builder.append("<b>Setor:</b> " );
+        builder.append(session.getSetor().getTitle());
+        builder.append(" ");
+      }
+      if (selectedEstados != null && selectedEstados.length > 0) {
+        setSearchParam("estados", selectedEstados);
+        builder.append("<b>Estados:</b> " );
+        for (EstadosGuiaEnum estado : selectedEstados) {
+          builder.append(estado.getLabel());
+          builder.append(" ");
+        }
+      }
+      if (selectedTipos != null && selectedTipos.length > 0) {
+        setSearchParam("tipos", selectedTipos);
+        builder.append("<b>Tipos:</b> " );
+        for (TipoGuiaEnum tipo : selectedTipos) {
+          builder.append(tipo.getLabel());
+          builder.append(" ");
+        }
+      }
+      if (somenteMinhaAutoria) {
+        setSearchParam("autor", session.getUser());
+      }
+      if (selectedConvenios != null && selectedConvenios.length > 0) {
+        setSearchParam("convenios", selectedConvenios);
+        builder.append("<b>Convênios:</b> " );
+        for (Convenio conv : selectedConvenios) {
+          builder.append(conv.getTitle());
+          builder.append(" ");
+        }
+      }
+      if (inicioDate != null || terminoDate != null) {
+        setSearchParam("dateRange", new Date[]{inicioDate, terminoDate});
+        setSearchParam("dateField", dateField);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        builder.append(String.format("<b>Data (%s):</b> ", dateField.equals("R") ? "Recebimento" : dateField.equals("A") ? "Auditoria" : dateField.equals("S") ? "Solicitação" : dateField.equals("F") ? "Resposta" : "Guia"));
+        builder.append(String.format("%s à %s", sdf.format(inicioDate), sdf.format(terminoDate)));
+      }
     }
-    if (session.getSetor() != null) {
-      setSearchParam("setor", session.getSetor());
-    }
-    if (selectedEstados != null && selectedEstados.length > 0) {
-      setSearchParam("estados", selectedEstados);
-    }
-    if (selectedTipos != null && selectedTipos.length > 0) {
-      setSearchParam("tipos", selectedTipos);
-    }
-    if (somenteMinhaAutoria) {
-      setSearchParam("autor", session.getUser());
-    }
-    if (selectedConvenios != null && selectedConvenios.length > 0) {
-      setSearchParam("convenios", selectedConvenios);
-    }
-    if (inicioDate != null || terminoDate != null) {
-      setSearchParam("dateRange", new Date[]{inicioDate, terminoDate});
-      setSearchParam("dateField", dateField);
-    }
+
+
+    textoFiltros = builder.toString();
+    textoFiltros = textoFiltros.equals("<b><i>FILTROS</i></b>: ") ? "" : textoFiltros;
   }
 
   public String getTipoInfo() {
@@ -525,4 +587,19 @@ public class GuiaController extends AbstractController<Guia> {
     buffer.append("<b>Outros</b> - Outras situações (radioterapia, quimioterapia, fono, acompanhamento nutricional, etc...)<br/>");
     return buffer.toString();
   }
+
+  public StreamedContent getConsultaCsv() {
+    prepareSearch();
+    return service.csvConsulta(getLazyModel().getSearchParams());
+  }
+
+  public Boolean disableAcoes(Guia guia) {
+    if (session.getSetor() != null) {
+      return !session.getSetor().equals(guia.getSetor());
+    }
+    return false;
+  }
+
+
+
 }

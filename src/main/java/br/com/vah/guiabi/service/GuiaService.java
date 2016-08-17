@@ -19,10 +19,15 @@ import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -166,6 +171,8 @@ public class GuiaService extends DataAccessService<Guia> {
     Convenio[] convenios = (Convenio[]) params.getParams().get("convenios");
     Date[] dateRange = (Date[]) params.getParams().get("dateRange");
     String dateField = (String) params.getParams().get("dateField");
+    Boolean semRecebimentos = (Boolean) params.getParams().get("semRecebimentos");
+
     Criteria atendimentoAlias = criteria.createAlias("atendimento", "a");
     if (atendimentoId != null) {
       atendimentoAlias.add(Restrictions.eq("a.id", atendimentoId));
@@ -187,6 +194,9 @@ public class GuiaService extends DataAccessService<Guia> {
     if (autor != null) {
       DetachedCriteria histCriteria = DetachedCriteria.forClass(HistoricoGuia.class, "h").add(Restrictions.eq("h.autor", autor)).add(Restrictions.eq("h.acao", AcoesGuiaEnum.CRIACAO)).setProjection(Projections.property("h.guia"));
       criteria.add(Subqueries.propertyIn("id", histCriteria));
+    }
+    if (semRecebimentos) {
+      criteria.add(Restrictions.isNull("dataRecebimento"));
     }
     if (dateRange != null) {
       String property = "data";
@@ -217,6 +227,63 @@ public class GuiaService extends DataAccessService<Guia> {
       }
     }
     return criteria;
+  }
+
+  public StreamedContent csvConsulta(PaginatedSearchParam params) {
+
+    Criteria criteria = createCriteria(params);
+
+    for (String relation : params.getRelations()) {
+      criteria.setFetchMode(relation, FetchMode.SELECT);
+    }
+
+    List<Guia> guias = criteria.list();
+
+    StringBuilder builder = new StringBuilder();
+
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:MM:ss");
+    builder.append("SETOR,ATENDIMENTO,PACIENTE,CONVENIO,TIPO,DESCRIÇÃO,DATA,DATA RECEBIMENTO,DATA AUDITORIA,DATA SOLICITAÇÃO,DATA RESPOSTA\r\n");
+
+    for (Guia guia : guias) {
+      builder.append(guia.getSetor().getTitle());
+      builder.append(",");
+      builder.append(guia.getAtendimento().getId());
+      builder.append(",");
+      builder.append(guia.getAtendimento().getPaciente().getName());
+      builder.append(",");
+      builder.append(guia.getAtendimento().getConvenio().getTitle());
+      builder.append(",");
+      builder.append(guia.getTipo().getLabel());
+      builder.append(",");
+      builder.append(guia.getDescricao());
+      builder.append(",");
+      builder.append(guia.getData() == null ? "" : sdf.format(guia.getData()));
+      builder.append(",");
+      builder.append(guia.getDataRecebimento() == null ? "" : sdf.format(guia.getDataRecebimento()));
+      builder.append(",");
+      builder.append(guia.getDataAuditoria() == null ? "" : sdf.format(guia.getDataAuditoria()));
+      builder.append(",");
+      builder.append(guia.getDataSolicitacaoConvenio() == null ? "" : sdf.format(guia.getDataSolicitacaoConvenio()));
+      builder.append(",");
+      builder.append(guia.getDataRespostaConvenio() == null ? "" : sdf.format(guia.getDataRespostaConvenio()));
+      builder.append("\r\n");
+    }
+
+    try {
+      ByteArrayInputStream bais = new ByteArrayInputStream(builder.toString().getBytes());
+      DefaultStreamedContent dsc = new DefaultStreamedContent(bais);
+
+      dsc.setContentType("text/plain");
+      dsc.setContentEncoding("UTF-8");
+
+      SimpleDateFormat sdfFile = new SimpleDateFormat("ddMMyy");
+      dsc.setName(String.format("%s%s.csv", "CSV", sdfFile.format(new Date())));
+
+      return dsc;
+    } catch (Exception e) {
+      return null;
+    }
+
   }
 
   public void saveAll(List<Guia> guias) throws GuiaPersistException {

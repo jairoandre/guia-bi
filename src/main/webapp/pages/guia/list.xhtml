@@ -11,6 +11,7 @@
 
         <guiabi:dataTable id="dataTable" controller="#{guiaController}"
                           renderActionColumn="false"
+                          updateAfterSearch="textoFiltros"
                           placeholder="Nº atendimento ou Nome do paciente"
                           renderAddBtn="true">
 
@@ -24,12 +25,12 @@
               <p:overlayPanel id="convPnl" widgetVar="convPnl" for="convBtn" hideEffect="fade">
                 <p:commandButton id="clearConvBtn" value="Limpar Filtro"
                                  actionListener="#{guiaController.clearSelectedConvenios}" ajax="true"
-                                 process="@this" update="table, manyMenuConv"/>
+                                 process="@this" update="table manyMenuConv textoFiltros"/>
                 <p:separator/>
                 <p:selectManyMenu id="manyMenuConv" value="#{guiaController.selectedConvenios}" showCheckbox="true"
                                   filter="true" filterMatchMode="contains"
                                   converter="#{convenioConverter}" styleClass="margin-top">
-                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table textoFiltros"/>
                   <f:selectItems value="#{guiaController.convenios}" var="conv" itemLabel="#{conv.title}"
                                  itemValue="#{conv}"/>
                 </p:selectManyMenu>
@@ -39,7 +40,7 @@
                               dismissable="false">
                 <p:commandButton id="currentMonthBtn" value="Mês corrente"
                                  actionListener="#{guiaController.filterCurrentMonth}" ajax="true"
-                                 process="@this, dateField" update="table, dateFilterInputs"/>
+                                 process="@this, dateField" update="table textoFiltros dateFilterInputs"/>
                 <p:commandButton id="dataFilterConvOverlay" value="Fechar" onclick="PF('dataFilterPnl').hide()"
                                  ajax="true" styleClass="margin-left"/>
                 <p:separator/>
@@ -60,18 +61,18 @@
                 <p:separator/>
                 <p:commandButton id="filterByDate" value="Filtrar"
                                  actionListener="#{guiaController.prepareSearch}" ajax="true"
-                                 process="@this, dateFilterInputs" update="table"/>
+                                 process="@this, dateFilterInputs" update="table textoFiltros"/>
               </p:overlayPanel>
               <p:commandButton id="estadoFilterBtn" value="Filtrar por Estado" type="button" styleClass="margin-left"/>
               <p:overlayPanel id="estadoFilterOverlay" widgetVar="estadoFilterOverlay" for="estadoFilterBtn"
                               hideEffect="fade">
                 <p:commandButton id="estadoClearBtn" value="Limpar Filtro"
                                  actionListener="#{guiaController.clearSelectedEstados}" ajax="true"
-                                 process="@this" update="table, estadoMany"/>
+                                 process="@this" update="table textoFiltros estadoMany"/>
                 <p:separator/>
                 <p:selectManyMenu id="estadoMany" value="#{guiaController.selectedEstados}" showCheckbox="true"
                                   styleClass="margin-top">
-                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table textoFiltros"/>
                   <f:selectItems value="#{guiaController.estados}" var="estado" itemLabel="#{estado.label}"
                                  itemValue="#{estado}"/>
                 </p:selectManyMenu>
@@ -81,12 +82,12 @@
                               hideEffect="fade">
                 <p:commandButton id="tipoClearBtn" value="Limpar Filtro"
                                  actionListener="#{guiaController.clearSelectedTipos}" ajax="true"
-                                 process="@this" update="table, tipoMany"/>
+                                 process="@this" update="table textoFiltros tipoMany"/>
                 <p:separator/>
                 <p:selectManyMenu id="tipoMany" value="#{guiaController.selectedTipos}" showCheckbox="true"
                                   style="min-width: 200px"
                                   styleClass="margin-top">
-                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+                  <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table textoFiltros"/>
                   <f:selectItems value="#{guiaController.tiposEnum}" var="tipo" itemLabel="#{tipo.label}"
                                  itemValue="#{tipo}"/>
                 </p:selectManyMenu>
@@ -95,7 +96,7 @@
               <p:overlayPanel id="setorFilterPnl" widgetVar="setorFilterPnl" for="setorFilterBtn" hideEffect="fade">
                 <p:commandButton id="setorClearFilterBtn" value="Limpar Filtro"
                                  actionListener="#{guiaController.clearSetor}" ajax="true"
-                                 process="@this" update="table, setorFilter" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
+                                 process="@this" update="table textoFiltros setorFilter" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
                 <p:separator/>
                 <p:autoComplete id="setorFilter" value="#{guiaController.setor}"
                                 var="setor"
@@ -105,7 +106,7 @@
                                 inputStyleClass="lance-input"
                                 queryDelay="250"
                                 completeMethod="#{setorController.completeSetor}" placeholder="Digite o código ou o nome do setor.">
-                  <p:ajax event="itemSelect" listener="#{guiaController.prepareSearch}" update="table"/>
+                  <p:ajax event="itemSelect" listener="#{guiaController.prepareSearch}" update="table textoFiltros"/>
                   <p:column>
                     #{setor.id}
                   </p:column>
@@ -114,10 +115,24 @@
                   </p:column>
                 </p:autoComplete>
               </p:overlayPanel>
+              <p:commandButton id="csvDownload" value="Planilha (CSV)" icon="fa fa-file-excel-o"
+                               ajax="false" process="@form" styleClass="margin-left"
+                               onclick="PrimeFaces.monitorDownload(start, stop);">
+                <p:fileDownload value="#{guiaController.consultaCsv}"/>
+              </p:commandButton>
+            </div>
+            <div class="margin-top">
               <p:selectBooleanCheckbox id="somenteMinhaAutoria" value="#{guiaController.somenteMinhaAutoria}"
-                                       itemLabel="Somente minha autoria" styleClass="margin-left">
-                <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table"/>
+                                       itemLabel="Somente minha autoria">
+                <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table textoFiltros"/>
               </p:selectBooleanCheckbox>
+              <p:selectBooleanCheckbox id="somenteSemRecebimentos" value="#{guiaController.somenteSemRecebimentos}"
+                                       itemLabel="Somente guias sem recembimento" styleClass="margin-left">
+                <p:ajax event="change" process="@this" listener="#{guiaController.prepareSearch}" update="table textoFiltros"/>
+              </p:selectBooleanCheckbox>
+              <h:panelGroup id="textoFiltros" layout="block">
+                <h:outputText value="#{guiaController.textoFiltros}" escape="false"/>
+              </h:panelGroup>
               <p:fileUpload mode="advanced" skinSimple="false"
                             fileUploadListener="#{guiaController.uploadValues}" uploadLabel="Submeter"
                             onstart="PF('changePage').show()"
@@ -127,6 +142,7 @@
                             rendered="#{sessionController.isUserInRoles('ADMINISTRATOR')}"
                             update="dataTable @this"/>
             </div>
+
           </f:facet>
 
           <!-- ################ -->
@@ -227,47 +243,54 @@
             </h:outputText>
           </p:column>
           <p:column style="text-align: center">
-            <p:menuButton id="menuButton" value="Ações">
+            <p:menuButton id="menuButton" value="Ações" disabled="#{guiaController.disableAcoes(item)}">
               <p:menuitem value="Recebimento" action="#{guiaController.receber(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataRecebimento"
+                          rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"
                           icon="fa fa-thumbs-up" disabled="#{item.dataRecebimento != null}"/>
               <p:menuitem value="Auditoria" actionListener="#{guiaController.auditar(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataAuditoria"
                           icon="fa fa-gavel"
+                          rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"
                           disabled="#{item.dataAuditoria != null or item.dataRespostaConvenio != null or item.dataRecebimento == null}"/>
               <p:menuitem value="Solicitação convênio" actionListener="#{guiaController.solicitarConvenio(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataSolicitacaoConvenio"
                           icon="fa fa-leaf"
+                          rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"
                           disabled="#{item.dataSolicitacaoConvenio != null or item.dataRespostaConvenio != null or item.dataRecebimento == null}"/>
-              <p:separator/>
+              <p:separator rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"/>
               <p:menuitem value="Negado" actionListener="#{guiaController.negar(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
                           icon="fa fa-ban"
+                          rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"
                           disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
               <p:menuitem value="Em revisão"
                           actionListener="#{guiaController.preRevisao(item)}"
                           ajax="true" process="@this" update="#{p:component('commentDialog')}"
                           oncomplete="PF('commentDialog').show()"
                           icon="fa fa-clock-o"
+                          rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"
                           disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null or item.estado == 'REVISAO'}"/>
               <p:menuitem value="Parcialmente"
                           actionListener="#{guiaController.preParcial(item)}"
                           ajax="true" process="@this" update="#{p:component('commentDialog')}"
                           oncomplete="PF('commentDialog').show()"
                           icon="fa fa-check-circle"
+                          rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"
                           disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null or item.estado == 'PARCIAL'}"/>
               <p:menuitem value="Autorizado" actionListener="#{guiaController.autorizar(item)}"
                           ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
                           icon="fa fa-check"
+                          rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"
                           disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
-              <p:separator/>
+              <p:separator rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"/>
+              <p:menuitem value="Histórico" action="#{guiaController.setItem(item)}"
+                          process="@this" update="#{p:component('historicoDlg')}" oncomplete="PF('historicoDlg').show()"
+                          icon="fa fa-tags"/>
               <p:menuitem value="Novo comentário" action="#{guiaController.setItem(item)}"
                           process="@this" update="#{p:component('novoComentarioDlg')}"
                           oncomplete="PF('novoComentarioDlg').show()"
                           icon="fa fa-comment" rendered="#{sessionController.isUserInRoles('AUTHORIZER')}"/>
-              <p:menuitem value="Histórico" action="#{guiaController.setItem(item)}"
-                          process="@this" update="#{p:component('historicoDlg')}" oncomplete="PF('historicoDlg').show()"
-                          icon="fa fa-tags" rendered="#{sessionController.isUserInRoles('MANAGER')}"/>
               <p:menuitem value="Comentários" action="#{guiaController.setItem(item)}"
                           process="@this" update="#{p:component('comentarioDlg')}"
                           oncomplete="PF('comentarioDlg').show()"

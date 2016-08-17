@@ -16,6 +16,7 @@
   <composite:attribute name="renderActionColumn"/>
   <composite:attribute name="renderDefaultFilter" default="true"/>
   <composite:attribute name="placeholder"/>
+  <composite:attribute name="updateAfterSearch"/>
 </composite:interface>
 
 <composite:implementation>
@@ -31,7 +32,7 @@
         <p:commandButton id="searchBtn" value="Buscar"
                          action="#{cc.attrs.controller.prepareSearch}" icon="fa fa-search"
                          ajax="true" process="@form"
-                         update="table"
+                         update="table #{cc.attrs.updateAfterSearch}"
                          title="Procurar #{cc.attrs.controller.entityName}"
                          style="margin-left: 10px;"/>
       </h:panelGroup>
