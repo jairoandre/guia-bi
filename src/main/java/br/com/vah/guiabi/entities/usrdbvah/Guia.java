@@ -89,6 +89,10 @@ public class Guia extends BaseEntity {
   @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private List<Comentario> comentarios;
 
+  //@Column(name = "CD_CONTA")
+  @Transient
+  private Long conta;
+
   public Guia() {
     this.estado = EstadosGuiaEnum.PENDENTE;
     this.historico = new ArrayList<>();
@@ -229,6 +233,14 @@ public class Guia extends BaseEntity {
 
   public void setProcedimentos(Set<ProFat> procedimentos) {
     this.procedimentos = procedimentos;
+  }
+
+  public Long getConta() {
+    return conta;
+  }
+
+  public void setConta(Long conta) {
+    this.conta = conta;
   }
 
   @Override

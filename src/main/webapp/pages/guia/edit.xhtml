@@ -9,8 +9,8 @@
 
   <ui:define name="metadata">
     <f:metadata>
-      <f:viewParam name="id" value="#{guiaController.id}"/>
-      <f:viewAction action="#{guiaController.onLoad}"/>
+      <f:viewParam name="id" value="#{guiaCtrl.id}"/>
+      <f:viewAction action="#{guiaCtrl.onLoad}"/>
     </f:metadata>
   </ui:define>
 
@@ -20,23 +20,23 @@
 
       <h:panelGroup id="guiaPnlWrapper">
         <p:focus context="guiaPnlWrapper"/>
-        <guiabi:editForm id="guiaForm" controller="#{guiaController}"
+        <guiabi:editForm id="guiaForm" controller="#{guiaCtrl}"
                          columns="3">
 
-          <uiguiabi:selectOneEnum id="tipo" label="Tipo" value="#{guiaController.item.tipo}" required="true"
-                                  editing="#{guiaController.editing and guiaController.item.id == null}"
-                                  options="#{guiaController.tipos}"
-                                  info="#{guiaController.tipoInfo}">
-            <p:ajax event="change" listener="#{guiaController.onchangeTipo}" process="@this" update="@form"
+          <uiguiabi:selectOneEnum id="tipo" label="Tipo" value="#{guiaCtrl.item.tipo}" required="true"
+                                  editing="#{guiaCtrl.editing and guiaCtrl.item.id == null}"
+                                  options="#{guiaCtrl.tipos}"
+                                  info="#{guiaCtrl.tipoInfo}">
+            <p:ajax event="change" listener="#{guiaCtrl.onchangeTipo}" process="@this" update="@form"
                     oncomplete="nextFocus('#{p:component('setor')}')"/>
           </uiguiabi:selectOneEnum>
 
-          <uiguiabi:autoComplete id="especialidade" value="#{guiaController.item.especialidade}" label="Especialidade"
+          <uiguiabi:autoComplete id="especialidade" value="#{guiaCtrl.item.especialidade}" label="Especialidade"
                                  required="true"
-                                 controller="#{especialidadeController}" completeMethod="completeEspecialidade"
-                                 editing="#{guiaController.editing and guiaController.item.id == null}"
+                                 controller="#{especialidadeCtrl}" completeMethod="completeEspecialidade"
+                                 editing="#{guiaCtrl.editing and guiaCtrl.item.id == null}"
                                  converter="#{especialidadeConverter}" itemLabel="title"
-                                 rendered="#{guiaController.item.tipo == 'PARECER'}"
+                                 rendered="#{guiaCtrl.item.tipo == 'PARECER'}"
                                  placeholder="Número/Nome especialidade">
             <p:column>
               #{item.id}
@@ -48,20 +48,20 @@
 
 
           <p:outputLabel value="Procedimentos" for="proFat" styleClass="lance-label"
-                         rendered="#{guiaController.item.tipo == 'PROCEDIMENTO'}"/>
-          <h:panelGroup rendered="#{guiaController.item.tipo == 'PROCEDIMENTO'}">
-            <p:autoComplete id="proFat" value="#{guiaController.proFatToAdd}"
+                         rendered="#{guiaCtrl.item.tipo == 'PROCEDIMENTO'}"/>
+          <h:panelGroup rendered="#{guiaCtrl.item.tipo == 'PROCEDIMENTO'}">
+            <p:autoComplete id="proFat" value="#{guiaCtrl.proFatToAdd}"
                             widgetVar="proFat"
                             queryDelay="200"
                             var="item"
-                            readonly="#{!(guiaController.editing and guiaController.item.id == null)}"
+                            readonly="#{!(guiaCtrl.editing and guiaCtrl.item.id == null)}"
                             itemLabel="#{item['title']}"
                             itemValue="#{item}"
                             converter="#{proFatConverter}"
                             inputStyleClass="lance-input"
-                            completeMethod="#{proFatController.completeProFat}"
+                            completeMethod="#{proFatCtrl.completeProFat}"
                             placeholder="Número/Nome procedimento">
-              <p:ajax event="itemSelect" listener="#{guiaController.addProFatToList}" process="@this"
+              <p:ajax event="itemSelect" listener="#{guiaCtrl.addProFatToList}" process="@this"
                       update="proFatList" oncomplete="$(PF('proFat').jqId + '_input').val('')"/>
               <p:column>
                 #{item.idStr}
@@ -71,9 +71,9 @@
               </p:column>
             </p:autoComplete>
             <h:panelGroup id="proFatList" layout="block">
-              <ui:repeat value="#{guiaController.item.procedimentos.toArray()}" var="proc">
+              <ui:repeat value="#{guiaCtrl.item.procedimentos.toArray()}" var="proc">
                 <h:panelGroup layout="block" styleClass="list-block">
-                  <p:commandLink styleClass="fa fa-close" action="#{guiaController.removeProFat(proc)}"
+                  <p:commandLink styleClass="fa fa-close" action="#{guiaCtrl.removeProFat(proc)}"
                                  process="@this" update="#{p:component('proFatList')}"/>
                   <h:outputText value="#{proc.title}"/>
                 </h:panelGroup>
@@ -81,12 +81,12 @@
             </h:panelGroup>
 
           </h:panelGroup>
-          <p:message for="proFat" rendered="#{guiaController.item.tipo == 'PROCEDIMENTO'}"/>
+          <p:message for="proFat" rendered="#{guiaCtrl.item.tipo == 'PROCEDIMENTO'}"/>
 
 
-          <uiguiabi:autoComplete id="setor" value="#{guiaController.item.setor}" label="Setor" required="true"
-                                 controller="#{setorController}" completeMethod="completeSetor"
-                                 editing="#{guiaController.editing and guiaController.item.id == null}"
+          <uiguiabi:autoComplete id="setor" value="#{guiaCtrl.item.setor}" label="Setor" required="true"
+                                 controller="#{setorCtrl}" completeMethod="completeSetor"
+                                 editing="#{guiaCtrl.editing and guiaCtrl.item.id == null}"
                                  converter="#{setorConverter}" itemLabel="title"
                                  placeholder="Número/Nome setor">
             <p:column>
@@ -97,10 +97,10 @@
             </p:column>
           </uiguiabi:autoComplete>
 
-          <uiguiabi:autoComplete id="atendimento" value="#{guiaController.item.atendimento}" label="Atendimento"
+          <uiguiabi:autoComplete id="atendimento" value="#{guiaCtrl.item.atendimento}" label="Atendimento"
                                  required="true"
-                                 controller="#{atendimentoController}" completeMethod="completeAtendimento"
-                                 editing="#{guiaController.editing and guiaController.item.id == null}"
+                                 controller="#{atendimentoCtrl}" completeMethod="completeAtendimento"
+                                 editing="#{guiaCtrl.editing and guiaCtrl.item.id == null}"
                                  converter="#{atendimentoConverter}" itemLabel="id"
                                  placeholder="Número/Nome paciente">
             <p:ajax event="itemSelect" update="pacientePnl" oncomplete="nextFocus('#{p:component('descricao')}')"/>
@@ -117,38 +117,38 @@
 
           <h:panelGroup id="pacientePnl">
             <p:inputText id="pacienteEmpty" value="" placeholder="Nome do paciente..." styleClass="lance-input"
-                         readonly="true" rendered="#{guiaController.item.atendimento.paciente == null}"/>
-            <p:inputText id="paciente" value="#{guiaController.item.atendimento.paciente.name}" styleClass="lance-input"
-                         readonly="true" rendered="#{guiaController.item.atendimento.paciente != null}"/>
+                         readonly="true" rendered="#{guiaCtrl.item.atendimento.paciente == null}"/>
+            <p:inputText id="paciente" value="#{guiaCtrl.item.atendimento.paciente.name}" styleClass="lance-input"
+                         readonly="true" rendered="#{guiaCtrl.item.atendimento.paciente != null}"/>
           </h:panelGroup>
 
           <h:panelGroup/>
 
-          <uiguiabi:inputText id="descricao" label="Descrição" value="#{guiaController.item.descricao}"
-                              editing="#{guiaController.editing}"/>
+          <uiguiabi:inputText id="descricao" label="Descrição" value="#{guiaCtrl.item.descricao}"
+                              editing="#{guiaCtrl.editing}"/>
 
           <uiguiabi:inputDate id="data" label="Data da guia" required="true"
-                              value="#{guiaController.item.data}"
+                              value="#{guiaCtrl.item.data}"
                               pattern="dd/MM/yyyy HH:mm"
-                              editing="#{guiaController.editing and (guiaController.item.tipo != 'PRORROGACAO' or sessionController.isUserInRoles('MANAGER'))}"/>
+                              editing="#{guiaCtrl.editing and (guiaCtrl.item.tipo != 'PRORROGACAO' or sessionCtrl.isUserInRoles('MANAGER'))}"/>
 
           <uiguiabi:inputDate id="dataRecebimento" label="Data de recebimento"
-                              value="#{guiaController.item.dataRecebimento}"
+                              value="#{guiaCtrl.item.dataRecebimento}"
                               pattern="dd/MM/yyyy HH:mm"
-                              editing="#{guiaController.editing and sessionController.isUserInRoles('MANAGER')}"
-                              rendered="#{guiaController.item.id != null or guiaController.item.tipo != 'PRORROGACAO'}"/>
+                              editing="#{guiaCtrl.editing and sessionCtrl.isUserInRoles('MANAGER')}"
+                              rendered="#{guiaCtrl.item.id != null or guiaCtrl.item.tipo != 'PRORROGACAO'}"/>
 
           <uiguiabi:inputDate id="dataAuditoria" label="Data de auditoria"
-                              value="#{guiaController.item.dataAuditoria}"
-                              editing="#{guiaController.editing}"
+                              value="#{guiaCtrl.item.dataAuditoria}"
+                              editing="#{guiaCtrl.editing}"
                               pattern="dd/MM/yyyy HH:mm"
-                              rendered="#{guiaController.item.id != null}"/>
+                              rendered="#{guiaCtrl.item.id != null}"/>
 
           <uiguiabi:inputDate id="dataSolicitacaoConvenio" label="Data de solicitação"
-                              value="#{guiaController.item.dataSolicitacaoConvenio}"
-                              editing="#{guiaController.editing}"
+                              value="#{guiaCtrl.item.dataSolicitacaoConvenio}"
+                              editing="#{guiaCtrl.editing}"
                               pattern="dd/MM/yyyy HH:mm"
-                              rendered="#{guiaController.item.id != null}"/>
+                              rendered="#{guiaCtrl.item.id != null}"/>
 
 
         </guiabi:editForm>

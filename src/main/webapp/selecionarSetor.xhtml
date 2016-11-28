@@ -28,7 +28,7 @@
                        columns="2"
                        cellpadding="5" style="margin-top: 25px;">
             <p:outputLabel value="Setor:" styleClass="lance-label"/>
-            <p:autoComplete id="setor" value="#{sessionController.setor}"
+            <p:autoComplete id="setor" value="#{sessionCtrl.setor}"
                             var="setor"
                             itemLabel="#{setor.title}"
                             itemValue="#{setor}"
@@ -36,7 +36,7 @@
                             converter="#{setorConverter}"
                             inputStyleClass="lance-input"
                             queryDelay="250"
-                            completeMethod="#{setorController.completeSetor}" placeholder="Digite o código ou o nome do setor.">
+                            completeMethod="#{setorCtrl.completeSetor}" placeholder="Digite o código ou o nome do setor.">
               <p:ajax event="itemSelect" update="prosseguirBtn" oncomplete="nextFocus('#{p:component('prosseguirBtn')}')"/>
               <p:column>
                 #{setor.id}
@@ -47,11 +47,11 @@
             </p:autoComplete>
           </h:panelGrid>
         </h:panelGroup>
-        <p:commandButton id="prosseguirBtn" value="Prosseguir" action="#{sessionController.prosseguir}"
+        <p:commandButton id="prosseguirBtn" value="Prosseguir" action="#{sessionCtrl.prosseguir}"
                          style="font-size: 25px; margin-top: 25px"
                          onstart="PF('changePage').show()"
                          onerror="PF('changePage').hide()"
-                         disabled="#{sessionController.setor == null or sessionController.setor.id == null}"/>
+                         disabled="#{sessionCtrl.setor == null or sessionCtrl.setor.id == null}"/>
       </p:panel>
     </h:form>
   </ui:define>

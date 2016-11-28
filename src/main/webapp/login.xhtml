@@ -15,7 +15,7 @@
         </div>
         <div class="login-system-name">Sistema GUIAS</div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <h:inputText id="username" value="#{sessionController.username}"
+          <h:inputText id="username" value="#{sessionCtrl.username}"
                        required="true" requiredMessage="Usuário requerido"
                        styleClass="mdl-textfield__input">
             <f:validateLength minimum="1"/>
@@ -23,7 +23,7 @@
           <h:outputLabel value="Usuário" for="username" styleClass="mdl-textfield__label"/>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <h:inputSecret id="password" value="#{sessionController.password}"
+          <h:inputSecret id="password" value="#{sessionCtrl.password}"
                          required="true" requiredMessage="Senha requerido"
                          styleClass="mdl-textfield__input">
             <f:validateLength minimum="1"/>
@@ -31,10 +31,10 @@
           <h:outputLabel value="Senha" for="password" styleClass="mdl-textfield__label"/>
         </div>
         <p:commandButton value="Entrar" update="msgs"
-                         actionListener="#{sessionController.login}" type="submit"
+                         actionListener="#{sessionCtrl.login}" type="submit"
                          onstart="PF('changePage').show()"
                          oncomplete="PF('changePage').hide()"
-                         styleClass="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+                         styleClass="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"
                          icon="fa fa-sign-in" style="margin:0"/>
       </h:panelGroup>
     </h:form>

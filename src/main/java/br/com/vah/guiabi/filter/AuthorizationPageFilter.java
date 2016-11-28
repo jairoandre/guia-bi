@@ -2,7 +2,7 @@ package br.com.vah.guiabi.filter;
 
 
 import br.com.vah.guiabi.constants.RolesEnum;
-import br.com.vah.guiabi.controllers.SessionController;
+import br.com.vah.guiabi.controllers.SessionCtrl;
 import br.com.vah.guiabi.constants.RestrictViewsEnum;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.User;
@@ -23,7 +23,7 @@ public class AuthorizationPageFilter implements Filter {
 
   private
   @Inject
-  SessionController sessionController;
+  SessionCtrl sessionCtrl;
 
   public static final String ERROR_ACCESS_DENIED = "/error-access-denied.xhtml";
   public static final String LOGIN = "/login.xhtml";
@@ -38,8 +38,8 @@ public class AuthorizationPageFilter implements Filter {
 
     if (request.getUserPrincipal() != null) {
 
-      User user = sessionController.getUser();
-      Setor setor = sessionController.getSetor();
+      User user = sessionCtrl.getUser();
+      Setor setor = sessionCtrl.getSetor();
 
       String[] splitPath = request.getRequestURI().split(request.getContextPath());
 

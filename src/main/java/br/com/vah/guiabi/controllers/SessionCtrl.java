@@ -33,7 +33,7 @@ import org.primefaces.event.SelectEvent;
 @SuppressWarnings("serial")
 @Named
 @SessionScoped
-public class SessionController implements Serializable {
+public class SessionCtrl implements Serializable {
 
   private
   transient Logger logger = Logger.getLogger("LoginController");
@@ -52,7 +52,7 @@ public class SessionController implements Serializable {
   /**
    * Creates a new instance of LoginController
    */
-  public SessionController() {
+  public SessionCtrl() {
   }
 
   // Getters and Setters

@@ -2,6 +2,7 @@ package br.com.vah.guiabi.controllers;
 
 import br.com.vah.guiabi.constants.AcoesGuiaEnum;
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
+import br.com.vah.guiabi.constants.GuiaFieldsEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
@@ -14,6 +15,7 @@ import br.com.vah.guiabi.exceptions.GuiaPersistException;
 import br.com.vah.guiabi.service.*;
 import br.com.vah.guiabi.util.ViewUtils;
 import com.opencsv.CSVReader;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
@@ -27,9 +29,7 @@ import javax.inject.Named;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  */
 @Named
 @ViewScoped
-public class GuiaController extends AbstractController<Guia> {
+public class GuiaCtrl extends AbstractCtrl<Guia> {
 
   private
   @Inject
@@ -49,7 +49,7 @@ public class GuiaController extends AbstractController<Guia> {
 
   private
   @Inject
-  SessionController session;
+  SessionCtrl session;
 
   private
   @Inject
@@ -99,7 +99,9 @@ public class GuiaController extends AbstractController<Guia> {
 
   private ProFat proFatToAdd;
 
-  private String textoFiltros;
+  private List<String> filtros;
+
+  private Map<String, GuiaFieldsEnum> mapFiltros;
 
   @PostConstruct
   public void init() {
@@ -270,14 +272,6 @@ public class GuiaController extends AbstractController<Guia> {
 
   public void setProFatToAdd(ProFat proFatToAdd) {
     this.proFatToAdd = proFatToAdd;
-  }
-
-  public String getTextoFiltros() {
-    return textoFiltros;
-  }
-
-  public void setTextoFiltros(String textoFiltros) {
-    this.textoFiltros = textoFiltros;
   }
 
   public void onchangeTipo() {
@@ -502,77 +496,110 @@ public class GuiaController extends AbstractController<Guia> {
   @Override
   public void prepareSearch() {
     resetSearchParams();
+    filtros = new ArrayList<>();
+    mapFiltros = new HashMap<>();
     String regex = "[0-9]+";
     Boolean searchByAtendimento = false;
-    StringBuilder builder = new StringBuilder();
-    builder.append("<b><i>FILTROS</i></b>: ");
     if (getSearchTerm() != null && getSearchTerm().matches(regex)) {
       setSearchParam("atendimento", Long.valueOf(getSearchTerm()));
       searchByAtendimento = true;
-      builder.append("<b>Atendimento:</b> " );
-      builder.append(getSearchTerm());
-      builder.append(" ");
+      String atendimentoKey = "<b>Atendimento:</b> " + getSearchTerm();
+      filtros.add(atendimentoKey);
+      mapFiltros.put(atendimentoKey, GuiaFieldsEnum.ATENDIMENTO);
     } else {
       setSearchParam("paciente", getSearchTerm());
       if (getSearchTerm() != null) {
-        builder.append("<b>Paciente:</b> ");
-        builder.append(getSearchTerm());
-        builder.append(" ");
+        String pacienteKey = "<b>Paciente:</b> " + getSearchTerm();
+        filtros.add(pacienteKey);
+        mapFiltros.put(pacienteKey, GuiaFieldsEnum.PACIENTE);
       }
     }
     setSearchParam("semRecebimentos", somenteSemRecebimentos);
     if (!searchByAtendimento) {
       if (setor != null) {
         setSearchParam("setor", setor);
-        builder.append("<b>Setor:</b> " );
-        builder.append(setor.getTitle());
-        builder.append(" ");
+        String setorKey = "<b>Setor:</b> " + setor.getTitle();
+        filtros.add(setorKey);
+        mapFiltros.put(setorKey, GuiaFieldsEnum.SETOR);
       }
       if (session.getSetor() != null) {
         setSearchParam("setor", session.getSetor());
-        builder.append("<b>Setor:</b> " );
-        builder.append(session.getSetor().getTitle());
-        builder.append(" ");
+        String setorKey = "<b>Setor (Sessão):</b> " + setor.getTitle();
+        filtros.add(setorKey);
+        mapFiltros.put(setorKey, GuiaFieldsEnum.SETOR_SESSAO);
       }
       if (selectedEstados != null && selectedEstados.length > 0) {
         setSearchParam("estados", selectedEstados);
-        builder.append("<b>Estados:</b> " );
-        for (EstadosGuiaEnum estado : selectedEstados) {
-          builder.append(estado.getLabel());
-          builder.append(" ");
+        String[] estadosStr = new String[selectedEstados.length];
+        for (int i = 0, len = selectedEstados.length; i < len; i++) {
+          estadosStr[i] = selectedEstados[i].getLabel();
         }
+        String estadosKey = "<b>Estados:</b> " + StringUtils.join(estadosStr, ", ");
+        filtros.add(estadosKey);
+        mapFiltros.put(estadosKey, GuiaFieldsEnum.ESTADOS);
       }
       if (selectedTipos != null && selectedTipos.length > 0) {
         setSearchParam("tipos", selectedTipos);
-        builder.append("<b>Tipos:</b> " );
-        for (TipoGuiaEnum tipo : selectedTipos) {
-          builder.append(tipo.getLabel());
-          builder.append(" ");
+        String[] tiposStr = new String[selectedTipos.length];
+        for (int i = 0, len = selectedTipos.length; i < len; i++) {
+          tiposStr[i] = selectedTipos[i].getLabel();
         }
+        String tiposKey = "<b>Tipos:</b> " + StringUtils.join(tiposStr, ", ");
+        filtros.add(tiposKey);
+        mapFiltros.put(tiposKey, GuiaFieldsEnum.TIPOS);
       }
       if (somenteMinhaAutoria) {
         setSearchParam("autor", session.getUser());
       }
       if (selectedConvenios != null && selectedConvenios.length > 0) {
         setSearchParam("convenios", selectedConvenios);
-        builder.append("<b>Convênios:</b> " );
-        for (Convenio conv : selectedConvenios) {
-          builder.append(conv.getTitle());
-          builder.append(" ");
+        String[] conveniosStr = new String[selectedConvenios.length];
+        for (int i = 0, len = selectedConvenios.length; i < len; i++) {
+          conveniosStr[i] = selectedConvenios[i].getTitle();
         }
+        String conveniosKey = "<b>Convênios:</b> " + StringUtils.join(conveniosStr, ", ");
+        filtros.add(conveniosKey);
+        mapFiltros.put(conveniosKey, GuiaFieldsEnum.CONVENIOS);
       }
       if (inicioDate != null || terminoDate != null) {
         setSearchParam("dateRange", new Date[]{inicioDate, terminoDate});
         setSearchParam("dateField", dateField);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        builder.append(String.format("<b>Data (%s):</b> ", dateField.equals("R") ? "Recebimento" : dateField.equals("A") ? "Auditoria" : dateField.equals("S") ? "Solicitação" : dateField.equals("F") ? "Resposta" : "Guia"));
-        builder.append(String.format("%s à %s", sdf.format(inicioDate), sdf.format(terminoDate)));
+        String dateKey = String.format("<b>Data (%s):</b> %s à %s", dateField.equals("R") ? "Recebimento" : dateField.equals("A") ? "Auditoria" : dateField.equals("S") ? "Solicitação" : dateField.equals("F") ? "Resposta" : "Guia", sdf.format(inicioDate), sdf.format(terminoDate));
+        filtros.add(dateKey);
+        mapFiltros.put(dateKey, GuiaFieldsEnum.DATA);
       }
     }
+  }
 
-
-    textoFiltros = builder.toString();
-    textoFiltros = textoFiltros.equals("<b><i>FILTROS</i></b>: ") ? "" : textoFiltros;
+  public void removeFilterItem(String key) {
+    GuiaFieldsEnum field = mapFiltros.get(key);
+    switch (field) {
+      case ATENDIMENTO:
+      case PACIENTE:
+        setSearchTerm(null);
+        break;
+      case SETOR:
+        setor = null;
+        break;
+      case SETOR_SESSAO:
+        break;
+      case ESTADOS:
+        selectedEstados = null;
+        break;
+      case TIPOS:
+        selectedTipos = null;
+        break;
+      case CONVENIOS:
+        selectedConvenios = null;
+        break;
+      case DATA:
+        inicioDate = terminoDate = null;
+        break;
+      default:
+        break;
+    }
+    prepareSearch();
   }
 
   public String getTipoInfo() {
@@ -600,6 +627,7 @@ public class GuiaController extends AbstractController<Guia> {
     return false;
   }
 
-
-
+  public List<String> getFiltros() {
+    return filtros;
+  }
 }

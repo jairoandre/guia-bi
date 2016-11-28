@@ -1,10 +1,12 @@
 package br.com.vah.guiabi.controllers;
 
-import br.com.vah.guiabi.entities.dbamv.Setor;
+import br.com.vah.guiabi.constants.RolesEnum;
+import br.com.vah.guiabi.entities.usrdbvah.User;
 import br.com.vah.guiabi.service.DataAccessService;
-import br.com.vah.guiabi.service.SetorService;
+import br.com.vah.guiabi.service.UserService;
 
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -16,24 +18,29 @@ import java.util.logging.Logger;
  */
 @Named
 @ViewScoped
-public class SetorController extends AbstractController<Setor> {
+public class UserCtrl extends AbstractCtrl<User> {
 
-  private @Inject
+  private
+  @Inject
   transient Logger logger;
 
-  private @Inject
-  SetorService service;
+  private
+  @Inject
+  UserService service;
+
+  private List<SelectItem> roles;
 
   @PostConstruct
   public void init() {
     logger.info(this.getClass().getSimpleName() + " created");
     setItem(createNewItem());
     initLazyModel(service);
+    roles = RolesEnum.getSelectItems();
   }
 
 
   @Override
-  public DataAccessService<Setor> getService() {
+  public DataAccessService<User> getService() {
     return service;
   }
 
@@ -43,29 +50,34 @@ public class SetorController extends AbstractController<Setor> {
   }
 
   @Override
-  public Setor createNewItem() {
-    return new Setor();
+  public User createNewItem() {
+    return new User();
   }
 
   @Override
   public String path() {
-    return "setor";
+    return "user";
   }
 
   @Override
   public String getEntityName() {
-    return "Setor";
+    return "User";
+  }
+
+  public List<SelectItem> getRoles() {
+    return roles;
   }
 
   @Override
   public void prepareSearch() {
     super.prepareSearch();
-    setSearchParam("title", getSearchTerm());
+    setSearchParam("login", getSearchTerm());
   }
 
-  public List<Setor> completeSetor(String query) {
+  public List<User> completeUser(String query) {
     setSearchTerm(query);
-    prepareSearch();
+    super.prepareSearch();
+    setSearchParam("login", query);
     return getLazyModel().load(10);
   }
 }
