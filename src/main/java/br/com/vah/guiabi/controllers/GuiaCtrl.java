@@ -26,10 +26,8 @@ import org.primefaces.model.UploadedFile;
 
 import com.opencsv.CSVReader;
 
-import br.com.vah.guiabi.constants.AcoesGuiaEnum;
-import br.com.vah.guiabi.constants.EstadosGuiaEnum;
-import br.com.vah.guiabi.constants.GuiaFieldsEnum;
-import br.com.vah.guiabi.constants.TipoGuiaEnum;
+
+import br.com.vah.guiabi.constants.*;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.ProFat;
@@ -116,7 +114,11 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
 
 	private Guia guiaAtt;
 
-	@PostConstruct
+  private AcoesRespostaEnum acaoResposta;
+
+  private Date dataRespostaAnterior;
+
+  @PostConstruct
   public void init() {
     logger.info(this.getClass().getSimpleName() + " created");
     initLazyModel(service, RELATIONS);

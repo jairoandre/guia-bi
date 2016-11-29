@@ -116,9 +116,11 @@ public class Guia extends BaseEntity {
 	@OrderBy("id DESC")
 	private Set<Anexo> anexos = new LinkedHashSet<>();
 
-  //@Column(name = "CD_CONTA")
-  @Transient
+  @Column(name = "CD_CONTA")
   private Long conta;
+
+  @Column(name = "DT_RESPOSTA_ANTERIOR")
+  private Date dataRespostaAnterior;
 
   public Guia() {
     this.estado = EstadosGuiaEnum.PENDENTE;
@@ -263,6 +265,14 @@ public class Guia extends BaseEntity {
 
   public void setConta(Long conta) {
     this.conta = conta;
+  }
+
+  public Date getDataRespostaAnterior() {
+    return dataRespostaAnterior;
+  }
+
+  public void setDataRespostaAnterior(Date dataRespostaAnterior) {
+    this.dataRespostaAnterior = dataRespostaAnterior;
   }
 
   @Override
