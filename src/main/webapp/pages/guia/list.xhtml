@@ -32,7 +32,10 @@
 
             <f:facet name="customFilters">
               <h:panelGroup id="overlayFields" styleClass="margin-top" layout="block">
-                <p:commandButton id="setorFilterBtn" value="Filtrar por Setor" type="button" styleClass="margin-left"
+                <p:commandButton id="setorFilterBtn"
+                                 value="Filtrar por Setor"
+                                 type="button"
+                                 styleClass="margin-right"
                                  rendered="#{empty sessionCtrl.setor}"/>
                 <p:overlayPanel id="setorFilterPnl" widgetVar="setorFilterPnl" for="setorFilterBtn" hideEffect="fade">
                   <p:commandButton id="setorClearFilterBtn" value="Limpar Filtro"
@@ -59,13 +62,12 @@
                     </p:column>
                   </p:autoComplete>
                 </p:overlayPanel>
-                <p:commandButton id="convBtn" value="Filtrar por Convênios" type="button"
-                                 rendered="#{empty sessionCtrl.conveniosStr}"/>
+                <p:commandButton id="convBtn"
+                                 value="Filtrar por Convênios"
+                                 type="button"
+                                 styleClass="margin-right"
+                                 rendered="#{empty sessionCtrl.convenios or sessionCtrl.convenios.size() > 1}"/>
                 <p:overlayPanel id="convPnl" widgetVar="convPnl" for="convBtn" hideEffect="fade">
-                  <p:commandButton id="clearConvBtn" value="Limpar Filtro"
-                                   actionListener="#{guiaCtrl.clearSelectedConvenios}" ajax="true"
-                                   process="@this" update="table manyMenuConv #{p:component('filtersWrapper')}"/>
-                  <p:separator/>
                   <p:selectManyMenu id="manyMenuConv" value="#{guiaCtrl.selectedConvenios}" showCheckbox="true"
                                     filter="true" filterMatchMode="contains"
                                     converter="#{convenioConverter}" styleClass="margin-top">
@@ -75,7 +77,10 @@
                                    itemValue="#{conv}"/>
                   </p:selectManyMenu>
                 </p:overlayPanel>
-                <p:commandButton id="dataFilterBtn" value="Filtar por Data" type="button" styleClass="margin-left"/>
+                <p:commandButton id="dataFilterBtn"
+                                 value="Filtar por Data"
+                                 type="button"
+                                 styleClass="margin-right"/>
                 <p:overlayPanel id="dataFilterPnl" widgetVar="dataFilterPnl" for="dataFilterBtn" hideEffect="fade"
                                 dismissable="false">
                   <p:commandButton id="currentMonthBtn" value="Mês corrente"
@@ -104,14 +109,12 @@
                                    actionListener="#{guiaCtrl.prepareSearch}" ajax="true"
                                    process="@this, dateFilterInputs" update="table #{p:component('filtersWrapper')}"/>
                 </p:overlayPanel>
-                <p:commandButton id="estadoFilterBtn" value="Filtrar por Estado" type="button"
-                                 styleClass="margin-left"/>
+                <p:commandButton id="estadoFilterBtn"
+                                 value="Filtrar por Estado"
+                                 type="button"
+                                 styleClass="margin-right"/>
                 <p:overlayPanel id="estadoFilterOverlay" widgetVar="estadoFilterOverlay" for="estadoFilterBtn"
                                 hideEffect="fade">
-                  <p:commandButton id="estadoClearBtn" value="Limpar Filtro"
-                                   actionListener="#{guiaCtrl.clearSelectedEstados}" ajax="true"
-                                   process="@this" update="table estadoMany #{p:component('filtersWrapper')}"/>
-                  <p:separator/>
                   <p:selectManyMenu id="estadoMany" value="#{guiaCtrl.selectedEstados}" showCheckbox="true"
                                     styleClass="margin-top">
                     <p:ajax event="change" process="@this" listener="#{guiaCtrl.prepareSearch}"
@@ -120,7 +123,10 @@
                                    itemValue="#{estado}"/>
                   </p:selectManyMenu>
                 </p:overlayPanel>
-                <p:commandButton id="tipoFilterBtn" value="Filtrar por Tipo" type="button" styleClass="margin-left"/>
+                <p:commandButton id="tipoFilterBtn"
+                                 value="Filtrar por Tipo"
+                                 type="button"
+                                 styleClass="margin-right"/>
                 <p:overlayPanel id="tipoFilterOverlay" widgetVar="tipoFilterOverlay" for="tipoFilterBtn"
                                 hideEffect="fade">
                   <p:commandButton id="tipoClearBtn" value="Limpar Filtro"
@@ -136,8 +142,11 @@
                                    itemValue="#{tipo}"/>
                   </p:selectManyMenu>
                 </p:overlayPanel>
-                <p:commandButton id="csvDownload" value="Planilha (CSV)" icon="fa fa-file-excel-o"
-                                 ajax="false" process="@form" styleClass="margin-left"
+                <p:commandButton id="csvDownload"
+                                 value="Planilha (CSV)"
+                                 icon="fa fa-file-excel-o"
+                                 ajax="false" process="@form"
+                                 styleClass="margin-right"
                                  onclick="PrimeFaces.monitorDownload(start, stop);">
                   <p:fileDownload value="#{guiaCtrl.consultaCsv}"/>
                 </p:commandButton>
@@ -315,7 +324,7 @@
                             process="@this" update="#{p:component('novoComentarioDlg')}"
                             oncomplete="PF('novoComentarioDlg').show()"
                             icon="fa fa-comment" rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
-                <p:menuitem value="Comentários" action="#{guiaCtrl.comentario(item)}"
+                <p:menuitem value="Comentários" action="#{guiaCtrl.carregarComentario(item)}"
                             process="@this" update="#{p:component('comentarioDlg')}"
                             oncomplete="PF('comentarioDlg').show()"
                             icon="fa fa-comments" rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>

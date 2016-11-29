@@ -202,6 +202,10 @@ a.action-link:HOVER, td.action-link a:HOVER {
   margin-left: 5px;
 }
 
+.margin-right {
+  margin-right: 5px !important;
+}
+
 .lance-container {
   position: relative;
 }

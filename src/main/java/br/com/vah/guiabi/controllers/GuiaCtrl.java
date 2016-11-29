@@ -114,26 +114,26 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
 
 	private ProFat proFatToAdd;
 
-	private String textoFiltros;
-
 	private Guia guiaAtt;
-	
-	private HistoricoGuia historicoAtt;
-	
-	private Comentario comentarioAtt;
-
+  
 	@PostConstruct
-	public void init() {
-		logger.info(this.getClass().getSimpleName() + " created");
-		initLazyModel(service, RELATIONS);
-		getLazyModel().getSearchParams().setOrderBy("data");
-		getLazyModel().getSearchParams().setAsc(false);
-		prepareSearch();
-		tipos = TipoGuiaEnum.getSelectItems();
-		convenios = convenioService.findWithNamedQuery(Convenio.ALL);
-		estados = EstadosGuiaEnum.values();
-		tiposEnum = TipoGuiaEnum.values();
-	}
+  public void init() {
+    logger.info(this.getClass().getSimpleName() + " created");
+    initLazyModel(service, RELATIONS);
+    getLazyModel().getSearchParams().setOrderBy("data");
+    getLazyModel().getSearchParams().setAsc(false);
+    prepareSearch();
+    tipos = TipoGuiaEnum.getSelectItems();
+    if (session.getConvenios().isEmpty()) {
+      convenios = convenioService.findWithNamedQuery(Convenio.ALL);
+    } else {
+      if (session.getConvenios().size() > 1) {
+        convenios = session.getConvenios();
+      }
+    }
+    estados = EstadosGuiaEnum.values();
+    tiposEnum = TipoGuiaEnum.values();
+  }
 
 	@Override
 	public void onLoad() {
@@ -584,18 +584,16 @@ public void solicitarConvenio(Guia guia) {
       if (somenteMinhaAutoria) {
         setSearchParam("autor", session.getUser());
       }
-      if (session.getConvenios().isEmpty()) {
-        if (selectedConvenios != null && selectedConvenios.length > 0) {
-          setSearchParam("convenios", selectedConvenios);
-          String[] conveniosStr = new String[selectedConvenios.length];
-          for (int i = 0, len = selectedConvenios.length; i < len; i++) {
-            conveniosStr[i] = selectedConvenios[i].getTitle();
-          }
-          String conveniosKey = "<b>Convênios:</b> " + StringUtils.join(conveniosStr, ", ");
-          filtros.add(conveniosKey);
-          mapFiltros.put(conveniosKey, GuiaFieldsEnum.CONVENIOS);
+      if (selectedConvenios != null && selectedConvenios.length > 0) {
+        setSearchParam("convenios", selectedConvenios);
+        String[] conveniosStr = new String[selectedConvenios.length];
+        for (int i = 0, len = selectedConvenios.length; i < len; i++) {
+          conveniosStr[i] = selectedConvenios[i].getTitle();
         }
-      } else {
+        String conveniosKey = "<b>Convênios:</b> " + StringUtils.join(conveniosStr, ", ");
+        filtros.add(conveniosKey);
+        mapFiltros.put(conveniosKey, GuiaFieldsEnum.CONVENIOS);
+      } else if (!session.getConvenios().isEmpty()) {
         setSearchParam("convenios", session.getConvenios());
       }
 
