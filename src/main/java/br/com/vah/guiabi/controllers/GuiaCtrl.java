@@ -35,6 +35,7 @@ import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.ProFat;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Anexo;
+import br.com.vah.guiabi.entities.usrdbvah.Comentario;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
 import br.com.vah.guiabi.entities.usrdbvah.User;
@@ -116,6 +117,10 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
 	private String textoFiltros;
 
 	private Guia guiaAtt;
+	
+	private HistoricoGuia historicoAtt;
+	
+	private Comentario comentarioAtt;
 
 	@PostConstruct
 	public void init() {
@@ -320,6 +325,10 @@ public StreamedContent download(Anexo anexo) {
     this.selectedTipos = null;
     prepareSearch();
   }
+	
+  public Setor getSetor() {
+		return setor;
+  }
 
   public void uploadValues(FileUploadEvent evt) {
     UploadedFile file = evt.getFile();
@@ -428,7 +437,11 @@ public StreamedContent download(Anexo anexo) {
     guia.setHistorico(getItem().getHistorico());
   }
 
-  public void solicitarConvenio(Guia guia) {
+  public Guia getGuiaAtt() {
+	return guiaAtt;
+}
+
+public void solicitarConvenio(Guia guia) {
     Guia attachedGuia = service.find(guia.getId());
     attachedGuia.setDataSolicitacaoConvenio(new Date());
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.SOLICITACAO);
@@ -597,7 +610,11 @@ public StreamedContent download(Anexo anexo) {
     }
   }
 
-  public void removeFilterItem(String key) {
+  public void setSomenteSemRecebimentos(Boolean somenteSemRecebimentos) {
+	this.somenteSemRecebimentos = somenteSemRecebimentos;
+}
+
+public void removeFilterItem(String key) {
     GuiaFieldsEnum field = mapFiltros.get(key);
     switch (field) {
       case ATENDIMENTO:
@@ -656,4 +673,17 @@ public StreamedContent download(Anexo anexo) {
     return filtros;
   }
 
+  public void carregarAnexos( Guia guia){
+	  this.guiaAtt = service.carregarAnexos(guia);
+  }
+  public void carregarHistorico( Guia guia){
+	  this.guiaAtt = service.carregarHistorico(guia);
+  }
+  public void carregarComentario( Guia guia){
+	  this.guiaAtt = service.carregarComentarios(guia);
+  }
+
+  public Boolean getSomenteSemRecebimentos() {
+		return somenteSemRecebimentos;
+  }
 }

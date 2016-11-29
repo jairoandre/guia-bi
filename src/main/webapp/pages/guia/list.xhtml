@@ -294,14 +294,17 @@
                             rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"
                             disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
                 <p:separator rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
-                <p:menuitem value="Histórico" action="#{guiaCtrl.setItem(item)}"
+                <p:menuitem value="Anexos" action="#{guiaCtrl.carregarAnexos(item)}"
+                            process="@this" update="#{p:component('anexosDlg')}" oncomplete="PF('anexosDlg').show()"
+                            icon="fa fa-tags"/>
+                <p:menuitem value="Histórico" action="#{guiaCtrl.carregarHistorico(item)}"
                             process="@this" update="#{p:component('historicoDlg')}" oncomplete="PF('historicoDlg').show()"
                             icon="fa fa-tags"/>
                 <p:menuitem value="Novo comentário" action="#{guiaCtrl.setItem(item)}"
                             process="@this" update="#{p:component('novoComentarioDlg')}"
                             oncomplete="PF('novoComentarioDlg').show()"
                             icon="fa fa-comment" rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
-                <p:menuitem value="Comentários" action="#{guiaCtrl.setItem(item)}"
+                <p:menuitem value="Comentários" action="#{guiaCtrl.comentario(item)}"
                             process="@this" update="#{p:component('comentarioDlg')}"
                             oncomplete="PF('comentarioDlg').show()"
                             icon="fa fa-comments" rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
@@ -412,7 +415,7 @@
             <h:outputText value="Histórico - #{guiaCtrl.item.labelForSelectItem}"/>
           </f:facet>
 
-          <p:dataTable id="historicoTable" value="#{guiaCtrl.item.historico}" var="hist" sortBy="#{hist.data}"
+          <p:dataTable id="historicoTable" value="#{guiaCtrl.guiaAtt.historico}" var="hist" sortBy="#{hist.data}"
                        scrollRows="5" emptyMessage="Sem histórico">
             <p:column headerText="Usuário" width="100" styleClass="left-align">
               <h:outputText value="#{hist.autor.login}"/>
@@ -463,9 +466,11 @@
                              oncomplete="PF('comentarioDlg').hide()"/>
           </f:facet>
         </p:dialog>
+        
 		<h:panelGroup id="anexosWrapper">
-			<p:dialog id="anexosDlg" rendered="#{not empty guiaController.guiaAtt}">
-				<ui:repeat value="#{item.anexos.toArray()}" var="anexo"
+			<p:dialog id="anexosDlg" widgetVar="anexosDlg">
+				
+				<ui:repeat value="#{guiaCtrl.guiaAtt.anexos.toArray()}" var="anexo"
 					varStatus="idx">
 					<h:panelGroup id="anexoItemWrapper" layout="block"
 						styleClass="margin-top">
@@ -473,21 +478,20 @@
 							value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
 							ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
 							immediate="true" icon="fa fa-download">
-							<p:fileDownload value="#{guiaController.download(anexo)}"
+							<p:fileDownload value="#{guiaCtrl.download(anexo)}"
 								contentDisposition="attachment" />
 						</p:commandButton>
 						<p:commandButton icon="fa fa-trash"
-							action="#{guiaController.removerAnexo(anexo)}" ajax="true"
+							action="#{guiaCtrl.removerAnexo(anexo)}" ajax="true"
 							process="@this" update="#{p:component('anexosWrapper')}"
 							styleClass="margin-left" />
 					</h:panelGroup>
 				</ui:repeat>
 
 					<f:facet name="footer">
-						<p:commandButton id="closeComent" value="Fechar" ajax="true"
-							process="@this" oncomplete="PF('comentarioDlg').hide()" />
+						<p:commandButton id="closeAnexos" value="Fechar" ajax="true"
+							process="@this" oncomplete="PF('anexosDlg').hide()" />
 					</f:facet>
-
 			</p:dialog>
 		</h:panelGroup>
       </p:panel>

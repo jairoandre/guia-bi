@@ -163,7 +163,7 @@
 	                        update="anexosWrapper @this"
 	                        
 	                        fileUploadListener="#{guiaCtrl.uploadAnexo}"/>
-	         <h:panelGroup id="anexosWrapper" layout="block" styleClass="margin-top">
+	         
 	            <ui:repeat value="#{guiaCtrl.item.anexos.toArray()}" var="anexo" varStatus="idx">
 	              <h:panelGroup id="anexoItemWrapper" layout="block" styleClass="margin-top">
 	                <p:commandButton value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
@@ -179,7 +179,7 @@
 	            </ui:repeat>
             </p:panelGrid>
          </h:panelGroup>
-      </h:panelGroup>
+      
     </h:form>
   </ui:define>
 </ui:composition>

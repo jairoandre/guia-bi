@@ -1,8 +1,9 @@
 package br.com.vah.guiabi.entities.usrdbvah;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -105,11 +106,11 @@ public class Guia extends BaseEntity {
 	@Column(name = "CD_DESCRICAO")
 	private String descricao;
 
-	@OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Set<HistoricoGuia> historico;
+	@OneToMany(mappedBy = "guia", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<HistoricoGuia> historico;
 
-	@OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Set<Comentario> comentarios;
+	@OneToMany(mappedBy = "guia", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Comentario> comentarios;
 
 	@OneToMany(mappedBy = "guia", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("id DESC")
@@ -121,8 +122,8 @@ public class Guia extends BaseEntity {
 
   public Guia() {
     this.estado = EstadosGuiaEnum.PENDENTE;
-    this.historico = new HashSet<>();
-    this.comentarios = new HashSet<>();
+    this.historico = new ArrayList<>();
+    this.comentarios = new ArrayList<>();
   }
 
 
@@ -291,22 +292,22 @@ public class Guia extends BaseEntity {
   }
 
 
-public Set<HistoricoGuia> getHistorico() {
+public List<HistoricoGuia> getHistorico() {
 	return historico;
 }
 
 
-public void setHistorico(Set<HistoricoGuia> historico) {
+public void setHistorico(List<HistoricoGuia> historico) {
 	this.historico = historico;
 }
 
 
-public Set<Comentario> getComentarios() {
+public List<Comentario> getComentarios() {
 	return comentarios;
 }
 
 
-public void setComentarios(Set<Comentario> comentarios) {
+public void setComentarios(List<Comentario> comentarios) {
 	this.comentarios = comentarios;
 }
   
