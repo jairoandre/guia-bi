@@ -1,8 +1,8 @@
 package br.com.vah.guiabi.controllers;
 
-import br.com.vah.guiabi.entities.dbamv.ProFat;
+import br.com.vah.guiabi.entities.dbamv.Atendimento;
+import br.com.vah.guiabi.service.AtendimentoService;
 import br.com.vah.guiabi.service.DataAccessService;
-import br.com.vah.guiabi.service.ProFatService;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -16,13 +16,15 @@ import java.util.logging.Logger;
  */
 @Named
 @ViewScoped
-public class ProFatController extends AbstractController<ProFat> {
+public class AtendimentoCtrl extends AbstractCtrl<Atendimento> {
 
-  private @Inject
+  private
+  @Inject
   transient Logger logger;
 
-  private @Inject
-  ProFatService service;
+  private
+  @Inject
+  AtendimentoService service;
 
   @PostConstruct
   public void init() {
@@ -33,7 +35,7 @@ public class ProFatController extends AbstractController<ProFat> {
 
 
   @Override
-  public DataAccessService<ProFat> getService() {
+  public DataAccessService<Atendimento> getService() {
     return service;
   }
 
@@ -43,28 +45,31 @@ public class ProFatController extends AbstractController<ProFat> {
   }
 
   @Override
-  public ProFat createNewItem() {
-    return new ProFat();
+  public Atendimento createNewItem() {
+    return new Atendimento();
   }
 
   @Override
   public String path() {
-    return "profat";
+    return "atendimento";
   }
 
   @Override
   public String getEntityName() {
-    return "ProFat";
+    return "Atendimento";
   }
 
   @Override
   public void prepareSearch() {
-    setSearchParam("title", getSearchTerm());
+    super.prepareSearch();
+    setSearchParam("paciente", getSearchTerm());
   }
 
-  public List<ProFat> completeProFat(String query) {
+  public List<Atendimento> completeAtendimento(String query) {
     setSearchTerm(query);
-    prepareSearch();
+    super.prepareSearch();
+    setSearchParam("paciente", query);
+    setSearchParam("semAltaRecente", true);
     return getLazyModel().load(10);
   }
 }

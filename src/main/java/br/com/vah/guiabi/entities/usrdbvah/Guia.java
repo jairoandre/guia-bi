@@ -1,10 +1,8 @@
 package br.com.vah.guiabi.entities.usrdbvah;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -26,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
@@ -116,11 +115,16 @@ public class Guia extends BaseEntity {
 	@OrderBy("id DESC")
 	private Set<Anexo> anexos = new LinkedHashSet<>();
 
-	public Guia() {
-		this.estado = EstadosGuiaEnum.PENDENTE;
-		this.historico = new HashSet<>();
-		this.comentarios = new HashSet<>();
-	}
+  //@Column(name = "CD_CONTA")
+  @Transient
+  private Long conta;
+
+  public Guia() {
+    this.estado = EstadosGuiaEnum.PENDENTE;
+    this.historico = new HashSet<>();
+    this.comentarios = new HashSet<>();
+  }
+
 
 	public Guia(Atendimento atendimento, TipoGuiaEnum tipo) {
 		this();
@@ -162,128 +166,6 @@ public class Guia extends BaseEntity {
 		this.atendimento = atendimento;
 	}
 
-	public Especialidade getEspecialidade() {
-		return especialidade;
-	}
-
-	public void setEspecialidade(Especialidade especialidade) {
-		this.especialidade = especialidade;
-	}
-
-	public ProFat getProFat() {
-		return proFat;
-	}
-
-	public void setProFat(ProFat proFat) {
-		this.proFat = proFat;
-	}
-
-	public EstadosGuiaEnum getEstado() {
-		return estado;
-	}
-
-	public void setEstado(EstadosGuiaEnum estado) {
-		this.estado = estado;
-	}
-
-	public Date getData() {
-		return data;
-	}
-
-	public void setData(Date data) {
-		this.data = data;
-	}
-
-	public Date getDataRecebimento() {
-		return dataRecebimento;
-	}
-
-	public void setDataRecebimento(Date dataRecebimento) {
-		this.dataRecebimento = dataRecebimento;
-	}
-
-	public Date getDataAuditoria() {
-		return dataAuditoria;
-	}
-
-	public void setDataAuditoria(Date dataAuditoria) {
-		this.dataAuditoria = dataAuditoria;
-	}
-
-	public Date getDataSolicitacaoConvenio() {
-		return dataSolicitacaoConvenio;
-	}
-
-	public void setDataSolicitacaoConvenio(Date dataSolicitacaoConvenio) {
-		this.dataSolicitacaoConvenio = dataSolicitacaoConvenio;
-	}
-
-	public Date getDataRespostaConvenio() {
-		return dataRespostaConvenio;
-	}
-
-	public void setDataRespostaConvenio(Date dataRespostaConvenio) {
-		this.dataRespostaConvenio = dataRespostaConvenio;
-	}
-
-	public Set<HistoricoGuia> getHistorico() {
-		return historico;
-	}
-
-	public void setHistorico(Set<HistoricoGuia> historico) {
-		this.historico = historico;
-	}
-
-	public String getDescricao() {
-		return descricao;
-	}
-
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
-
-	public Set<Comentario> getComentarios() {
-		return comentarios;
-	}
-
-	public void setComentarios(Set<Comentario> comentarios) {
-		this.comentarios = comentarios;
-	}
-
-	public Set<ProFat> getProcedimentos() {
-		return procedimentos;
-	}
-
-	public void setProcedimentos(Set<ProFat> procedimentos) {
-		this.procedimentos = procedimentos;
-	}
-
-	@Override
-	public String getLabelForSelectItem() {
-		StringBuffer buffer = new StringBuffer();
-		if (atendimento != null) {
-			buffer.append(atendimento.getId());
-			buffer.append(" - ");
-			buffer.append(atendimento.getConvenio().getTitle());
-		}
-		return buffer.toString();
-	}
-
-	public String getProcedimentosStr() {
-		if (procedimentos != null) {
-			StringBuffer buffer = new StringBuffer();
-			for (ProFat procedimento : procedimentos) {
-				buffer.append(procedimento.getTitle());
-				buffer.append(", ");
-			}
-			String bufferStr = buffer.toString();
-			if (bufferStr.length() > 2) {
-				return bufferStr.substring(0, bufferStr.length() - 2);
-			}
-		}
-		return "Sem procedimentos";
-	}
-
 	public Set<Anexo> getAnexos() {
 		return anexos;
 	}
@@ -292,4 +174,140 @@ public class Guia extends BaseEntity {
 		this.anexos = anexos;
 	}
 
+
+  public Especialidade getEspecialidade() {
+    return especialidade;
+  }
+
+  public void setEspecialidade(Especialidade especialidade) {
+    this.especialidade = especialidade;
+  }
+
+  public ProFat getProFat() {
+    return proFat;
+  }
+
+  public void setProFat(ProFat proFat) {
+    this.proFat = proFat;
+  }
+
+  public EstadosGuiaEnum getEstado() {
+    return estado;
+  }
+
+  public void setEstado(EstadosGuiaEnum estado) {
+    this.estado = estado;
+  }
+
+  public Date getData() {
+    return data;
+  }
+
+  public void setData(Date data) {
+    this.data = data;
+  }
+
+  public Date getDataRecebimento() {
+    return dataRecebimento;
+  }
+
+  public void setDataRecebimento(Date dataRecebimento) {
+    this.dataRecebimento = dataRecebimento;
+  }
+
+  public Date getDataAuditoria() {
+    return dataAuditoria;
+  }
+
+  public void setDataAuditoria(Date dataAuditoria) {
+    this.dataAuditoria = dataAuditoria;
+  }
+
+  public Date getDataSolicitacaoConvenio() {
+    return dataSolicitacaoConvenio;
+  }
+
+  public void setDataSolicitacaoConvenio(Date dataSolicitacaoConvenio) {
+    this.dataSolicitacaoConvenio = dataSolicitacaoConvenio;
+  }
+
+  public Date getDataRespostaConvenio() {
+    return dataRespostaConvenio;
+  }
+
+  public void setDataRespostaConvenio(Date dataRespostaConvenio) {
+    this.dataRespostaConvenio = dataRespostaConvenio;
+  }
+
+  
+  public String getDescricao() {
+    return descricao;
+  }
+
+  public void setDescricao(String descricao) {
+    this.descricao = descricao;
+  }
+
+    public Set<ProFat> getProcedimentos() {
+    return procedimentos;
+  }
+
+  public void setProcedimentos(Set<ProFat> procedimentos) {
+    this.procedimentos = procedimentos;
+  }
+
+  public Long getConta() {
+    return conta;
+  }
+
+  public void setConta(Long conta) {
+    this.conta = conta;
+  }
+
+  @Override
+  public String getLabelForSelectItem() {
+    StringBuffer buffer = new StringBuffer();
+    if (atendimento != null) {
+      buffer.append(atendimento.getId());
+      buffer.append(" - ");
+      buffer.append(atendimento.getConvenio().getTitle());
+    }
+    return buffer.toString();
+  }
+
+  public String getProcedimentosStr() {
+    if (procedimentos != null) {
+      StringBuffer buffer = new StringBuffer();
+      for (ProFat procedimento : procedimentos) {
+        buffer.append(procedimento.getTitle());
+        buffer.append(", ");
+      }
+      String bufferStr = buffer.toString();
+      if (bufferStr.length() > 2) {
+        return bufferStr.substring(0, bufferStr.length() - 2);
+      }
+    }
+    return "Sem procedimentos";
+  }
+
+
+public Set<HistoricoGuia> getHistorico() {
+	return historico;
+}
+
+
+public void setHistorico(Set<HistoricoGuia> historico) {
+	this.historico = historico;
+}
+
+
+public Set<Comentario> getComentarios() {
+	return comentarios;
+}
+
+
+public void setComentarios(Set<Comentario> comentarios) {
+	this.comentarios = comentarios;
+}
+  
 }

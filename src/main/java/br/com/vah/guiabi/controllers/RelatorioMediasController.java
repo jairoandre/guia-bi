@@ -99,7 +99,7 @@ public class RelatorioMediasController implements Serializable {
 
   public StreamedContent getRelatorio() {
     try {
-      return service.relatorioTotalPorSetor(inicioDate, terminoDate, setores, GuiaController.RELATIONS);
+      return service.relatorioTotalPorSetor(inicioDate, terminoDate, setores, GuiaCtrl.RELATIONS);
     } catch (Exception e) {
       addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, "erro", "relatório"), false);
     }

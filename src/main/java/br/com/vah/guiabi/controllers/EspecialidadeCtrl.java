@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 @Named
 @ViewScoped
-public class EspecialidadeController extends AbstractController<Especialidade> {
+public class EspecialidadeCtrl extends AbstractCtrl<Especialidade> {
 
   private
   @Inject

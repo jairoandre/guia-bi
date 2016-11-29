@@ -13,7 +13,7 @@
       </p:menuitem>
       <p:menuitem value="Usuários"
                   action="/pages/user/list.xhtml?faces-redirect=true" ajax="false"
-                  rendered="#{sessionController.isUserInRoles('ADMINISTRATOR')}"
+                  rendered="#{sessionCtrl.isUserInRoles('ADMINISTRATOR')}"
                   icon="fa fa-user" onstart="PF('changePage').show()"/>
       <p:menuitem value="Guias"
                   action="/pages/guia/list.xhtml?faces-redirect=true" ajax="false"
@@ -27,13 +27,16 @@
       <f:facet name="options">
 
         <h:panelGroup style="margin-top: 3px;" layout="block">
-          <p:commandButton value="#{sessionController.setor.title}"
+          <p:commandButton value="#{sessionCtrl.conveniosStr}"
                            action="/selecionarSetor.xhtml?faces-redirect=true" ajax="false"
-                           icon="fa fa-hospital-o" rendered="#{sessionController.setor != null}" onstart="PF('changePage').show()"/>
-          <p:commandButton value="#{sessionController.username}"
+                           icon="fa fa-leaf" rendered="#{not empty sessionCtrl.conveniosStr}" onstart="PF('changePage').show()"/>
+          <p:commandButton value="#{sessionCtrl.setor.title}"
+                           action="/selecionarSetor.xhtml?faces-redirect=true" ajax="false"
+                           icon="fa fa-hospital-o" rendered="#{sessionCtrl.setor != null}" onstart="PF('changePage').show()"/>
+          <p:commandButton value="#{sessionCtrl.username}"
                            action="/pages/guia/index.xhtml?faces-redirect=true" ajax="false"
                            icon="fa fa-user" rendered="#{request.getUserPrincipal() != null}"/>
-          <p:commandButton value="Logout" action="#{sessionController.logout}"
+          <p:commandButton value="Logout" action="#{sessionCtrl.logout}"
                            icon="fa fa-sign-out"
                            rendered="#{request.getUserPrincipal() != null}" onstart="PF('changePage').show()"/>
         </h:panelGroup>

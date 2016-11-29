@@ -2,8 +2,9 @@ package br.com.vah.guiabi.filter;
 
 
 import br.com.vah.guiabi.constants.RolesEnum;
-import br.com.vah.guiabi.controllers.SessionController;
+import br.com.vah.guiabi.controllers.SessionCtrl;
 import br.com.vah.guiabi.constants.RestrictViewsEnum;
+import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.User;
 
@@ -13,6 +14,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * To prevent user from going back to Login page if the user already logged in
@@ -23,7 +25,7 @@ public class AuthorizationPageFilter implements Filter {
 
   private
   @Inject
-  SessionController sessionController;
+  SessionCtrl sessionCtrl;
 
   public static final String ERROR_ACCESS_DENIED = "/error-access-denied.xhtml";
   public static final String LOGIN = "/login.xhtml";
@@ -38,8 +40,9 @@ public class AuthorizationPageFilter implements Filter {
 
     if (request.getUserPrincipal() != null) {
 
-      User user = sessionController.getUser();
-      Setor setor = sessionController.getSetor();
+      User user = sessionCtrl.getUser();
+      Setor setor = sessionCtrl.getSetor();
+      List<Convenio> convenios = sessionCtrl.getConvenios();
 
       String[] splitPath = request.getRequestURI().split(request.getContextPath());
 
@@ -55,7 +58,7 @@ public class AuthorizationPageFilter implements Filter {
       RestrictViewsEnum restrictView = RestrictViewsEnum.getByView(view);
 
       if (restrictView == null || restrictView.checkRole(user.getRole())) {
-        if (RolesEnum.AUTHORIZER.equals(user.getRole()) && setor == null) {
+        if (RolesEnum.AUTHORIZER.equals(user.getRole()) && !(setor != null || !convenios.isEmpty())) {
           response.sendRedirect(request.getContextPath() + SELECIONAR_SETOR);
         } else {
           filterChain.doFilter(servletRequest, servletResponse);
