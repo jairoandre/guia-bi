@@ -1,9 +1,6 @@
 package br.com.vah.guiabi.controllers;
 
-import br.com.vah.guiabi.constants.AcoesGuiaEnum;
-import br.com.vah.guiabi.constants.EstadosGuiaEnum;
-import br.com.vah.guiabi.constants.GuiaFieldsEnum;
-import br.com.vah.guiabi.constants.TipoGuiaEnum;
+import br.com.vah.guiabi.constants.*;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.ProFat;
@@ -102,6 +99,10 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
   private List<String> filtros;
 
   private Map<String, GuiaFieldsEnum> mapFiltros;
+
+  private AcoesRespostaEnum acaoResposta;
+
+  private Date dataRespostaAnterior;
 
   @PostConstruct
   public void init() {

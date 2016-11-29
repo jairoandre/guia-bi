@@ -89,9 +89,11 @@ public class Guia extends BaseEntity {
   @OneToMany(mappedBy = "guia", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private List<Comentario> comentarios;
 
-  //@Column(name = "CD_CONTA")
-  @Transient
+  @Column(name = "CD_CONTA")
   private Long conta;
+
+  @Column(name = "DT_RESPOSTA_ANTERIOR")
+  private Date dataRespostaAnterior;
 
   public Guia() {
     this.estado = EstadosGuiaEnum.PENDENTE;
@@ -241,6 +243,14 @@ public class Guia extends BaseEntity {
 
   public void setConta(Long conta) {
     this.conta = conta;
+  }
+
+  public Date getDataRespostaAnterior() {
+    return dataRespostaAnterior;
+  }
+
+  public void setDataRespostaAnterior(Date dataRespostaAnterior) {
+    this.dataRespostaAnterior = dataRespostaAnterior;
   }
 
   @Override
