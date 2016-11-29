@@ -32,11 +32,13 @@
 
             <f:facet name="customFilters">
               <h:panelGroup id="overlayFields" styleClass="margin-top" layout="block">
-                <p:commandButton id="setorFilterBtn" value="Filtrar por Setor" type="button" styleClass="margin-left" rendered="#{empty sessionCtrl.setor}"/>
+                <p:commandButton id="setorFilterBtn" value="Filtrar por Setor" type="button" styleClass="margin-left"
+                                 rendered="#{empty sessionCtrl.setor}"/>
                 <p:overlayPanel id="setorFilterPnl" widgetVar="setorFilterPnl" for="setorFilterBtn" hideEffect="fade">
                   <p:commandButton id="setorClearFilterBtn" value="Limpar Filtro"
                                    actionListener="#{guiaCtrl.clearSetor}" ajax="true"
-                                   process="@this" update="table setorFilter #{p:component('filtersWrapper')}" rendered="#{sessionCtrl.isUserInRoles('MANAGER')}"/>
+                                   process="@this" update="table setorFilter #{p:component('filtersWrapper')}"
+                                   rendered="#{sessionCtrl.isUserInRoles('MANAGER')}"/>
                   <p:separator/>
                   <p:autoComplete id="setorFilter" value="#{guiaCtrl.setor}"
                                   var="setor"
@@ -45,8 +47,10 @@
                                   converter="#{setorConverter}"
                                   inputStyleClass="lance-input"
                                   queryDelay="250"
-                                  completeMethod="#{setorCtrl.completeSetor}" placeholder="Digite o código ou o nome do setor.">
-                    <p:ajax event="itemSelect" listener="#{guiaCtrl.prepareSearch}" update="table #{p:component('filtersWrapper')}"/>
+                                  completeMethod="#{setorCtrl.completeSetor}"
+                                  placeholder="Digite o código ou o nome do setor.">
+                    <p:ajax event="itemSelect" listener="#{guiaCtrl.prepareSearch}"
+                            update="table #{p:component('filtersWrapper')}"/>
                     <p:column>
                       #{setor.id}
                     </p:column>
@@ -55,7 +59,8 @@
                     </p:column>
                   </p:autoComplete>
                 </p:overlayPanel>
-                <p:commandButton id="convBtn" value="Filtrar por Convênios" type="button" rendered="#{empty sessionCtrl.conveniosStr}"/>
+                <p:commandButton id="convBtn" value="Filtrar por Convênios" type="button"
+                                 rendered="#{empty sessionCtrl.conveniosStr}"/>
                 <p:overlayPanel id="convPnl" widgetVar="convPnl" for="convBtn" hideEffect="fade">
                   <p:commandButton id="clearConvBtn" value="Limpar Filtro"
                                    actionListener="#{guiaCtrl.clearSelectedConvenios}" ajax="true"
@@ -64,7 +69,8 @@
                   <p:selectManyMenu id="manyMenuConv" value="#{guiaCtrl.selectedConvenios}" showCheckbox="true"
                                     filter="true" filterMatchMode="contains"
                                     converter="#{convenioConverter}" styleClass="margin-top">
-                    <p:ajax event="change" process="@this" listener="#{guiaCtrl.prepareSearch}" update="table #{p:component('filtersWrapper')}"/>
+                    <p:ajax event="change" process="@this" listener="#{guiaCtrl.prepareSearch}"
+                            update="table #{p:component('filtersWrapper')}"/>
                     <f:selectItems value="#{guiaCtrl.convenios}" var="conv" itemLabel="#{conv.title}"
                                    itemValue="#{conv}"/>
                   </p:selectManyMenu>
@@ -74,7 +80,8 @@
                                 dismissable="false">
                   <p:commandButton id="currentMonthBtn" value="Mês corrente"
                                    actionListener="#{guiaCtrl.filterCurrentMonth}" ajax="true"
-                                   process="@this, dateField" update="table dateFilterInputs #{p:component('filtersWrapper')}"/>
+                                   process="@this, dateField"
+                                   update="table dateFilterInputs #{p:component('filtersWrapper')}"/>
                   <p:commandButton id="dataFilterConvOverlay" value="Fechar" onclick="PF('dataFilterPnl').hide()"
                                    ajax="true" styleClass="margin-left"/>
                   <p:separator/>
@@ -97,7 +104,8 @@
                                    actionListener="#{guiaCtrl.prepareSearch}" ajax="true"
                                    process="@this, dateFilterInputs" update="table #{p:component('filtersWrapper')}"/>
                 </p:overlayPanel>
-                <p:commandButton id="estadoFilterBtn" value="Filtrar por Estado" type="button" styleClass="margin-left"/>
+                <p:commandButton id="estadoFilterBtn" value="Filtrar por Estado" type="button"
+                                 styleClass="margin-left"/>
                 <p:overlayPanel id="estadoFilterOverlay" widgetVar="estadoFilterOverlay" for="estadoFilterBtn"
                                 hideEffect="fade">
                   <p:commandButton id="estadoClearBtn" value="Limpar Filtro"
@@ -106,7 +114,8 @@
                   <p:separator/>
                   <p:selectManyMenu id="estadoMany" value="#{guiaCtrl.selectedEstados}" showCheckbox="true"
                                     styleClass="margin-top">
-                    <p:ajax event="change" process="@this" listener="#{guiaCtrl.prepareSearch}" update="table #{p:component('filtersWrapper')}"/>
+                    <p:ajax event="change" process="@this" listener="#{guiaCtrl.prepareSearch}"
+                            update="table #{p:component('filtersWrapper')}"/>
                     <f:selectItems value="#{guiaCtrl.estados}" var="estado" itemLabel="#{estado.label}"
                                    itemValue="#{estado}"/>
                   </p:selectManyMenu>
@@ -121,7 +130,8 @@
                   <p:selectManyMenu id="tipoMany" value="#{guiaCtrl.selectedTipos}" showCheckbox="true"
                                     style="min-width: 200px"
                                     styleClass="margin-top">
-                    <p:ajax event="change" process="@this" listener="#{guiaCtrl.prepareSearch}" update="table #{p:component('filtersWrapper')}"/>
+                    <p:ajax event="change" process="@this" listener="#{guiaCtrl.prepareSearch}"
+                            update="table #{p:component('filtersWrapper')}"/>
                     <f:selectItems value="#{guiaCtrl.tiposEnum}" var="tipo" itemLabel="#{tipo.label}"
                                    itemValue="#{tipo}"/>
                   </p:selectManyMenu>
@@ -298,7 +308,8 @@
                             process="@this" update="#{p:component('anexosDlg')}" oncomplete="PF('anexosDlg').show()"
                             icon="fa fa-tags"/>
                 <p:menuitem value="Histórico" action="#{guiaCtrl.carregarHistorico(item)}"
-                            process="@this" update="#{p:component('historicoDlg')}" oncomplete="PF('historicoDlg').show()"
+                            process="@this" update="#{p:component('historicoDlg')}"
+                            oncomplete="PF('historicoDlg').show()"
                             icon="fa fa-tags"/>
                 <p:menuitem value="Novo comentário" action="#{guiaCtrl.setItem(item)}"
                             process="@this" update="#{p:component('novoComentarioDlg')}"
@@ -315,7 +326,8 @@
                 <p:menuitem value="Excluir" actionListener="#{guiaCtrl.preDelete(item.id, index)}"
                             process="@this" update="#{p:component('deleteDlg')}" oncomplete="PF('deleteDlg').show()"
                             disabled="#{item.dataRespostaConvenio != null}"
-                            icon="fa fa-trash" rendered="#{sessionCtrl.isUserInRoles('MANAGER') or (sessionCtrl.isUserInRoles('AUTHORIZER') and item.tipo == 'PRORROGACAO')}"/>
+                            icon="fa fa-trash"
+                            rendered="#{sessionCtrl.isUserInRoles('MANAGER') or (sessionCtrl.isUserInRoles('AUTHORIZER') and item.tipo == 'PRORROGACAO')}"/>
               </p:menuButton>
             </p:column>
           </guiabi:dataTable>
@@ -466,34 +478,34 @@
                              oncomplete="PF('comentarioDlg').hide()"/>
           </f:facet>
         </p:dialog>
-        
-		<h:panelGroup id="anexosWrapper">
-			<p:dialog id="anexosDlg" widgetVar="anexosDlg">
-				
-				<ui:repeat value="#{guiaCtrl.guiaAtt.anexos.toArray()}" var="anexo"
-					varStatus="idx">
-					<h:panelGroup id="anexoItemWrapper" layout="block"
-						styleClass="margin-top">
-						<p:commandButton
-							value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
-							ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
-							immediate="true" icon="fa fa-download">
-							<p:fileDownload value="#{guiaCtrl.download(anexo)}"
-								contentDisposition="attachment" />
-						</p:commandButton>
-						<p:commandButton icon="fa fa-trash"
-							action="#{guiaCtrl.removerAnexo(anexo)}" ajax="true"
-							process="@this" update="#{p:component('anexosWrapper')}"
-							styleClass="margin-left" />
-					</h:panelGroup>
-				</ui:repeat>
 
-					<f:facet name="footer">
-						<p:commandButton id="closeAnexos" value="Fechar" ajax="true"
-							process="@this" oncomplete="PF('anexosDlg').hide()" />
-					</f:facet>
-			</p:dialog>
-		</h:panelGroup>
+        <h:panelGroup id="anexosWrapper">
+          <p:dialog id="anexosDlg" widgetVar="anexosDlg">
+
+            <ui:repeat value="#{guiaCtrl.guiaAtt.anexos.toArray()}" var="anexo"
+                       varStatus="idx">
+              <h:panelGroup id="anexoItemWrapper" layout="block"
+                            styleClass="margin-top">
+                <p:commandButton
+                  value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
+                  ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+                  immediate="true" icon="fa fa-download">
+                  <p:fileDownload value="#{guiaCtrl.download(anexo)}"
+                                  contentDisposition="attachment"/>
+                </p:commandButton>
+                <p:commandButton icon="fa fa-trash"
+                                 action="#{guiaCtrl.removerAnexo(anexo)}" ajax="true"
+                                 process="@this" update="#{p:component('anexosWrapper')}"
+                                 styleClass="margin-left"/>
+              </h:panelGroup>
+            </ui:repeat>
+
+            <f:facet name="footer">
+              <p:commandButton id="closeAnexos" value="Fechar" ajax="true"
+                               process="@this" oncomplete="PF('anexosDlg').hide()"/>
+            </f:facet>
+          </p:dialog>
+        </h:panelGroup>
       </p:panel>
     </h:form>
   </ui:define>
