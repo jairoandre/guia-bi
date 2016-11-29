@@ -162,7 +162,9 @@
               <p:column rowspan="2" headerText="Descrição" styleClass="left-align" sortBy="#{item.descricao}"
                         width="100"/>
               <p:column colspan="5" headerText="Datas" width="375"/>
+              <p:column rowspan="2" headerText="Anexo" width="70"/>
               <p:column rowspan="2" style="text-align: center;" width="70"/>
+              
             </p:row>
             <p:row>
               <p:column headerText="Guia" styleClass="left-align" sortBy="#{item.data}" width="75"/>
@@ -242,6 +244,7 @@
               <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="GMT-3"/>
             </h:outputText>
           </p:column>
+
           <p:column style="text-align: center">
             <p:menuButton id="menuButton" value="Ações" disabled="#{guiaController.disableAcoes(item)}">
               <p:menuitem value="Recebimento" action="#{guiaController.receber(item)}"
@@ -452,7 +455,33 @@
                              oncomplete="PF('comentarioDlg').hide()"/>
           </f:facet>
         </p:dialog>
+		<h:panelGroup id="anexosWrapper">
+			<p:dialog id="anexosDlg" rendered="#{not empty guiaController.guiaAtt}">
+				<ui:repeat value="#{item.anexos.toArray()}" var="anexo"
+					varStatus="idx">
+					<h:panelGroup id="anexoItemWrapper" layout="block"
+						styleClass="margin-top">
+						<p:commandButton
+							value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
+							ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+							immediate="true" icon="fa fa-download">
+							<p:fileDownload value="#{guiaController.download(anexo)}"
+								contentDisposition="attachment" />
+						</p:commandButton>
+						<p:commandButton icon="fa fa-trash"
+							action="#{guiaController.removerAnexo(anexo)}" ajax="true"
+							process="@this" update="#{p:component('anexosWrapper')}"
+							styleClass="margin-left" />
+					</h:panelGroup>
+				</ui:repeat>
 
+					<f:facet name="footer">
+						<p:commandButton id="closeComent" value="Fechar" ajax="true"
+							process="@this" oncomplete="PF('comentarioDlg').hide()" />
+					</f:facet>
+
+			</p:dialog>
+		</h:panelGroup>
       </p:panel>
     </h:form>
   </ui:define>
