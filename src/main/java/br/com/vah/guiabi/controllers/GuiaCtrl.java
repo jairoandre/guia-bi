@@ -115,7 +115,7 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
 	private ProFat proFatToAdd;
 
 	private Guia guiaAtt;
-  
+
 	@PostConstruct
   public void init() {
     logger.info(this.getClass().getSimpleName() + " created");

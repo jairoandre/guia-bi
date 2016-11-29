@@ -150,36 +150,45 @@
                               pattern="dd/MM/yyyy HH:mm"
                               rendered="#{guiaCtrl.item.id != null}"/>
 
+          <f:facet name="other">
+
+            <p:fieldset legend="Anexos">
+              <p:fileUpload skinSimple="true"
+                            mode="advanced"
+                            label="Incluir anexo"
+                            uploadLabel="Submeter"
+                            cancelLabel="Cancelar"
+                            onstart="start()"
+                            oncomplete="stop()"
+                            update="anexosWrapper @this"
+                            fileUploadListener="#{guiaCtrl.uploadAnexo}"/>
+              <h:panelGroup id="anexosWrapper" layout="block">
+                <ui:repeat value="#{guiaCtrl.item.anexos.toArray()}" var="anexo" varStatus="idx">
+                  <h:panelGroup id="anexoItemWrapper" layout="block" styleClass="margin-top">
+                    <p:commandButton value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
+                                     ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" immediate="true"
+                                     icon="fa fa-download">
+                      <p:fileDownload value="#{guiaCtrl.download(anexo)}" contentDisposition="attachment"/>
+                    </p:commandButton>
+                    <p:commandButton icon="fa fa-trash" action="#{guiaCtrl.removerAnexo(anexo)}" ajax="true"
+                                     process="@this"
+
+                                     update="#{p:component('anexosWrapper')}"
+                                     styleClass="margin-left"/>
+                  </h:panelGroup>
+                </ui:repeat>
+              </h:panelGroup>
+            </p:fieldset>
+
+
+          </f:facet>
+
 
         </guiabi:editForm>
-      
-      	<p:panelGrid id="anexosWrapper">
-	      	<p:fileUpload skinSimple="true"
-	                        label="Incluir anexo"
-	                        uploadLabel="Submeter"
-	                        cancelLabel="Cancelar"
-	                        onstart="start()"
-	                        oncomplete="stop()"
-	                        update="anexosWrapper @this"
-	                        
-	                        fileUploadListener="#{guiaCtrl.uploadAnexo}"/>
-	         
-	            <ui:repeat value="#{guiaCtrl.item.anexos.toArray()}" var="anexo" varStatus="idx">
-	              <h:panelGroup id="anexoItemWrapper" layout="block" styleClass="margin-top">
-	                <p:commandButton value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
-	                                 ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" immediate="true"
-	                                 icon="fa fa-download">
-	                  <p:fileDownload value="#{guiaCtrl.download(anexo)}" contentDisposition="attachment"/>
-	                </p:commandButton>
-	                <p:commandButton icon="fa fa-trash" action="#{guiaCtrl.removerAnexo(anexo)}" ajax="true" process="@this"
-	                                 
-	                                 update="#{p:component('anexosWrapper')}"
-	                                 styleClass="margin-left"/>
-	              </h:panelGroup>
-	            </ui:repeat>
-            </p:panelGrid>
-         </h:panelGroup>
-      
+
+
+      </h:panelGroup>
+
     </h:form>
   </ui:define>
 </ui:composition>

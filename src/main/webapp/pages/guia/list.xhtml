@@ -163,8 +163,8 @@
 
                 <p:fileUpload mode="advanced" skinSimple="false"
                               fileUploadListener="#{guiaCtrl.uploadValues}" uploadLabel="Submeter"
-                              onstart="PF('changePage').show()"
-                              oncomplete="PF('changePage').hide()"
+                              onstart="start()"
+                              oncomplete="stop()"
                               label="Importar CSV"
                               cancelLabel="Cancelar" styleClass="margin-top"
                               rendered="#{sessionCtrl.isUserInRoles('ADMINISTRATOR')}"
@@ -315,7 +315,7 @@
                 <p:separator rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
                 <p:menuitem value="Anexos" action="#{guiaCtrl.carregarAnexos(item)}"
                             process="@this" update="#{p:component('anexosDlg')}" oncomplete="PF('anexosDlg').show()"
-                            icon="fa fa-tags"/>
+                            icon="fa fa-download"/>
                 <p:menuitem value="Histórico" action="#{guiaCtrl.carregarHistorico(item)}"
                             process="@this" update="#{p:component('historicoDlg')}"
                             oncomplete="PF('historicoDlg').show()"
@@ -489,7 +489,15 @@
         </p:dialog>
 
         <h:panelGroup id="anexosWrapper">
-          <p:dialog id="anexosDlg" widgetVar="anexosDlg">
+          <p:dialog id="anexosDlg" widgetVar="anexosDlg" width="500">
+
+            <f:facet name="header">
+              <h:outputText value="Guia - #{guiaCtrl.guiaAtt.labelForSelectItem}"/>
+            </f:facet>
+
+            <h:panelGroup rendered="#{empty guiaCtrl.guiaAtt.anexos}">
+              <h:outputText value="Sem anexos"/>
+            </h:panelGroup>
 
             <ui:repeat value="#{guiaCtrl.guiaAtt.anexos.toArray()}" var="anexo"
                        varStatus="idx">
