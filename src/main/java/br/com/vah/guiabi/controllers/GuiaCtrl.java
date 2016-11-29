@@ -516,17 +516,15 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
     }
     setSearchParam("semRecebimentos", somenteSemRecebimentos);
     if (!searchByAtendimento) {
-      if (setor != null) {
-        setSearchParam("setor", setor);
-        String setorKey = "<b>Setor:</b> " + setor.getTitle();
-        filtros.add(setorKey);
-        mapFiltros.put(setorKey, GuiaFieldsEnum.SETOR);
-      }
       if (session.getSetor() != null) {
         setSearchParam("setor", session.getSetor());
-        String setorKey = "<b>Setor (Sessão):</b> " + setor.getTitle();
-        filtros.add(setorKey);
-        mapFiltros.put(setorKey, GuiaFieldsEnum.SETOR_SESSAO);
+      } else {
+        if (setor != null) {
+          setSearchParam("setor", setor);
+          String setorKey = "<b>Setor:</b> " + setor.getTitle();
+          filtros.add(setorKey);
+          mapFiltros.put(setorKey, GuiaFieldsEnum.SETOR);
+        }
       }
       if (selectedEstados != null && selectedEstados.length > 0) {
         setSearchParam("estados", selectedEstados);
@@ -551,16 +549,21 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
       if (somenteMinhaAutoria) {
         setSearchParam("autor", session.getUser());
       }
-      if (selectedConvenios != null && selectedConvenios.length > 0) {
-        setSearchParam("convenios", selectedConvenios);
-        String[] conveniosStr = new String[selectedConvenios.length];
-        for (int i = 0, len = selectedConvenios.length; i < len; i++) {
-          conveniosStr[i] = selectedConvenios[i].getTitle();
+      if (session.getConvenios().isEmpty()) {
+        if (selectedConvenios != null && selectedConvenios.length > 0) {
+          setSearchParam("convenios", selectedConvenios);
+          String[] conveniosStr = new String[selectedConvenios.length];
+          for (int i = 0, len = selectedConvenios.length; i < len; i++) {
+            conveniosStr[i] = selectedConvenios[i].getTitle();
+          }
+          String conveniosKey = "<b>Convênios:</b> " + StringUtils.join(conveniosStr, ", ");
+          filtros.add(conveniosKey);
+          mapFiltros.put(conveniosKey, GuiaFieldsEnum.CONVENIOS);
         }
-        String conveniosKey = "<b>Convênios:</b> " + StringUtils.join(conveniosStr, ", ");
-        filtros.add(conveniosKey);
-        mapFiltros.put(conveniosKey, GuiaFieldsEnum.CONVENIOS);
+      } else {
+        setSearchParam("convenios", session.getConvenios());
       }
+
       if (inicioDate != null || terminoDate != null) {
         setSearchParam("dateRange", new Date[]{inicioDate, terminoDate});
         setSearchParam("dateField", dateField);

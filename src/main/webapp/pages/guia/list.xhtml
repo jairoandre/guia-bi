@@ -32,7 +32,30 @@
 
             <f:facet name="customFilters">
               <h:panelGroup id="overlayFields" styleClass="margin-top" layout="block">
-                <p:commandButton id="convBtn" value="Filtrar por Convênios" type="button"/>
+                <p:commandButton id="setorFilterBtn" value="Filtrar por Setor" type="button" styleClass="margin-left" rendered="#{empty sessionCtrl.setor}"/>
+                <p:overlayPanel id="setorFilterPnl" widgetVar="setorFilterPnl" for="setorFilterBtn" hideEffect="fade">
+                  <p:commandButton id="setorClearFilterBtn" value="Limpar Filtro"
+                                   actionListener="#{guiaCtrl.clearSetor}" ajax="true"
+                                   process="@this" update="table setorFilter #{p:component('filtersWrapper')}" rendered="#{sessionCtrl.isUserInRoles('MANAGER')}"/>
+                  <p:separator/>
+                  <p:autoComplete id="setorFilter" value="#{guiaCtrl.setor}"
+                                  var="setor"
+                                  itemLabel="#{setor.title}"
+                                  itemValue="#{setor}"
+                                  converter="#{setorConverter}"
+                                  inputStyleClass="lance-input"
+                                  queryDelay="250"
+                                  completeMethod="#{setorCtrl.completeSetor}" placeholder="Digite o código ou o nome do setor.">
+                    <p:ajax event="itemSelect" listener="#{guiaCtrl.prepareSearch}" update="table #{p:component('filtersWrapper')}"/>
+                    <p:column>
+                      #{setor.id}
+                    </p:column>
+                    <p:column>
+                      #{setor.title}
+                    </p:column>
+                  </p:autoComplete>
+                </p:overlayPanel>
+                <p:commandButton id="convBtn" value="Filtrar por Convênios" type="button" rendered="#{empty sessionCtrl.conveniosStr}"/>
                 <p:overlayPanel id="convPnl" widgetVar="convPnl" for="convBtn" hideEffect="fade">
                   <p:commandButton id="clearConvBtn" value="Limpar Filtro"
                                    actionListener="#{guiaCtrl.clearSelectedConvenios}" ajax="true"
@@ -102,29 +125,6 @@
                     <f:selectItems value="#{guiaCtrl.tiposEnum}" var="tipo" itemLabel="#{tipo.label}"
                                    itemValue="#{tipo}"/>
                   </p:selectManyMenu>
-                </p:overlayPanel>
-                <p:commandButton id="setorFilterBtn" value="Filtrar por Setor" type="button" styleClass="margin-left"/>
-                <p:overlayPanel id="setorFilterPnl" widgetVar="setorFilterPnl" for="setorFilterBtn" hideEffect="fade">
-                  <p:commandButton id="setorClearFilterBtn" value="Limpar Filtro"
-                                   actionListener="#{guiaCtrl.clearSetor}" ajax="true"
-                                   process="@this" update="table setorFilter #{p:component('filtersWrapper')}" rendered="#{sessionCtrl.isUserInRoles('MANAGER')}"/>
-                  <p:separator/>
-                  <p:autoComplete id="setorFilter" value="#{guiaCtrl.setor}"
-                                  var="setor"
-                                  itemLabel="#{setor.title}"
-                                  itemValue="#{setor}"
-                                  converter="#{setorConverter}"
-                                  inputStyleClass="lance-input"
-                                  queryDelay="250"
-                                  completeMethod="#{setorCtrl.completeSetor}" placeholder="Digite o código ou o nome do setor.">
-                    <p:ajax event="itemSelect" listener="#{guiaCtrl.prepareSearch}" update="table #{p:component('filtersWrapper')}"/>
-                    <p:column>
-                      #{setor.id}
-                    </p:column>
-                    <p:column>
-                      #{setor.title}
-                    </p:column>
-                  </p:autoComplete>
                 </p:overlayPanel>
                 <p:commandButton id="csvDownload" value="Planilha (CSV)" icon="fa fa-file-excel-o"
                                  ajax="false" process="@form" styleClass="margin-left"
@@ -228,27 +228,27 @@
             </p:column>
             <p:column sortBy="#{item.data}" styleClass="left-align">
               <h:outputText value="#{item.data}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="GMT-03:00"/>
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
               </h:outputText>
             </p:column>
             <p:column sortBy="#{item.dataRecebimento}" styleClass="left-align">
               <h:outputText id="dataRecebimento" value="#{item.dataRecebimento}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="GMT-03:00"/>
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
               </h:outputText>
             </p:column>
             <p:column sortBy="#{item.dataAuditoria}" styleClass="left-align">
               <h:outputText id="dataAuditoria" value="#{item.dataAuditoria}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="GMT-03:00"/>
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
               </h:outputText>
             </p:column>
             <p:column sortBy="#{item.dataSolicitacaoConvenio}" styleClass="left-align">
               <h:outputText id="dataSolicitacaoConvenio" value="#{item.dataSolicitacaoConvenio}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="GMT-03:00"/>
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
               </h:outputText>
             </p:column>
             <p:column sortBy="#{item.dataRespostaConvenio}" styleClass="left-align">
               <h:outputText id="dataRespostaConvenio" value="#{item.dataRespostaConvenio}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="GMT-03:00"/>
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
               </h:outputText>
             </p:column>
             <p:column style="text-align: center">
@@ -422,7 +422,7 @@
             </p:column>
             <p:column headerText="Data" width="100" styleClass="left-align">
               <h:outputText value="#{hist.data}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="GMT-03:00"/>
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
               </h:outputText>
             </p:column>
           </p:dataTable>
@@ -451,7 +451,7 @@
             </p:column>
             <p:column headerText="Data" width="100" styleClass="left-align">
               <h:outputText value="#{coment.data}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="GMT-03:00"/>
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
               </h:outputText>
             </p:column>
           </p:dataTable>

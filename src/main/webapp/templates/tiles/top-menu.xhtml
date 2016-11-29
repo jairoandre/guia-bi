@@ -27,6 +27,9 @@
       <f:facet name="options">
 
         <h:panelGroup style="margin-top: 3px;" layout="block">
+          <p:commandButton value="#{sessionCtrl.conveniosStr}"
+                           action="/selecionarSetor.xhtml?faces-redirect=true" ajax="false"
+                           icon="fa fa-leaf" rendered="#{not empty sessionCtrl.conveniosStr}" onstart="PF('changePage').show()"/>
           <p:commandButton value="#{sessionCtrl.setor.title}"
                            action="/selecionarSetor.xhtml?faces-redirect=true" ajax="false"
                            icon="fa fa-hospital-o" rendered="#{sessionCtrl.setor != null}" onstart="PF('changePage').show()"/>

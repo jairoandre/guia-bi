@@ -3,6 +3,8 @@ package br.com.vah.guiabi.controllers;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,11 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import br.com.vah.guiabi.constants.RolesEnum;
+import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.User;
 import br.com.vah.guiabi.reports.ReportLoader;
 import br.com.vah.guiabi.service.UserService;
 import br.com.vah.guiabi.util.DateUtility;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -45,8 +49,11 @@ public class SessionCtrl implements Serializable {
 
   private String username;
   private String password;
+  private String conveniosStr;
   private User user;
   private Setor setor;
+  private Convenio convenioToAdd;
+  private List<Convenio> convenios = new ArrayList<>();
 
 
   /**
@@ -180,6 +187,20 @@ public class SessionCtrl implements Serializable {
     return atLeastOneRole;
   }
 
+  public void addConvenioToList() {
+    if (convenioToAdd != null) {
+      if (!convenios.contains(convenioToAdd)) {
+        convenios.add(convenioToAdd);
+        conveniosStr = StringUtils.join(convenios, ",");
+      }
+      convenioToAdd = null;
+    }
+  }
+
+  public void removeConvenio(Convenio convenio) {
+    convenios.remove(convenio);
+  }
+
   public String prosseguir() {
     return "/pages/guia/list.xhtml?faces-redirect=true";
   }
@@ -190,6 +211,28 @@ public class SessionCtrl implements Serializable {
 
   public void setSetor(Setor setor) {
     this.setor = setor;
+  }
+
+  public Convenio getConvenioToAdd() {
+    return convenioToAdd;
+  }
+
+  public void setConvenioToAdd(Convenio convenioToAdd) {
+    this.convenioToAdd = convenioToAdd;
+  }
+
+
+
+  public List<Convenio> getConvenios() {
+    return convenios;
+  }
+
+  public void setConvenios(List<Convenio> convenios) {
+    this.convenios = convenios;
+  }
+
+  public String getConveniosStr() {
+    return conveniosStr;
   }
 
   public void onSetorSelect(SelectEvent event) {

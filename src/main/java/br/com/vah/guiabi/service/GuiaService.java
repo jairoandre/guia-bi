@@ -168,7 +168,7 @@ public class GuiaService extends DataAccessService<Guia> {
     EstadosGuiaEnum[] estados = (EstadosGuiaEnum[]) params.getParams().get("estados");
     TipoGuiaEnum[] tipos = (TipoGuiaEnum[]) params.getParams().get("tipos");
     User autor = (User) params.getParams().get("autor");
-    Convenio[] convenios = (Convenio[]) params.getParams().get("convenios");
+    List<Convenio> convenios = (List<Convenio>) params.getParams().get("convenios");
     Date[] dateRange = (Date[]) params.getParams().get("dateRange");
     String dateField = (String) params.getParams().get("dateField");
     Boolean semRecebimentos = (Boolean) params.getParams().get("semRecebimentos");
