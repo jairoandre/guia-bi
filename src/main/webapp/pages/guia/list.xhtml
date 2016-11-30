@@ -288,52 +288,85 @@
                             rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"
                             disabled="#{item.dataSolicitacaoConvenio != null or item.dataRespostaConvenio != null or item.dataRecebimento == null}"/>
                 <p:separator rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
-                <p:menuitem value="Negado" actionListener="#{guiaCtrl.negar(item)}"
-                            ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
+                <p:menuitem value="Negado"
+                            action="#{guiaCtrl.preResposta(item, 'NEGADO')}"
+                            ajax="true"
+                            process="@this"
+                            update="#{p:component('dialogsWrapper')}"
+                            oncomplete="PF('registrarRespostaDlg').show()"
                             icon="fa fa-ban"
                             rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"
                             disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
                 <p:menuitem value="Em revisão"
-                            actionListener="#{guiaCtrl.preRevisao(item)}"
-                            ajax="true" process="@this" update="#{p:component('commentDialog')}"
-                            oncomplete="PF('commentDialog').show()"
+                            actionListener="#{guiaCtrl.preResposta(item, 'EM_REVISAO')}"
+                            ajax="true"
+                            process="@this"
+                            update="#{p:component('dialogsWrapper')}"
+                            oncomplete="PF('registrarRespostaDlg').show()"
                             icon="fa fa-clock-o"
                             rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"
                             disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null or item.estado == 'REVISAO'}"/>
                 <p:menuitem value="Parcialmente"
-                            actionListener="#{guiaCtrl.preParcial(item)}"
-                            ajax="true" process="@this" update="#{p:component('commentDialog')}"
-                            oncomplete="PF('commentDialog').show()"
+                            actionListener="#{guiaCtrl.preResposta(item, 'PARCIALMENTE')}"
+                            ajax="true"
+                            process="@this"
+                            update="#{p:component('dialogsWrapper')}"
+                            oncomplete="PF('registrarRespostaDlg').show()"
                             icon="fa fa-check-circle"
                             rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"
                             disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null or item.estado == 'PARCIAL'}"/>
-                <p:menuitem value="Autorizado" actionListener="#{guiaCtrl.autorizar(item)}"
-                            ajax="true" process="@this" update="estado, menuButton, dataRespostaConvenio"
+                <p:menuitem value="Autorizado" actionListener="#{guiaCtrl.preResposta(item, 'AUTORIZADO')}"
+                            ajax="true"
+                            process="@this"
+                            update="#{p:component('dialogsWrapper')}"
+                            oncomplete="PF('registrarRespostaDlg').show()"
                             icon="fa fa-check"
                             rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"
                             disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}"/>
                 <p:separator rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
-                <p:menuitem value="Anexos" action="#{guiaCtrl.carregarAnexos(item)}"
-                            process="@this" update="#{p:component('anexosDlg')}" oncomplete="PF('anexosDlg').show()"
+                <p:menuitem value="Anexos"
+                            ajax="true"
+                            action="#{guiaCtrl.carregarAnexos(item)}"
+                            process="@this"
+                            update="#{p:component('dialogsWrapper')}"
+                            oncomplete="PF('anexosDlg').show()"
                             icon="fa fa-download"/>
-                <p:menuitem value="Histórico" action="#{guiaCtrl.carregarHistorico(item)}"
-                            process="@this" update="#{p:component('historicoDlg')}"
+                <p:menuitem value="Histórico"
+                            action="#{guiaCtrl.carregarHistorico(item)}"
+                            ajax="true"
+                            process="@this"
+                            update="#{p:component('dialogsWrapper')}"
                             oncomplete="PF('historicoDlg').show()"
                             icon="fa fa-tags"/>
-                <p:menuitem value="Novo comentário" action="#{guiaCtrl.setItem(item)}"
-                            process="@this" update="#{p:component('novoComentarioDlg')}"
-                            oncomplete="PF('novoComentarioDlg').show()"
-                            icon="fa fa-comment" rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
-                <p:menuitem value="Comentários" action="#{guiaCtrl.carregarComentario(item)}"
-                            process="@this" update="#{p:component('comentarioDlg')}"
-                            oncomplete="PF('comentarioDlg').show()"
-                            icon="fa fa-comments" rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
-                <p:menuitem value="Editar" action="#{guiaCtrl.edit(item)}"
-                            process="@this" onstart="PF('changePage').show()"
+                <p:menuitem value="Novo comentário"
+                            action="#{guiaCtrl.preNewComment(item)}"
+                            ajax="true"
+                            process="@this"
+                            update="#{p:component('dialogsWrapper')}"
+                            oncomplete="PF('newCommentDlg').show()"
+                            icon="fa fa-comment"
+                            rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
+                <p:menuitem value="Comentários"
+                            action="#{guiaCtrl.carregarComentario(item)}"
+                            ajax="true"
+                            process="@this"
+                            update="#{p:component('dialogsWrapper')}"
+                            oncomplete="PF('commentsDlg').show();"
+                            icon="fa fa-comments"
+                            rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
+                <p:menuitem value="Editar"
+                            action="#{guiaCtrl.edit(item)}"
+                            ajax="true"
+                            process="@this"
+                            onstart="start()"
                             disabled="#{item.dataRespostaConvenio != null}"
-                            icon="fa fa-pencil" rendered="#{sessionCtrl.isUserInRoles('MANAGER')}"/>
-                <p:menuitem value="Excluir" actionListener="#{guiaCtrl.preDelete(item.id, index)}"
-                            process="@this" update="#{p:component('deleteDlg')}" oncomplete="PF('deleteDlg').show()"
+                            icon="fa fa-pencil"
+                            rendered="#{sessionCtrl.isUserInRoles('MANAGER')}"/>
+                <p:menuitem value="Excluir"
+                            actionListener="#{guiaCtrl.preDelete(item.id, index)}"
+                            process="@this"
+                            update="#{p:component('deleteDlg')}"
+                            oncomplete="PF('deleteDlg').show()"
                             disabled="#{item.dataRespostaConvenio != null}"
                             icon="fa fa-trash"
                             rendered="#{sessionCtrl.isUserInRoles('MANAGER') or (sessionCtrl.isUserInRoles('AUTHORIZER') and item.tipo == 'PRORROGACAO')}"/>
@@ -342,59 +375,226 @@
           </guiabi:dataTable>
         </h:panelGroup>
 
-        <p:dialog id="novoComentarioDlg" widgetVar="novoComentarioDlg" modal="true">
-          <f:facet name="header">
-            <h:outputText value="Guia - #{guiaCtrl.item.labelForSelectItem}"/>
-          </f:facet>
-          <h:panelGrid id="novoComentarioGrid" columns="1">
-            <p:outputLabel value="Comentário" for="novoComentarioTextArea" styleClass="lance-label"/>
-            <p:inputTextarea id="novoComentarioTextArea" value="#{guiaCtrl.comentario}" rows="5" cols="75"/>
-            <p:message for="novoComentarioTextArea"/>
-          </h:panelGrid>
-          <f:facet name="footer">
-            <p:commandButton id="saveComentario" value="Salvar"
-                             action="#{guiaCtrl.salvarNovoComentario}"
-                             ajax="true"
-                             process="@this, novoComentarioGrid"
-                             update="#{p:component('table')}"
-                             onsuccess="PF('novoComentarioDlg').hide()"/>
-            <p:commandButton id="cancelarNovoComentario" value="Cancelar"
-                             ajax="true"
-                             process="@this"
-                             oncomplete="PF('novoComentarioDlg').hide()"/>
-          </f:facet>
-        </p:dialog>
+        <h:panelGroup id="registrarRespostaWrapper" layout="block">
 
-        <p:dialog id="commentDialog" widgetVar="commentDialog" modal="true">
-          <f:facet name="header">
-            <h:outputText value="Guia - #{guiaCtrl.item.labelForSelectItem}"/>
-          </f:facet>
-          <h:panelGrid id="commentGrid" columns="1">
-            <p:outputLabel value="Comentário" for="commentTextArea" styleClass="lance-label"/>
-            <p:inputTextarea id="commentTextArea" value="#{guiaCtrl.comentario}" rows="5" cols="75"/>
-            <p:message for="commentTextArea"/>
-          </h:panelGrid>
-          <f:facet name="footer">
-            <p:commandButton id="saveRevisao" value="Salvar"
-                             action="#{guiaCtrl.emRevisao}"
-                             ajax="true"
-                             process="@this, commentGrid"
-                             update="#{p:component('table')}"
-                             rendered="#{guiaCtrl.dialogoRevisao}"
-                             onsuccess="PF('commentDialog').hide()"/>
-            <p:commandButton id="saveParcial" value="Salvar"
-                             action="#{guiaCtrl.autorizarParcialmente}"
-                             ajax="true"
-                             process="@this, commentGrid"
-                             update="#{p:component('table')}"
-                             rendered="#{!guiaCtrl.dialogoRevisao}"
-                             onsuccess="PF('commentDialog').hide()"/>
-            <p:commandButton id="cancelRevisao" value="Cancelar"
-                             ajax="true"
-                             process="@this"
-                             oncomplete="PF('commentDialog').hide()"/>
-          </f:facet>
-        </p:dialog>
+        </h:panelGroup>
+
+        <h:panelGroup id="dialogsWrapper" layout="block">
+          <p:dialog id="registrarRespostaDlg"
+                    widgetVar="registrarRespostaDlg"
+                    modal="true"
+                    width="400"
+                    rendered="#{guiaCtrl.modal eq 'registrarRespostaDlg'}">
+            <f:facet name="header">
+              <h:outputText value="Guia - #{guiaCtrl.guiaAtt.labelForSelectItem}"/>
+            </f:facet>
+            <h:panelGrid id="registrarRespostaGrid" columns="2">
+              <p:outputLabel value="Data de Resposta:" for="respostaAtual" styleClass="lance-label"/>
+              <p:selectOneRadio id="respostaAtual" value="#{guiaCtrl.respostaAtual}">
+                <p:ajax event="change" process="@this" update="dataAnterior"/>
+                <f:selectItem itemLabel="Data Atual" itemValue="#{true}"/>
+                <f:selectItem itemLabel="Data Anterior" itemValue="#{false}"/>
+              </p:selectOneRadio>
+              <p:outputLabel value="Data Anterior:" for="dataAnterior" styleClass="lance-label"/>
+              <p:calendar id="dataAnterior"
+                          value="#{guiaCtrl.dataRespostaAnterior}"
+                          disabled="#{guiaCtrl.respostaAtual}"
+                          pattern="dd/MM/yyyy HH:mm"
+                          mask="true"
+                          locale="pt_BR"
+                          timeZone="America/Sao_Paulo"/>
+            </h:panelGrid>
+            <f:facet name="footer">
+              <p:commandButton id="confirmarRepostaNeg" value="Confirmar"
+                               action="#{guiaCtrl.registrarResposta}"
+                               ajax="true"
+                               process="@this registrarRespostaGrid"
+                               update="#{p:component('listWrapper')}"
+                               rendered="#{guiaCtrl.acaoResposta eq 'NEGADO'}"
+                               onsuccess="PF('registrarRespostaDlg').hide()"/>
+              <p:commandButton id="confirmarRepostaRev" value="Confirmar"
+                               action="#{guiaCtrl.registrarResposta}"
+                               ajax="true"
+                               process="@this registrarRespostaGrid"
+                               update="#{p:component('dialogsWrapper')}"
+                               rendered="#{guiaCtrl.acaoResposta eq 'EM_REVISAO'}"
+                               onsuccess="PF('registrarRespostaDlg').hide(); PF('newCommentForAnswerDlg').show();"/>
+              <p:commandButton id="confirmarRepostaParc" value="Confirmar"
+                               action="#{guiaCtrl.registrarResposta}"
+                               ajax="true"
+                               process="@this registrarRespostaGrid"
+                               update="#{p:component('dialogsWrapper')}"
+                               rendered="#{guiaCtrl.acaoResposta eq 'PARCIALMENTE'}"
+                               onsuccess="PF('registrarRespostaDlg').hide(); PF('newCommentForAnswerDlg').show();"/>
+              <p:commandButton id="confirmarRepostaAut" value="Confirmar"
+                               action="#{guiaCtrl.registrarResposta}"
+                               ajax="true"
+                               process="@this registrarRespostaGrid"
+                               update="#{p:component('listWrapper')}"
+                               rendered="#{guiaCtrl.acaoResposta eq 'AUTORIZADO'}"
+                               onsuccess="PF('registrarRespostaDlg').hide();"/>
+
+              <p:commandButton id="cancelarResposta" value="Cancelar"
+                               ajax="true"
+                               process="@this"
+                               oncomplete="PF('registrarRespostaDlg').hide()"/>
+            </f:facet>
+          </p:dialog>
+          <p:dialog id="commentsDlg"
+                    widgetVar="commentsDlg"
+                    modal="true"
+                    width="500"
+                    rendered="#{guiaCtrl.modal eq 'commentsDlg'}">
+            <f:facet name="header">
+              <h:outputText value="Comentários - #{guiaCtrl.guiaAtt.labelForSelectItem}"/>
+            </f:facet>
+
+            <p:dataTable id="comentarioTable" value="#{guiaCtrl.guiaAtt.comentarios}" var="coment"
+                         sortBy="#{coment.data}" scrollRows="5" emptyMessage="Sem comentários">
+              <p:column headerText="Usuário" width="100" styleClass="left-align">
+                <h:outputText value="#{coment.autor.login}"/>
+              </p:column>
+              <p:column headerText="Comentário" width="100" styleClass="left-align">
+                <h:outputText value="#{coment.comentario}"/>
+              </p:column>
+              <p:column headerText="Data" width="100" styleClass="left-align">
+                <h:outputText value="#{coment.data}">
+                  <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
+                </h:outputText>
+              </p:column>
+            </p:dataTable>
+
+            <f:facet name="footer">
+              <p:commandButton id="closeComent" value="Fechar"
+                               ajax="true"
+                               process="@this"
+                               oncomplete="PF('commentsDlg').hide()"/>
+            </f:facet>
+          </p:dialog>
+          <p:dialog id="newCommentDlg"
+                    widgetVar="newCommentDlg"
+                    modal="#{guiaCtrl.modal eq 'newCommentDlg'}">
+            <f:facet name="header">
+              <h:outputText value="Guia - #{guiaCtrl.guiaAtt.labelForSelectItem}"/>
+            </f:facet>
+            <h:panelGrid id="novoComentarioGrid" columns="1">
+              <p:outputLabel value="Comentário" for="novoComentarioTextArea" styleClass="lance-label"/>
+              <p:inputTextarea id="novoComentarioTextArea" value="#{guiaCtrl.comentario}" rows="5" cols="75"/>
+              <p:message for="novoComentarioTextArea"/>
+            </h:panelGrid>
+            <f:facet name="footer">
+              <p:commandButton id="saveComentario" value="Salvar"
+                               action="#{guiaCtrl.salvarNovoComentario}"
+                               ajax="true"
+                               process="@this, novoComentarioGrid"
+                               update="#{p:component('table')}"
+                               onsuccess="PF('newCommentDlg').hide()"/>
+              <p:commandButton id="cancelarNovoComentario" value="Cancelar"
+                               ajax="true"
+                               process="@this"
+                               oncomplete="PF('newCommentDlg').hide()"/>
+            </f:facet>
+          </p:dialog>
+          <p:dialog id="newCommentForAnswerDlg"
+                    widgetVar="newCommentForAnswerDlg"
+                    modal="#{guiaCtrl.modal eq 'newCommentForAnswerDlg'}">
+            <f:facet name="header">
+              <h:outputText value="Guia - #{guiaCtrl.item.labelForSelectItem}"/>
+            </f:facet>
+            <h:panelGrid id="commentGrid" columns="1">
+              <p:outputLabel value="Comentário" for="commentTextArea" styleClass="lance-label"/>
+              <p:inputTextarea id="commentTextArea" value="#{guiaCtrl.comentario}" rows="5" cols="75"/>
+              <p:message for="commentTextArea"/>
+            </h:panelGrid>
+            <f:facet name="footer">
+              <p:commandButton id="saveRevisao" value="Salvar"
+                               action="#{guiaCtrl.emRevisao}"
+                               ajax="true"
+                               process="@this, commentGrid"
+                               update="#{p:component('table')}"
+                               rendered="#{guiaCtrl.dialogoRevisao}"
+                               onsuccess="PF('newCommentForAnswerDlg').hide()"/>
+              <p:commandButton id="saveParcial" value="Salvar"
+                               action="#{guiaCtrl.autorizarParcialmente}"
+                               ajax="true"
+                               process="@this, commentGrid"
+                               update="#{p:component('table')}"
+                               rendered="#{!guiaCtrl.dialogoRevisao}"
+                               onsuccess="PF('newCommentForAnswerDlg').hide()"/>
+              <p:commandButton id="cancelRevisao" value="Cancelar"
+                               ajax="true"
+                               process="@this"
+                               oncomplete="PF('newCommentForAnswerDlg').hide()"/>
+            </f:facet>
+          </p:dialog>
+          <p:dialog id="historicoDlg"
+                    widgetVar="historicoDlg"
+                    modal="true"
+                    width="500"
+                    rendered="#{guiaCtrl.modal eq 'historicoDlg'}">
+            <f:facet name="header">
+              <h:outputText value="Histórico - #{guiaCtrl.guiaAtt.labelForSelectItem}"/>
+            </f:facet>
+
+            <p:dataTable id="historicoTable" value="#{guiaCtrl.guiaAtt.historico}" var="hist" sortBy="#{hist.data}"
+                         scrollRows="5" emptyMessage="Sem histórico">
+              <p:column headerText="Usuário" width="100" styleClass="left-align">
+                <h:outputText value="#{hist.autor.login}"/>
+              </p:column>
+              <p:column headerText="Ação" width="100" styleClass="left-align">
+                <h:outputText value="#{hist.acao.name()}"/>
+              </p:column>
+              <p:column headerText="Data" width="100" styleClass="left-align">
+                <h:outputText value="#{hist.data}">
+                  <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
+                </h:outputText>
+              </p:column>
+            </p:dataTable>
+
+            <f:facet name="footer">
+              <p:commandButton id="closeHistorico" value="Fechar"
+                               ajax="true"
+                               process="@this"
+                               oncomplete="PF('historicoDlg').hide()"/>
+            </f:facet>
+          </p:dialog>
+          <p:dialog id="anexosDlg"
+                    widgetVar="anexosDlg"
+                    width="500"
+                    rendered="#{guiaCtrl.modal eq 'anexosDlg'}">
+
+            <f:facet name="header">
+              <h:outputText value="Guia - #{guiaCtrl.guiaAtt.labelForSelectItem}"/>
+            </f:facet>
+
+            <h:panelGroup rendered="#{empty guiaCtrl.guiaAtt.anexos}">
+              <h:outputText value="Sem anexos"/>
+            </h:panelGroup>
+
+            <ui:repeat value="#{guiaCtrl.guiaAtt.anexos.toArray()}" var="anexo"
+                       varStatus="idx">
+              <h:panelGroup id="anexoItemWrapper" layout="block"
+                            styleClass="margin-top">
+                <p:commandButton
+                  value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
+                  ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+                  immediate="true" icon="fa fa-download">
+                  <p:fileDownload value="#{guiaCtrl.download(anexo)}"
+                                  contentDisposition="attachment"/>
+                </p:commandButton>
+                <p:commandButton icon="fa fa-trash"
+                                 action="#{guiaCtrl.removerAnexo(anexo)}" ajax="true"
+                                 process="@this" update="#{p:component('dialogsWrapper')}"
+                                 styleClass="margin-left"/>
+              </h:panelGroup>
+            </ui:repeat>
+
+            <f:facet name="footer">
+              <p:commandButton id="closeAnexos" value="Fechar" ajax="true"
+                               process="@this" oncomplete="PF('anexosDlg').hide()"/>
+            </f:facet>
+          </p:dialog>
+        </h:panelGroup>
 
         <p:dialog id="deleteDlg" header="Atenção"
                   widgetVar="deleteDlg" modal="true">
@@ -430,99 +630,6 @@
           </f:facet>
         </p:dialog>
 
-        <p:dialog id="historicoDlg"
-                  widgetVar="historicoDlg" modal="true" width="500">
-          <f:facet name="header">
-            <h:outputText value="Histórico - #{guiaCtrl.item.labelForSelectItem}"/>
-          </f:facet>
-
-          <p:dataTable id="historicoTable" value="#{guiaCtrl.guiaAtt.historico}" var="hist" sortBy="#{hist.data}"
-                       scrollRows="5" emptyMessage="Sem histórico">
-            <p:column headerText="Usuário" width="100" styleClass="left-align">
-              <h:outputText value="#{hist.autor.login}"/>
-            </p:column>
-            <p:column headerText="Ação" width="100" styleClass="left-align">
-              <h:outputText value="#{hist.acao.name()}"/>
-            </p:column>
-            <p:column headerText="Data" width="100" styleClass="left-align">
-              <h:outputText value="#{hist.data}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
-              </h:outputText>
-            </p:column>
-          </p:dataTable>
-
-          <f:facet name="footer">
-            <p:commandButton id="closeHistorico" value="Fechar"
-                             ajax="true"
-                             process="@this"
-                             oncomplete="PF('historicoDlg').hide()"/>
-          </f:facet>
-        </p:dialog>
-
-        <p:dialog id="comentarioDlg"
-                  widgetVar="comentarioDlg" modal="true" width="500">
-          <f:facet name="header">
-            <h:outputText value="Comentários - #{guiaCtrl.item.labelForSelectItem}"/>
-          </f:facet>
-
-          <p:dataTable id="comentarioTable" value="#{guiaCtrl.item.comentarios}" var="coment"
-                       sortBy="#{coment.data}" scrollRows="5" emptyMessage="Sem comentários">
-            <p:column headerText="Usuário" width="100" styleClass="left-align">
-              <h:outputText value="#{coment.autor.login}"/>
-            </p:column>
-            <p:column headerText="Comentário" width="100" styleClass="left-align">
-              <h:outputText value="#{coment.comentario}"/>
-            </p:column>
-            <p:column headerText="Data" width="100" styleClass="left-align">
-              <h:outputText value="#{coment.data}">
-                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
-              </h:outputText>
-            </p:column>
-          </p:dataTable>
-
-          <f:facet name="footer">
-            <p:commandButton id="closeComent" value="Fechar"
-                             ajax="true"
-                             process="@this"
-                             oncomplete="PF('comentarioDlg').hide()"/>
-          </f:facet>
-        </p:dialog>
-
-        <h:panelGroup id="anexosWrapper">
-          <p:dialog id="anexosDlg" widgetVar="anexosDlg" width="500">
-
-            <f:facet name="header">
-              <h:outputText value="Guia - #{guiaCtrl.guiaAtt.labelForSelectItem}"/>
-            </f:facet>
-
-            <h:panelGroup rendered="#{empty guiaCtrl.guiaAtt.anexos}">
-              <h:outputText value="Sem anexos"/>
-            </h:panelGroup>
-
-            <ui:repeat value="#{guiaCtrl.guiaAtt.anexos.toArray()}" var="anexo"
-                       varStatus="idx">
-              <h:panelGroup id="anexoItemWrapper" layout="block"
-                            styleClass="margin-top">
-                <p:commandButton
-                  value="#{anexo.nmAnexo} (#{anexo.tamanhoArquivo} bytes)"
-                  ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
-                  immediate="true" icon="fa fa-download">
-                  <p:fileDownload value="#{guiaCtrl.download(anexo)}"
-                                  contentDisposition="attachment"/>
-                </p:commandButton>
-                <p:commandButton icon="fa fa-trash"
-                                 action="#{guiaCtrl.removerAnexo(anexo)}" ajax="true"
-                                 process="@this" update="#{p:component('anexosWrapper')}"
-                                 styleClass="margin-left"/>
-              </h:panelGroup>
-            </ui:repeat>
-
-            <f:facet name="footer">
-              <p:commandButton id="closeAnexos" value="Fechar" ajax="true"
-                               process="@this" oncomplete="PF('anexosDlg').hide()"/>
-            </f:facet>
-          </p:dialog>
-        </h:panelGroup>
       </p:panel>
     </h:form>
   </ui:define>

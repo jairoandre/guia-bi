@@ -303,16 +303,21 @@ public class GuiaService extends DataAccessService<Guia> {
 
 	}
 
-	public Guia carregarAnexos(Guia guia) {
+	public Guia carregarListas(Guia guia) {
 		Guia att = find(guia.getId());
 		new LinkedHashSet<>(att.getAnexos());
-				
 		new LinkedHashSet<>(att.getHistorico());
-
 		new LinkedHashSet<>(att.getComentarios());
 		
 		return att;
 	}
+
+	public Guia carregarAnexos(Guia guia) {
+		Guia att = find(guia.getId());
+		new LinkedHashSet<>(att.getAnexos());
+		return att;
+	}
+
 	public Guia carregarHistorico(Guia guia ) {
 		Guia att = find(guia.getId());
 		new LinkedHashSet<>(att.getHistorico());
@@ -320,6 +325,13 @@ public class GuiaService extends DataAccessService<Guia> {
 	}
 	public Guia carregarComentarios(Guia guia) {
 		Guia att = find(guia.getId());
+		new LinkedHashSet<>(att.getComentarios());
+		return att;
+	}
+
+	public Guia carregarHistoricoEComentarios(Guia guia) {
+		Guia att = find(guia.getId());
+		new LinkedHashSet<>(att.getHistorico());
 		new LinkedHashSet<>(att.getComentarios());
 		return att;
 	}

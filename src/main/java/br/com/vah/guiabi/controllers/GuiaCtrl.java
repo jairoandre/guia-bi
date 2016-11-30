@@ -1,15 +1,23 @@
 package br.com.vah.guiabi.controllers;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import br.com.vah.guiabi.constants.*;
+import br.com.vah.guiabi.entities.dbamv.Atendimento;
+import br.com.vah.guiabi.entities.dbamv.Convenio;
+import br.com.vah.guiabi.entities.dbamv.ProFat;
+import br.com.vah.guiabi.entities.dbamv.Setor;
+import br.com.vah.guiabi.entities.usrdbvah.Anexo;
+import br.com.vah.guiabi.entities.usrdbvah.Guia;
+import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
+import br.com.vah.guiabi.entities.usrdbvah.User;
+import br.com.vah.guiabi.exceptions.GuiaPersistException;
+import br.com.vah.guiabi.service.*;
+import br.com.vah.guiabi.util.ViewUtils;
+import com.opencsv.CSVReader;
+import org.apache.commons.lang3.StringUtils;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+import org.primefaces.model.UploadedFile;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -17,33 +25,12 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.commons.lang3.StringUtils;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-import org.primefaces.model.UploadedFile;
-
-import com.opencsv.CSVReader;
-
-
-import br.com.vah.guiabi.constants.*;
-import br.com.vah.guiabi.entities.dbamv.Atendimento;
-import br.com.vah.guiabi.entities.dbamv.Convenio;
-import br.com.vah.guiabi.entities.dbamv.ProFat;
-import br.com.vah.guiabi.entities.dbamv.Setor;
-import br.com.vah.guiabi.entities.usrdbvah.Anexo;
-import br.com.vah.guiabi.entities.usrdbvah.Comentario;
-import br.com.vah.guiabi.entities.usrdbvah.Guia;
-import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
-import br.com.vah.guiabi.entities.usrdbvah.User;
-import br.com.vah.guiabi.exceptions.GuiaPersistException;
-import br.com.vah.guiabi.service.AtendimentoService;
-import br.com.vah.guiabi.service.ConvenioService;
-import br.com.vah.guiabi.service.DataAccessService;
-import br.com.vah.guiabi.service.EspecialidadeService;
-import br.com.vah.guiabi.service.GuiaService;
-import br.com.vah.guiabi.util.ViewUtils;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by Jairoportela on 06/04/2016.
@@ -68,55 +55,63 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
   @Inject
   AtendimentoService atendimentoService;
 
-	private @Inject ConvenioService convenioService;
+  private
+  @Inject
+  ConvenioService convenioService;
 
-	private @Inject EspecialidadeService especialidadeService;
+  private
+  @Inject
+  EspecialidadeService especialidadeService;
 
-	private List<SelectItem> tipos;
+  private List<SelectItem> tipos;
 
-	private List<Convenio> convenios;
+  private List<Convenio> convenios;
 
-	private EstadosGuiaEnum[] estados;
+  private EstadosGuiaEnum[] estados;
 
-	private TipoGuiaEnum[] tiposEnum;
+  private TipoGuiaEnum[] tiposEnum;
 
-	private Convenio[] selectedConvenios;
+  private Convenio[] selectedConvenios;
 
-	private Setor setor;
+  private Setor setor;
 
-	private Boolean somenteMinhaAutoria = true;
+  private Boolean somenteMinhaAutoria = true;
 
-	private Boolean somenteSemRecebimentos = false;
+  private Boolean somenteSemRecebimentos = false;
 
-	private String comentario;
+  private String comentario;
 
-	private Date inicioDate;
+  private Date inicioDate;
 
-	private Date terminoDate;
+  private Date terminoDate;
 
-	private String dateField = "G";
+  private String dateField = "G";
 
-	private EstadosGuiaEnum[] selectedEstados;
+  private EstadosGuiaEnum[] selectedEstados;
 
-	private TipoGuiaEnum[] selectedTipos;
+  private TipoGuiaEnum[] selectedTipos;
 
-	private Boolean dialogoRevisao = true;
+  private Boolean dialogoRevisao = true;
 
-	private Guia detachedGuia;
+  private Guia detachedGuia;
 
-	private List<String> filtros;
+  private List<String> filtros;
 
-  	private Map<String, GuiaFieldsEnum> mapFiltros;
+  private Map<String, GuiaFieldsEnum> mapFiltros;
 
-	public static final String[] RELATIONS = { "comentarios", "historico", "procedimentos" };
+  public static final String[] RELATIONS = {"comentarios", "historico", "procedimentos"};
 
-	private ProFat proFatToAdd;
+  private ProFat proFatToAdd;
 
-	private Guia guiaAtt;
+  private Guia guiaAtt;
 
   private AcoesRespostaEnum acaoResposta;
 
   private Date dataRespostaAnterior;
+
+  private Boolean respostaAtual;
+
+  private String modal;
 
   @PostConstruct
   public void init() {
@@ -137,79 +132,79 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
     tiposEnum = TipoGuiaEnum.values();
   }
 
-	@Override
-	public void onLoad() {
-		super.onLoad();
-		if (getItem().getId() == null) {
-			getItem().setSetor(session.getSetor());
-			service.addHistorico(session.getUser(), getItem(), AcoesGuiaEnum.CRIACAO);
-		}
-	}
+  @Override
+  public void onLoad() {
+    super.onLoad();
+    if (getItem().getId() == null) {
+      getItem().setSetor(session.getSetor());
+      service.addHistorico(session.getUser(), getItem(), AcoesGuiaEnum.CRIACAO);
+    }
+  }
 
-	public void filterCurrentMonth() {
-		Date[] thisMonth = ViewUtils.getDateRangeForThisMonth();
-		inicioDate = thisMonth[0];
-		terminoDate = thisMonth[1];
-		prepareSearch();
-	}
+  public void filterCurrentMonth() {
+    Date[] thisMonth = ViewUtils.getDateRangeForThisMonth();
+    inicioDate = thisMonth[0];
+    terminoDate = thisMonth[1];
+    prepareSearch();
+  }
 
-	@Override
-	public DataAccessService<Guia> getService() {
-		return service;
-	}
+  @Override
+  public DataAccessService<Guia> getService() {
+    return service;
+  }
 
-	@Override
-	public Logger getLogger() {
-		return logger;
-	}
+  @Override
+  public Logger getLogger() {
+    return logger;
+  }
 
-	@Override
-	public Guia createNewItem() {
-		return new Guia();
-	}
+  @Override
+  public Guia createNewItem() {
+    return new Guia();
+  }
 
-	@Override
-	public String path() {
-		return "guia";
-	}
+  @Override
+  public String path() {
+    return "guia";
+  }
 
-	@Override
-	public String getEntityName() {
-		return "Guia";
-	}
+  @Override
+  public String getEntityName() {
+    return "Guia";
+  }
 
-	public List<SelectItem> getTipos() {
-		return tipos;
-	}
+  public List<SelectItem> getTipos() {
+    return tipos;
+  }
 
-	public Boolean getSomenteMinhaAutoria() {
-		return somenteMinhaAutoria;
-	}
+  public Boolean getSomenteMinhaAutoria() {
+    return somenteMinhaAutoria;
+  }
 
-	public void setSomenteMinhaAutoria(Boolean somenteMinhaAutoria) {
-		this.somenteMinhaAutoria = somenteMinhaAutoria;
-	}
-	
-public void removerAnexo(Anexo anexo) {
-	getItem().getAnexos().remove(anexo);
-}
+  public void setSomenteMinhaAutoria(Boolean somenteMinhaAutoria) {
+    this.somenteMinhaAutoria = somenteMinhaAutoria;
+  }
 
-public void uploadAnexo(FileUploadEvent evt) {
-	UploadedFile file = evt.getFile();
-	Anexo anexo = new Anexo();
-	anexo.setGuia(getItem());
-	anexo.setNmAnexo(file.getFileName());
-	anexo.setArquivo(file.getContents());
-	getItem().getAnexos().add(anexo);
-}
+  public void removerAnexo(Anexo anexo) {
+    getItem().getAnexos().remove(anexo);
+  }
 
-public StreamedContent download(Anexo anexo) {
-	InputStream report = new ByteArrayInputStream(anexo.getArquivo());
-	DefaultStreamedContent dsc = new DefaultStreamedContent(report);
-	dsc.setContentType("application/pdf");
-	dsc.setName(anexo.getNmAnexo());
-	return dsc;
-}
+  public void uploadAnexo(FileUploadEvent evt) {
+    UploadedFile file = evt.getFile();
+    Anexo anexo = new Anexo();
+    anexo.setGuia(getItem());
+    anexo.setNmAnexo(file.getFileName());
+    anexo.setArquivo(file.getContents());
+    getItem().getAnexos().add(anexo);
+  }
+
+  public StreamedContent download(Anexo anexo) {
+    InputStream report = new ByteArrayInputStream(anexo.getArquivo());
+    DefaultStreamedContent dsc = new DefaultStreamedContent(report);
+    dsc.setContentType("application/pdf");
+    dsc.setName(anexo.getNmAnexo());
+    return dsc;
+  }
 
   public void setSetor(Setor setor) {
     this.setor = setor;
@@ -327,9 +322,62 @@ public StreamedContent download(Anexo anexo) {
     this.selectedTipos = null;
     prepareSearch();
   }
-	
+
   public Setor getSetor() {
-		return setor;
+    return setor;
+  }
+
+  public Boolean getRespostaAtual() {
+    return respostaAtual;
+  }
+
+  public void setRespostaAtual(Boolean respostaAtual) {
+    this.respostaAtual = respostaAtual;
+  }
+
+  public Date getDataRespostaAnterior() {
+    return dataRespostaAnterior;
+  }
+
+  public void setDataRespostaAnterior(Date dataRespostaAnterior) {
+    this.dataRespostaAnterior = dataRespostaAnterior;
+  }
+
+  public AcoesRespostaEnum getAcaoResposta() {
+    return acaoResposta;
+  }
+
+  public void setAcaoResposta(AcoesRespostaEnum acaoResposta) {
+    this.acaoResposta = acaoResposta;
+  }
+
+  public void preResposta(Guia guia, AcoesRespostaEnum acao) {
+    this.modal = "registrarRespostaDlg";
+    setItem(guia);
+    this.respostaAtual = true;
+    this.acaoResposta = acao;
+  }
+
+  public void registrarResposta() {
+    this.modal = "newCommentForAnswerDlg";
+    setItem(service.carregarListas(getItem()));
+    getItem().setDataRespostaAnterior(dataRespostaAnterior);
+    switch (acaoResposta) {
+      case NEGADO:
+        negar(getItem());
+        break;
+      case EM_REVISAO:
+        preRevisao(getItem());
+        break;
+      case PARCIALMENTE:
+        preParcial(getItem());
+        break;
+      case AUTORIZADO:
+        autorizar(getItem());
+        break;
+    }
+    dataRespostaAnterior = null;
+    acaoResposta = null;
   }
 
   public void uploadValues(FileUploadEvent evt) {
@@ -420,7 +468,7 @@ public StreamedContent download(Anexo anexo) {
   }
 
   public void receber(Guia guia) {
-    Guia attachedGuia = service.find(guia.getId());
+    Guia attachedGuia = service.carregarListas(guia);
     attachedGuia.setDataRecebimento(new Date());
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.RECEBIMENTO);
     setItem(attachedGuia);
@@ -430,7 +478,7 @@ public StreamedContent download(Anexo anexo) {
   }
 
   public void auditar(Guia guia) {
-    Guia attachedGuia = service.find(guia.getId());
+    Guia attachedGuia = service.carregarListas(guia);
     attachedGuia.setDataAuditoria(new Date());
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.AUDITORIA);
     setItem(attachedGuia);
@@ -440,11 +488,11 @@ public StreamedContent download(Anexo anexo) {
   }
 
   public Guia getGuiaAtt() {
-	return guiaAtt;
-}
+    return guiaAtt;
+  }
 
-public void solicitarConvenio(Guia guia) {
-    Guia attachedGuia = service.find(guia.getId());
+  public void solicitarConvenio(Guia guia) {
+    Guia attachedGuia = service.carregarListas(guia);
     attachedGuia.setDataSolicitacaoConvenio(new Date());
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.SOLICITACAO);
     setItem(attachedGuia);
@@ -455,15 +503,12 @@ public void solicitarConvenio(Guia guia) {
   }
 
   public void negar(Guia guia) {
-    Guia attachedGuia = service.find(guia.getId());
+    Guia attachedGuia = service.carregarListas(guia);
     attachedGuia.setDataRespostaConvenio(new Date());
     attachedGuia.setEstado(EstadosGuiaEnum.NEGADO);
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.NEGADO);
     setItem(attachedGuia);
     doSave();
-    guia.setDataAuditoria(getItem().getDataRespostaConvenio());
-    guia.setEstado(EstadosGuiaEnum.NEGADO);
-    guia.setHistorico(getItem().getHistorico());
   }
 
   public void preRevisao(Guia guia) {
@@ -477,19 +522,16 @@ public void solicitarConvenio(Guia guia) {
   }
 
   public void salvarNovoComentario() {
-    Guia detachedGuia = getItem();
-    Guia attachedGuia = service.find(getItem().getId());
+    Guia attachedGuia = service.carregarHistoricoEComentarios(getItem());
     service.addComentario(attachedGuia, session.getUser(), comentario);
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.COMENTARIO);
     comentario = null;
     setItem(attachedGuia);
     doSave();
-    detachedGuia.setComentarios(attachedGuia.getComentarios());
-    detachedGuia.setHistorico(attachedGuia.getHistorico());
   }
 
   private void saveAddingComment(EstadosGuiaEnum estado, AcoesGuiaEnum acao) {
-    Guia attachedGuia = service.find(detachedGuia.getId());
+    Guia attachedGuia = service.carregarHistoricoEComentarios(detachedGuia);
     attachedGuia.setEstado(estado);
     if (estado.equals(EstadosGuiaEnum.PARCIAL)) {
       attachedGuia.setDataRespostaConvenio(new Date());
@@ -500,9 +542,6 @@ public void solicitarConvenio(Guia guia) {
     comentario = null;
     setItem(attachedGuia);
     doSave();
-    detachedGuia.setEstado(estado);
-    detachedGuia.setComentarios(attachedGuia.getComentarios());
-    detachedGuia.setHistorico(attachedGuia.getHistorico());
   }
 
   public void emRevisao() {
@@ -514,15 +553,12 @@ public void solicitarConvenio(Guia guia) {
   }
 
   public void autorizar(Guia guia) {
-    Guia attachedGuia = service.find(guia.getId());
+    Guia attachedGuia = service.carregarListas(guia);
     attachedGuia.setDataRespostaConvenio(new Date());
     attachedGuia.setEstado(EstadosGuiaEnum.AUTORIZADO);
     service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.AUTORIZADO);
     setItem(attachedGuia);
     doSave();
-    guia.setEstado(EstadosGuiaEnum.AUTORIZADO);
-    guia.setDataRespostaConvenio(attachedGuia.getDataRespostaConvenio());
-    guia.setHistorico(attachedGuia.getHistorico());
   }
 
   public void clearSetor() {
@@ -611,10 +647,10 @@ public void solicitarConvenio(Guia guia) {
   }
 
   public void setSomenteSemRecebimentos(Boolean somenteSemRecebimentos) {
-	this.somenteSemRecebimentos = somenteSemRecebimentos;
-}
+    this.somenteSemRecebimentos = somenteSemRecebimentos;
+  }
 
-public void removeFilterItem(String key) {
+  public void removeFilterItem(String key) {
     GuiaFieldsEnum field = mapFiltros.get(key);
     switch (field) {
       case ATENDIMENTO:
@@ -669,21 +705,36 @@ public void removeFilterItem(String key) {
     return false;
   }
 
+  public String getModal() {
+    return modal;
+  }
+
   public List<String> getFiltros() {
     return filtros;
   }
 
-  public void carregarAnexos( Guia guia){
-	  this.guiaAtt = service.carregarAnexos(guia);
+  public void carregarAnexos(Guia guia) {
+    this.modal = "anexosDlg";
+    this.guiaAtt = service.carregarAnexos(guia);
   }
-  public void carregarHistorico( Guia guia){
-	  this.guiaAtt = service.carregarHistorico(guia);
+
+  public void carregarHistorico(Guia guia) {
+    this.modal = "historicoDlg";
+    this.guiaAtt = service.carregarHistorico(guia);
   }
-  public void carregarComentario( Guia guia){
-	  this.guiaAtt = service.carregarComentarios(guia);
+
+  public void carregarComentario(Guia guia) {
+    this.modal = "commentsDlg";
+    this.guiaAtt = service.carregarComentarios(guia);
+  }
+
+  public void preNewComment(Guia guia) {
+    this.guiaAtt = service.carregarHistoricoEComentarios(guia);
+    this.modal = "newCommentDlg";
+    setItem(guia);
   }
 
   public Boolean getSomenteSemRecebimentos() {
-		return somenteSemRecebimentos;
+    return somenteSemRecebimentos;
   }
 }
