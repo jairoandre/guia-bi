@@ -91,10 +91,6 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
 
   private TipoGuiaEnum[] selectedTipos;
 
-  private Boolean dialogoRevisao = true;
-
-  private Guia detachedGuia;
-
   private List<String> filtros;
 
   private Map<String, GuiaFieldsEnum> mapFiltros;
@@ -102,8 +98,6 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
   public static final String[] RELATIONS = {"comentarios", "historico", "procedimentos"};
 
   private ProFat proFatToAdd;
-
-  private Guia guiaAtt;
 
   private AcoesRespostaEnum acaoResposta;
 
@@ -278,18 +272,6 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
     this.selectedTipos = selectedTipos;
   }
 
-  public Boolean getDialogoRevisao() {
-    return dialogoRevisao;
-  }
-
-  public Guia getDetachedGuia() {
-    return detachedGuia;
-  }
-
-  public void setDetachedGuia(Guia detachedGuia) {
-    this.detachedGuia = detachedGuia;
-  }
-
   public ProFat getProFatToAdd() {
     return proFatToAdd;
   }
@@ -352,32 +334,31 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
   }
 
   public void preResposta(Guia guia, AcoesRespostaEnum acao) {
+    setItem(service.carregarHistoricoEComentarios(guia));
     this.modal = "registrarRespostaDlg";
-    setItem(guia);
     this.respostaAtual = true;
     this.acaoResposta = acao;
   }
 
-  public void registrarResposta() {
-    this.modal = "newCommentForAnswerDlg";
-    setItem(service.carregarListas(getItem()));
+  public String registrarResposta() {
     getItem().setDataRespostaAnterior(dataRespostaAnterior);
     switch (acaoResposta) {
       case NEGADO:
-        negar(getItem());
+        negar();
         break;
       case EM_REVISAO:
-        preRevisao(getItem());
+        emRevisao();
         break;
       case PARCIALMENTE:
-        preParcial(getItem());
+        autorizarParcialmente();
         break;
       case AUTORIZADO:
-        autorizar(getItem());
+        autorizar();
         break;
     }
     dataRespostaAnterior = null;
     acaoResposta = null;
+    return "";
   }
 
   public void uploadValues(FileUploadEvent evt) {
@@ -486,11 +467,6 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
     guia.setDataAuditoria(getItem().getDataAuditoria());
     guia.setHistorico(getItem().getHistorico());
   }
-
-  public Guia getGuiaAtt() {
-    return guiaAtt;
-  }
-
   public void solicitarConvenio(Guia guia) {
     Guia attachedGuia = service.carregarListas(guia);
     attachedGuia.setDataSolicitacaoConvenio(new Date());
@@ -502,45 +478,28 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
     guia.setHistorico(getItem().getHistorico());
   }
 
-  public void negar(Guia guia) {
-    Guia attachedGuia = service.carregarListas(guia);
-    attachedGuia.setDataRespostaConvenio(new Date());
-    attachedGuia.setEstado(EstadosGuiaEnum.NEGADO);
-    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.NEGADO);
-    setItem(attachedGuia);
+  public void negar() {
+    getItem().setDataRespostaConvenio(new Date());
+    getItem().setEstado(EstadosGuiaEnum.NEGADO);
+    service.addHistorico(session.getUser(), getItem(), AcoesGuiaEnum.NEGADO);
     doSave();
   }
 
-  public void preRevisao(Guia guia) {
-    dialogoRevisao = true;
-    detachedGuia = guia;
-  }
-
-  public void preParcial(Guia guia) {
-    dialogoRevisao = false;
-    detachedGuia = guia;
-  }
-
   public void salvarNovoComentario() {
-    Guia attachedGuia = service.carregarHistoricoEComentarios(getItem());
-    service.addComentario(attachedGuia, session.getUser(), comentario);
-    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.COMENTARIO);
+    service.addComentario(getItem(), session.getUser(), comentario);
+    service.addHistorico(session.getUser(), getItem(), AcoesGuiaEnum.COMENTARIO);
     comentario = null;
-    setItem(attachedGuia);
     doSave();
   }
 
   private void saveAddingComment(EstadosGuiaEnum estado, AcoesGuiaEnum acao) {
-    Guia attachedGuia = service.carregarHistoricoEComentarios(detachedGuia);
-    attachedGuia.setEstado(estado);
+    getItem().setEstado(estado);
     if (estado.equals(EstadosGuiaEnum.PARCIAL)) {
-      attachedGuia.setDataRespostaConvenio(new Date());
-      detachedGuia.setDataRespostaConvenio(attachedGuia.getDataRespostaConvenio());
+      getItem().setDataRespostaConvenio(new Date());
     }
-    service.addComentario(attachedGuia, session.getUser(), comentario);
-    service.addHistorico(session.getUser(), attachedGuia, acao);
+    service.addComentario(getItem(), session.getUser(), comentario);
+    service.addHistorico(session.getUser(), getItem(), acao);
     comentario = null;
-    setItem(attachedGuia);
     doSave();
   }
 
@@ -552,12 +511,10 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
     saveAddingComment(EstadosGuiaEnum.PARCIAL, AcoesGuiaEnum.PARCIAL);
   }
 
-  public void autorizar(Guia guia) {
-    Guia attachedGuia = service.carregarListas(guia);
-    attachedGuia.setDataRespostaConvenio(new Date());
-    attachedGuia.setEstado(EstadosGuiaEnum.AUTORIZADO);
-    service.addHistorico(session.getUser(), attachedGuia, AcoesGuiaEnum.AUTORIZADO);
-    setItem(attachedGuia);
+  public void autorizar() {
+    getItem().setDataRespostaConvenio(new Date());
+    getItem().setEstado(EstadosGuiaEnum.AUTORIZADO);
+    service.addHistorico(session.getUser(), getItem(), AcoesGuiaEnum.AUTORIZADO);
     doSave();
   }
 
@@ -715,23 +672,22 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
 
   public void carregarAnexos(Guia guia) {
     this.modal = "anexosDlg";
-    this.guiaAtt = service.carregarAnexos(guia);
+    setItem(service.carregarAnexos(guia));
   }
 
   public void carregarHistorico(Guia guia) {
     this.modal = "historicoDlg";
-    this.guiaAtt = service.carregarHistorico(guia);
+    setItem(service.carregarHistorico(guia));
   }
 
   public void carregarComentario(Guia guia) {
     this.modal = "commentsDlg";
-    this.guiaAtt = service.carregarComentarios(guia);
+    setItem(service.carregarComentarios(guia));
   }
 
   public void preNewComment(Guia guia) {
-    this.guiaAtt = service.carregarHistoricoEComentarios(guia);
     this.modal = "newCommentDlg";
-    setItem(guia);
+    setItem(service.carregarHistoricoEComentarios(guia));
   }
 
   public Boolean getSomenteSemRecebimentos() {
