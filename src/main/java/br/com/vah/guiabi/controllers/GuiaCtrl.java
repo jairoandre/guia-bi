@@ -132,6 +132,8 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
     if (getItem().getId() == null) {
       getItem().setSetor(session.getSetor());
       service.addHistorico(session.getUser(), getItem(), AcoesGuiaEnum.CRIACAO);
+    } else {
+      setItem(service.carregarListas(getItem()));
     }
   }
 

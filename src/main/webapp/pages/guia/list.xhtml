@@ -270,6 +270,13 @@
               <h:outputText id="dataRespostaConvenio" value="#{item.dataRespostaConvenio}">
                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
               </h:outputText>
+              <h:outputText id="dataRespAnt" value="!" rendered="#{not empty item.dataRespostaAnterior}" styleClass="dataRespAnt"/>
+              <p:overlayPanel for="dataRespAnt">
+                <h:outputText value="&lt;b&gt;Data Resposta Anterior: &lt;/b&gt;" escape="false"/>
+                <h:outputText value="#{item.dataRespostaAnterior}">
+                  <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="America/Sao_Paulo"/>
+                </h:outputText>
+              </p:overlayPanel>
             </p:column>
             <p:column style="text-align: center">
               <p:menuButton id="menuButton" value="Ações" disabled="#{guiaCtrl.disableAcoes(item)}">
@@ -319,7 +326,7 @@
                             icon="fa fa-check-circle"
                             rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"
                             disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null or item.estado == 'PARCIAL'}">
-                  <p:resetInput target="dialogsWrapper"/>
+                  <p:resetInput target="#{p:component('dialogsWrapper')}"/>
                 </p:menuitem>
                 <p:menuitem value="Autorizado" actionListener="#{guiaCtrl.preResposta(item, 'AUTORIZADO')}"
                             ajax="true"
@@ -329,7 +336,7 @@
                             icon="fa fa-check"
                             rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"
                             disabled="#{(item.data == null or item.dataRecebimento == null) or item.dataRespostaConvenio != null}">
-                  <p:resetInput target="dialogsWrapper"/>
+                  <p:resetInput target="#{p:component('dialogsWrapper')}"/>
                 </p:menuitem>
                 <p:separator rendered="#{sessionCtrl.isUserInRoles('AUTHORIZER')}"/>
                 <p:menuitem value="Anexos"
@@ -432,14 +439,14 @@
 
               </h:panelGrid>
               <p:message for="dataAnterior"/>
-              <p:message for="commentTextArea"/>
+              <p:message for="commentTextArea" rendered="#{guiaCtrl.acaoResposta eq 'EM_REVISAO' or guiaCtrl.acaoResposta eq 'PARCIALMENTE'}"/>
             </h:panelGroup>
             <f:facet name="footer">
               <p:commandButton id="confirmarRepostaNeg" value="Confirmar"
                                action="#{guiaCtrl.registrarResposta}"
                                ajax="true"
                                process="@this registrarRespostaGrid"
-                               update="#{p:component('listWrapper')}"
+                               update="#{p:component('listWrapper')} registrarRespostaGrid"
                                rendered="#{guiaCtrl.acaoResposta eq 'NEGADO'}"
                                oncomplete="if (args &amp;&amp; !args.validationFailed) PF('registrarRespostaDlg').hide()"/>
               <p:commandButton id="confirmarRepostaRev" value="Confirmar"
@@ -460,7 +467,7 @@
                                action="#{guiaCtrl.registrarResposta}"
                                ajax="true"
                                process="@this registrarRespostaGrid"
-                               update="#{p:component('listWrapper')}"
+                               update="#{p:component('listWrapper')} registrarRespostaGrid"
                                rendered="#{guiaCtrl.acaoResposta eq 'AUTORIZADO'}"
                                oncomplete="if (args &amp;&amp; !args.validationFailed) PF('registrarRespostaDlg').hide()"/>
 
