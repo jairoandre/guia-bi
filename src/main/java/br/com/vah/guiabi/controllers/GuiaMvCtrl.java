@@ -1,12 +1,10 @@
 package br.com.vah.guiabi.controllers;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import br.com.vah.guiabi.entities.dbamv.Especialidade;
 import br.com.vah.guiabi.entities.dbamv.GuiaMv;
 import br.com.vah.guiabi.service.DataAccessService;
 import br.com.vah.guiabi.service.GuiaMvService;

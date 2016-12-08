@@ -54,9 +54,6 @@ public class GuiaMv extends BaseEntity {
 	@Column(name = "DT_AUTORIZACAO")
 	private Date dataAutorizacao;
 	
-	@Column(name = "DT_VALIDADE")
-	private Date validade;
-	
 	@Column(name = "DT_NEGACAO")
 	private Date dataNegacao;
 	
@@ -65,10 +62,7 @@ public class GuiaMv extends BaseEntity {
 	
 	@Column(name = "NR_DIAS_AUTORIZADOS")
 	private Integer diasAutorizadas;
-	
-	@Column(name = "CD_GUIA_PAI")
-	private Long guiaPai;
-	
+		
 	@Column(name = "CD_SENHA")
 	private String senha;
 	
@@ -178,14 +172,6 @@ public class GuiaMv extends BaseEntity {
 		this.dataNegacao = dataNegacao;
 	}
 
-	public Date getValidade() {
-		return validade;
-	}
-
-	public void setValidade(Date validade) {
-		this.validade = validade;
-	}
-
 	public Integer getDiasSolicitados() {
 		return diasSolicitados;
 	}
@@ -200,14 +186,6 @@ public class GuiaMv extends BaseEntity {
 
 	public void setDiasAutorizadas(Integer diasAutorizadas) {
 		this.diasAutorizadas = diasAutorizadas;
-	}
-
-	public Long getGuiaPai() {
-		return guiaPai;
-	}
-
-	public void setGuiaPai(Long guiaPai) {
-		this.guiaPai = guiaPai;
 	}
 
 	public String getSenha() {

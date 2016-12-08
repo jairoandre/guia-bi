@@ -1,9 +1,34 @@
 package br.com.vah.guiabi.service;
 
+import java.io.ByteArrayInputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+
 import br.com.vah.guiabi.constants.AcoesGuiaEnum;
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
-import br.com.vah.guiabi.controllers.SessionCtrl;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
 import br.com.vah.guiabi.entities.dbamv.GuiaMv;
@@ -16,21 +41,6 @@ import br.com.vah.guiabi.exceptions.GuiaPersistException;
 import br.com.vah.guiabi.reports.ReportLoader;
 import br.com.vah.guiabi.reports.ReportTotalPorSetor;
 import br.com.vah.guiabi.util.PaginatedSearchParam;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.Session;
-import org.hibernate.criterion.*;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by Jairoportela on 06/04/2016.
@@ -355,39 +365,37 @@ public class GuiaService extends DataAccessService<Guia> {
 		
 		// Tipos de guia seguindo tabela MV
 		if (guia.getTipo().getLabel().equalsIgnoreCase("Internação")){
-			guiaMv.setTipoGuia("I"); // Set default para teste
+			guiaMv.setTipoGuia("I"); 
 		}
 		if ((guia.getTipo().getLabel().equalsIgnoreCase("Procedimento")) || (guia.getTipo().getLabel().equalsIgnoreCase("Mat./Med. Alto Custo"))
 				|| (guia.getTipo().getLabel().equalsIgnoreCase("Home Care")) || (guia.getTipo().getLabel().equalsIgnoreCase("Parecer"))
 						|| (guia.getTipo().getLabel().equalsIgnoreCase("Bipap"))){
-			guiaMv.setTipoGuia("P"); // Set default para teste
+			guiaMv.setTipoGuia("P"); 
 		}
 		if (guia.getTipo().getLabel().equalsIgnoreCase("Prorrogação")){
-			guiaMv.setTipoGuia("R"); // Set default para teste
+			guiaMv.setTipoGuia("R"); 
 		}
 		if (guia.getTipo().getLabel().equalsIgnoreCase("Consulta")){
-			guiaMv.setTipoGuia("C"); // Set default para teste
+			guiaMv.setTipoGuia("C"); 
 		}
 		// ---------------------------------
 		
 		// tipo de situacao da guia seguindo tabela MV
 		if (guia.getEstado().getLabel().equalsIgnoreCase("Negado")){
-			guiaMv.setTipoSituacao("N"); // Set default para teste
+			guiaMv.setTipoSituacao("N");
 		}
 		if (guia.getEstado().getLabel().equalsIgnoreCase("Autorizado")){
-			guiaMv.setTipoSituacao("A"); // Set default para teste
+			guiaMv.setTipoSituacao("A");
 		}
 		if (guia.getEstado().getLabel().equalsIgnoreCase("Revisao")){
-			guiaMv.setTipoSituacao("G"); // Set default para teste
+			guiaMv.setTipoSituacao("G");
 		}
 		if (guia.getEstado().getLabel().equalsIgnoreCase("Pendente")){
-			guiaMv.setTipoSituacao("P"); // Set default para teste
-		}
-		if (guia.getEstado().getLabel().equalsIgnoreCase("Solicitado")){
-			guiaMv.setTipoSituacao("S"); // Set default para teste
+			guiaMv.setTipoSituacao("P");
 		}
 		// -------------------------------------------
-		
+		guiaMv.setNomeAutorizador("SIS");
+		guiaMv.setDiasSolicitados(1); // Default para 1 dia
 		guiaMv.setConvenio(guia.getAtendimento().getConvenio().getId().intValue());
 		guiaMv.setTipoAcomodacao(guia.getAtendimento().getTipoAcomodacao());
 		
