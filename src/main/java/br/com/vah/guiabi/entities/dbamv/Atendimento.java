@@ -31,7 +31,10 @@ public class Atendimento extends BaseEntity {
 
   @Column(name = "DT_ALTA")
   private Date dataAlta;
-
+  
+  @Column(name = "CD_TIP_ACOM")
+  private Integer tipoAcomodacao;
+  
   @Override
   public Long getId() {
     return id;
@@ -70,7 +73,15 @@ public class Atendimento extends BaseEntity {
     this.dataAlta = dataAlta;
   }
 
-  @Override
+  public Integer getTipoAcomodacao() {
+	return tipoAcomodacao;
+}
+
+public void setTipoAcomodacao(Integer tipoAcomodacao) {
+	this.tipoAcomodacao = tipoAcomodacao;
+}
+
+@Override
   public String getLabelForSelectItem() {
     return String.format("%l - %s", id, paciente.getName());
   }

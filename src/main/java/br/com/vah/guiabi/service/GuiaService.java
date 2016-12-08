@@ -3,8 +3,10 @@ package br.com.vah.guiabi.service;
 import br.com.vah.guiabi.constants.AcoesGuiaEnum;
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
+import br.com.vah.guiabi.controllers.SessionCtrl;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
+import br.com.vah.guiabi.entities.dbamv.GuiaMv;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Comentario;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
@@ -26,6 +28,7 @@ import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -36,7 +39,7 @@ import java.util.*;
 public class GuiaService extends DataAccessService<Guia> {
 
 	private @Inject ReportLoader reportLoader;
-
+	
 	public GuiaService() {
 		super(Guia.class);
 	}
@@ -294,6 +297,11 @@ public class GuiaService extends DataAccessService<Guia> {
 		for (Guia guia : guias) {
 			try {
 				create(guia);
+				
+				// -----
+				criarGuiaMv(guia);
+				// ----
+				
 			} catch (Exception e) {
 				throw new GuiaPersistException(String.format("Erro ao criar guia para o atendimento %s",
 						guia.getAtendimento().getId().toString()));
@@ -334,5 +342,59 @@ public class GuiaService extends DataAccessService<Guia> {
 		new LinkedHashSet<>(att.getHistorico());
 		new LinkedHashSet<>(att.getComentarios());
 		return att;
+	}
+	// TODO: Criação da guia na tabela do MV
+	public GuiaMv criarGuiaMv(Guia guia){
+
+		GuiaMv guiaMv = new GuiaMv();
+		
+		guiaMv.setAtendimento(guia.getAtendimento());
+		
+		guiaMv.setCriacao(guia.getData());
+		guiaMv.setPaciente(guia.getAtendimento().getPaciente());
+		
+		// Tipos de guia seguindo tabela MV
+		if (guia.getTipo().getLabel().equalsIgnoreCase("Internação")){
+			guiaMv.setTipoGuia("I"); // Set default para teste
+		}
+		if ((guia.getTipo().getLabel().equalsIgnoreCase("Procedimento")) || (guia.getTipo().getLabel().equalsIgnoreCase("Mat./Med. Alto Custo"))
+				|| (guia.getTipo().getLabel().equalsIgnoreCase("Home Care")) || (guia.getTipo().getLabel().equalsIgnoreCase("Parecer"))
+						|| (guia.getTipo().getLabel().equalsIgnoreCase("Bipap"))){
+			guiaMv.setTipoGuia("P"); // Set default para teste
+		}
+		if (guia.getTipo().getLabel().equalsIgnoreCase("Prorrogação")){
+			guiaMv.setTipoGuia("R"); // Set default para teste
+		}
+		if (guia.getTipo().getLabel().equalsIgnoreCase("Consulta")){
+			guiaMv.setTipoGuia("C"); // Set default para teste
+		}
+		// ---------------------------------
+		
+		// tipo de situacao da guia seguindo tabela MV
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Negado")){
+			guiaMv.setTipoSituacao("N"); // Set default para teste
+		}
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Autorizado")){
+			guiaMv.setTipoSituacao("A"); // Set default para teste
+		}
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Revisao")){
+			guiaMv.setTipoSituacao("G"); // Set default para teste
+		}
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Pendente")){
+			guiaMv.setTipoSituacao("P"); // Set default para teste
+		}
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Solicitado")){
+			guiaMv.setTipoSituacao("S"); // Set default para teste
+		}
+		// -------------------------------------------
+		
+		guiaMv.setConvenio(guia.getAtendimento().getConvenio().getId().intValue());
+		guiaMv.setTipoAcomodacao(guia.getAtendimento().getTipoAcomodacao());
+		
+		guiaMv.setEmergencia("N");
+		guiaMv.setUrgente("N");
+		
+		return guiaMv;
+		
 	}
 }

@@ -1,7 +1,10 @@
 package br.com.vah.guiabi.controllers;
 
 import br.com.vah.guiabi.entities.BaseEntity;
+import br.com.vah.guiabi.entities.dbamv.GuiaMv;
+import br.com.vah.guiabi.entities.usrdbvah.Guia;
 import br.com.vah.guiabi.service.DataAccessService;
+import br.com.vah.guiabi.service.GuiaService;
 import br.com.vah.guiabi.util.GenericLazyDataModel;
 
 import javax.faces.application.FacesMessage;
@@ -156,8 +159,23 @@ public abstract class AbstractCtrl<T extends BaseEntity> implements Serializable
     try {
       if (item.getId() == null) {
         item = getService().create(item);
+        
+        Guia guia = (Guia) item;
+        
+        GuiaService guiaService = new GuiaService();
+        GuiaMv guiaMv = new GuiaMv();
+        guiaMv = guiaService.criarGuiaMv(guia);
+        
+        getService().createMv(guiaMv);
+        
+        
       } else {
-        item = getService().update(item);
+        
+    	  item = getService().update(item);
+    	  
+    	  Guia guia = (Guia) item;
+          getService().updateMv(guia);
+        
       }
       addMsg(new FacesMessage("Sucesso!", "Registro salvo"), true);
       return back();
