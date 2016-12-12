@@ -69,7 +69,7 @@ public abstract class DataAccessService<T> implements Serializable {
     this.em.refresh(t);
     return t;
   }
-  
+  //TODO: Insercao de GUIA no MV
   public GuiaMv createMv(GuiaMv guia) {
 	  
 	  // ----- CD GUIA Incremento
@@ -89,7 +89,7 @@ public abstract class DataAccessService<T> implements Serializable {
 	  this.em.refresh(guia);
 	  return guia;
   }
-  
+  // TODO: Update de GUIA no MV
   public GuiaMv updateMv(Guia guia) {
 	  
 	  Query consulta = null;
