@@ -13,8 +13,10 @@ import org.primefaces.model.StreamedContent;
 
 import javax.ejb.Stateless;
 import javax.faces.context.FacesContext;
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -45,7 +47,12 @@ public class ReportLoader implements Serializable {
 
       ServletContext scontext = (ServletContext) facesContext.getExternalContext().getContext();
 
-      JasperPrint jasperPrint = JasperFillManager.fillReport(scontext.getRealPath(String.format("/resources/reports/%s.jasper", reportName)), parameters, ds);
+      BufferedImage logo = ImageIO.read(scontext.getResource("/resources/img/logo.png"));
+      parameters.put("LOGO", logo);
+
+      JasperPrint jasperPrint = JasperFillManager.
+          fillReport(scontext.getRealPath(String.format("/resources/reports/%s.jasper", reportName)), parameters, ds);
+
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

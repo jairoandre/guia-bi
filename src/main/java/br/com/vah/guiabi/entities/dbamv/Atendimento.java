@@ -32,6 +32,9 @@ public class Atendimento extends BaseEntity {
   @Column(name = "DT_ALTA")
   private Date dataAlta;
 
+  @Column(name = "CD_MULTI_EMPRESA")
+  private Integer multiEmpresa;
+
   @Override
   public Long getId() {
     return id;
@@ -68,6 +71,14 @@ public class Atendimento extends BaseEntity {
 
   public void setDataAlta(Date dataAlta) {
     this.dataAlta = dataAlta;
+  }
+
+  public Integer getMultiEmpresa() {
+    return multiEmpresa;
+  }
+
+  public void setMultiEmpresa(Integer multiEmpresa) {
+    this.multiEmpresa = multiEmpresa;
   }
 
   @Override

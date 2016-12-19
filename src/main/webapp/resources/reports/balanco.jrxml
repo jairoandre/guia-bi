@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ordem" pageWidth="595" pageHeight="845" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="76479a3c-133e-4501-9ab5-ef98285538a8">
+	<property name="ireport.zoom" value="1.0000000000000047"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="zebra">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#EEEEEE"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="LOGO" class="java.lang.Object"/>
+	<parameter name="tipo" class="java.lang.String"/>
+	<parameter name="numeroGuia" class="java.lang.String"/>
+	<parameter name="convenio" class="java.lang.String"/>
+	<parameter name="dataEntrega" class="java.lang.String"/>
+	<parameter name="dataSolicitacao" class="java.lang.String"/>
+	<parameter name="dataResposta" class="java.lang.String"/>
+	<parameter name="paciente" class="java.lang.String"/>
+	<parameter name="status" class="java.lang.String"/>
+	<parameter name="statusOpme" class="java.lang.String"/>
+	<parameter name="statusMat" class="java.lang.String"/>
+	<field name="convenio" class="java.lang.String"/>
+	<field name="ge30Qtd" class="java.lang.Integer"/>
+	<field name="ge30Dias" class="java.lang.Integer"/>
+	<field name="ge30Total" class="java.math.BigDecimal"/>
+	<field name="lt30Qtd" class="java.lang.Integer"/>
+	<field name="lt30Dias" class="java.lang.Integer"/>
+	<field name="lt30Total" class="java.math.BigDecimal"/>
+	<field name="guiasQtd" class="java.lang.Integer"/>
+	<field name="guiasDias" class="java.lang.Integer"/>
+	<field name="grupo" class="java.lang.String"/>
+	<group name="grupoGroup">
+		<groupExpression><![CDATA[$F{grupo}]]></groupExpression>
+		<groupHeader>
+			<band height="60">
+				<textField>
+					<reportElement x="0" y="0" width="555" height="20" uuid="e7cf9177-7b58-449f-afff-3c564f5f0ee6"/>
+					<box leftPadding="2">
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="14" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{grupo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="20" width="130" height="40" backcolor="#CCCCCC" uuid="08fbc763-2867-418e-8e53-c72079eb03c6"/>
+					<box leftPadding="2">
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[CONVÊNIO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="130" y="20" width="165" height="20" backcolor="#CCCCCC" uuid="b1ff5e3d-d541-4907-8550-6466331eb588"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[CONTAS >= 30 DIAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="130" y="40" width="30" height="20" backcolor="#CCCCCC" uuid="5139d04b-f39b-4684-b402-bdc10974781e"/>
+					<box rightPadding="2">
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[QTD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="160" y="40" width="50" height="20" backcolor="#CCCCCC" uuid="e2b149bf-7cee-4182-bd5e-40ff0a8bd3e4"/>
+					<box rightPadding="2">
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[MÉD. DIAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="210" y="40" width="85" height="20" backcolor="#CCCCCC" uuid="a6437ca5-14b7-4f6c-9e91-5a40f2246d33"/>
+					<box rightPadding="2">
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[TOTAL VALOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="295" y="20" width="165" height="20" backcolor="#CCCCCC" uuid="6dd625dd-391c-46d4-9569-f7eed12fb7e1"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[CONTAS < 30 DIAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="375" y="40" width="85" height="20" backcolor="#CCCCCC" uuid="13ff18b8-a5ca-4574-9bd9-64150a750fb5"/>
+					<box rightPadding="2">
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[TOTAL VALOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="295" y="40" width="30" height="20" backcolor="#CCCCCC" uuid="e46b6561-5b42-4a44-92fa-9b802d8c9035"/>
+					<box rightPadding="2">
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[QTD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="325" y="40" width="50" height="20" backcolor="#CCCCCC" uuid="d07d697f-cd99-4ce2-92e9-6b0d79308b48"/>
+					<box rightPadding="2">
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[MÉD. DIAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="460" y="20" width="95" height="20" backcolor="#CCCCCC" uuid="ce358e64-20d6-4b96-bcb3-cdd4f3be690e"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[GUIAS PENDENTES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="460" y="40" width="40" height="20" backcolor="#CCCCCC" uuid="4b126f4a-3663-4717-89fd-6b1a6626ffcc"/>
+					<box rightPadding="2">
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[QTD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="500" y="40" width="55" height="20" backcolor="#CCCCCC" uuid="2ceb80f6-d566-4cd5-a301-7d211688d190"/>
+					<box rightPadding="2">
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[MÉD. DIAS]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="2">
+				<line>
+					<reportElement x="0" y="0" width="555" height="1" uuid="1877f850-a5af-4fc8-b595-ab0e322342de"/>
+				</line>
+				<break>
+					<reportElement x="0" y="1" width="100" height="1" uuid="41e515f9-ce0c-4dde-9543-8b8908df24ad"/>
+				</break>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="45" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="120" height="35" uuid="ed068acf-e628-4544-983a-f84da01beeba"/>
+				<imageExpression><![CDATA[$P{LOGO}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="35" uuid="80b0caee-32af-4bc3-b792-2a8ec58957a3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BALANÇO CONTAS E GUIAS]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="20" uuid="cc3e6587-7fc9-4534-8863-28173ce3c8ed"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{convenio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="30" height="20" uuid="bee41aa5-bac6-431e-ba9c-07231c9cae5d"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ge30Qtd}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="160" y="0" width="50" height="20" uuid="51f067a0-700e-42aa-bef6-51755ba9675a"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ge30Dias}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="210" y="0" width="85" height="20" uuid="4cfa0f9a-c9de-46e0-98d2-983bb489b01c"/>
+				<box rightPadding="2">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ge30Total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="325" y="0" width="50" height="20" uuid="e0a233f7-35b3-4702-a0a1-9a551407bfe4"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lt30Dias}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="375" y="0" width="85" height="20" uuid="b7228c5d-c736-429f-98ef-8e87fc4dd773"/>
+				<box rightPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lt30Total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="295" y="0" width="30" height="20" uuid="dbaccbf7-b957-487b-bcda-95c87f7e5f42"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lt30Qtd}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="460" y="0" width="40" height="20" uuid="6bd44e76-4660-4ba7-8921-9d920d3ab271"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{guiasQtd}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="0" width="55" height="20" uuid="55100c4b-30c8-4bee-8ea2-36b3d5ce515f"/>
+				<box rightPadding="2">
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{guiasDias}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="460" y="0" width="95" height="15" uuid="d0750aa3-992f-41c2-a17f-55ccbb7b89a6"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="295" height="15" uuid="1d7c62db-6d98-4abe-96c6-3505c63081fe"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

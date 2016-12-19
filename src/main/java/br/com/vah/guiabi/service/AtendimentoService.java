@@ -52,6 +52,7 @@ public class AtendimentoService extends DataAccessService<Atendimento> {
       criteria.add(Subqueries.propertyIn("id", detachedCriteria));
 
     }
+    criteria.add(Restrictions.eq("multiEmpresa", 1));
     return criteria;
   }
 }
