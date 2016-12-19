@@ -35,6 +35,10 @@ public class Atendimento extends BaseEntity {
   @Column(name = "CD_MULTI_EMPRESA")
   private Integer multiEmpresa;
 
+
+  @Column(name = "CD_TIP_ACOM")
+  private Integer tipoAcomodacao;
+  
   @Override
   public Long getId() {
     return id;
@@ -79,6 +83,14 @@ public class Atendimento extends BaseEntity {
 
   public void setMultiEmpresa(Integer multiEmpresa) {
     this.multiEmpresa = multiEmpresa;
+  }
+
+  public Integer getTipoAcomodacao() {
+	return tipoAcomodacao;
+}
+
+  public void setTipoAcomodacao(Integer tipoAcomodacao) {
+    this.tipoAcomodacao = tipoAcomodacao;
   }
 
   @Override

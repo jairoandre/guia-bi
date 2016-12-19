@@ -1,10 +1,37 @@
 package br.com.vah.guiabi.service;
 
+import java.io.ByteArrayInputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+
 import br.com.vah.guiabi.constants.AcoesGuiaEnum;
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
 import br.com.vah.guiabi.entities.dbamv.Atendimento;
 import br.com.vah.guiabi.entities.dbamv.Convenio;
+import br.com.vah.guiabi.entities.dbamv.GuiaMv;
 import br.com.vah.guiabi.entities.dbamv.Setor;
 import br.com.vah.guiabi.entities.usrdbvah.Comentario;
 import br.com.vah.guiabi.entities.usrdbvah.Guia;
@@ -14,20 +41,6 @@ import br.com.vah.guiabi.exceptions.GuiaPersistException;
 import br.com.vah.guiabi.reports.ReportLoader;
 import br.com.vah.guiabi.reports.ReportTotalPorSetor;
 import br.com.vah.guiabi.util.PaginatedSearchParam;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.Session;
-import org.hibernate.criterion.*;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by Jairoportela on 06/04/2016.
@@ -36,7 +49,7 @@ import java.util.*;
 public class GuiaService extends DataAccessService<Guia> {
 
 	private @Inject ReportLoader reportLoader;
-
+	
 	public GuiaService() {
 		super(Guia.class);
 	}
@@ -294,6 +307,11 @@ public class GuiaService extends DataAccessService<Guia> {
 		for (Guia guia : guias) {
 			try {
 				create(guia);
+				
+				// -----
+				criarGuiaMv(guia);
+				// ----
+				
 			} catch (Exception e) {
 				throw new GuiaPersistException(String.format("Erro ao criar guia para o atendimento %s",
 						guia.getAtendimento().getId().toString()));
@@ -334,5 +352,57 @@ public class GuiaService extends DataAccessService<Guia> {
 		new LinkedHashSet<>(att.getHistorico());
 		new LinkedHashSet<>(att.getComentarios());
 		return att;
+	}
+	// TODO: Criação da guia na tabela do MV
+	public GuiaMv criarGuiaMv(Guia guia){
+
+		GuiaMv guiaMv = new GuiaMv();
+		
+		guiaMv.setAtendimento(guia.getAtendimento());
+		
+		guiaMv.setCriacao(guia.getData());
+		guiaMv.setPaciente(guia.getAtendimento().getPaciente());
+		
+		// Tipos de guia seguindo tabela MV
+		if (guia.getTipo().getLabel().equalsIgnoreCase("Internação")){
+			guiaMv.setTipoGuia("I"); 
+		}
+		if ((guia.getTipo().getLabel().equalsIgnoreCase("Procedimento")) || (guia.getTipo().getLabel().equalsIgnoreCase("Mat./Med. Alto Custo"))
+				|| (guia.getTipo().getLabel().equalsIgnoreCase("Home Care")) || (guia.getTipo().getLabel().equalsIgnoreCase("Parecer"))
+						|| (guia.getTipo().getLabel().equalsIgnoreCase("Bipap"))){
+			guiaMv.setTipoGuia("P"); 
+		}
+		if (guia.getTipo().getLabel().equalsIgnoreCase("Prorrogação")){
+			guiaMv.setTipoGuia("R"); 
+		}
+		if (guia.getTipo().getLabel().equalsIgnoreCase("Consulta")){
+			guiaMv.setTipoGuia("C"); 
+		}
+		// ---------------------------------
+		
+		// tipo de situacao da guia seguindo tabela MV
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Negado")){
+			guiaMv.setTipoSituacao("N");
+		}
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Autorizado")){
+			guiaMv.setTipoSituacao("A");
+		}
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Revisao")){
+			guiaMv.setTipoSituacao("G");
+		}
+		if (guia.getEstado().getLabel().equalsIgnoreCase("Pendente")){
+			guiaMv.setTipoSituacao("P");
+		}
+		// -------------------------------------------
+		guiaMv.setNomeAutorizador("SIS");
+		guiaMv.setDiasSolicitados(1); // Default para 1 dia
+		guiaMv.setConvenio(guia.getAtendimento().getConvenio().getId().intValue());
+		guiaMv.setTipoAcomodacao(guia.getAtendimento().getTipoAcomodacao());
+		
+		guiaMv.setEmergencia("N");
+		guiaMv.setUrgente("N");
+		
+		return guiaMv;
+		
 	}
 }

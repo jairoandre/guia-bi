@@ -25,7 +25,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import br.com.vah.guiabi.constants.EstadosGuiaEnum;
 import br.com.vah.guiabi.constants.TipoGuiaEnum;
@@ -43,7 +42,8 @@ import br.com.vah.guiabi.entities.dbamv.Setor;
 @Entity
 @Table(name = "TB_GUIABI_GUIA", schema = "USRDBVAH")
 @NamedQueries({ @NamedQuery(name = Guia.ALL, query = "SELECT g FROM Guia g"),
-		@NamedQuery(name = Guia.COUNT, query = "SELECT COUNT(g) FROM Guia g") })
+		@NamedQuery(name = Guia.COUNT, query = "SELECT COUNT(g) FROM Guia g"),
+		@NamedQuery(name = Guia.MAX, query = "SELECT MAX(g.id) FROM Guia g")})
 public class Guia extends BaseEntity {
 
 	/**
@@ -52,6 +52,7 @@ public class Guia extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 	public static final String ALL = "Guia.all";
 	public static final String COUNT = "Guia.count";
+	public static final String MAX = "Guia.max";
 
 	@Id
 	@SequenceGenerator(name = "seqGuia", sequenceName = "SEQ_GUIABI_GUIA", schema = "USRDBVAH", allocationSize = 1)

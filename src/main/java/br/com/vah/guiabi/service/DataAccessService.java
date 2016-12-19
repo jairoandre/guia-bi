@@ -11,12 +11,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import br.com.vah.guiabi.exceptions.GuiaPersistException;
-import br.com.vah.guiabi.util.PaginatedSearchParam;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+
+import br.com.vah.guiabi.entities.dbamv.GuiaMv;
+import br.com.vah.guiabi.entities.usrdbvah.Guia;
+import br.com.vah.guiabi.exceptions.GuiaPersistException;
+import br.com.vah.guiabi.util.PaginatedSearchParam;
 
 /**
  * Implementation of the generic Data Access Service All CRUD (create, read,
@@ -60,6 +68,65 @@ public abstract class DataAccessService<T> implements Serializable {
     this.em.flush();
     this.em.refresh(t);
     return t;
+  }
+  //TODO: Insercao de GUIA no MV
+  public GuiaMv createMv(GuiaMv guia) {
+	  
+	  // ----- CD GUIA Incremento
+	  Query consulta = null;  
+	  consulta = em.createNamedQuery("CdGuia.Max", Long.class);
+	  Long id = (Long) consulta.getSingleResult();
+	  guia.setId(id+1);
+	  // ------------
+	  // ---- NR GUIA Incremento
+	  consulta = em.createNamedQuery("Guia.max", Long.class);
+	  id = (Long) consulta.getSingleResult();
+	  id = id++;
+	  guia.setGuia(id.toString());
+	  // ----
+	  this.em.persist(guia);
+	  this.em.flush();
+	  this.em.refresh(guia);
+	  return guia;
+  }
+  // TODO: Update de GUIA no MV
+  public GuiaMv updateMv(Guia guia) {
+	  
+	  Query consulta = null;
+	  GuiaMv guiaMv = null;
+	  
+	  consulta = em.createQuery("Select g From GuiaMv g Where g.atendimento = :atendimento And g.guia = :guia");
+	  consulta.setParameter("atendimento", guia.getAtendimento());
+	  consulta.setParameter("guia", guia.getId().toString());
+	  guiaMv = (GuiaMv) consulta.getSingleResult();
+	  
+	  if (guia.getEstado().getLabel().equalsIgnoreCase("Negado")){
+		  guiaMv.setTipoSituacao("N"); 
+		  guiaMv.setDataNegacao(guia.getDataRespostaConvenio());
+	  }
+	  if (guia.getEstado().getLabel().equalsIgnoreCase("Autorizado")){
+		  guiaMv.setTipoSituacao("A");
+		  guiaMv.setDataAutorizacao(guia.getDataRespostaConvenio());
+		  guiaMv.setDiasAutorizadas(guiaMv.getDiasSolicitados()); // Default para 1 dia
+	  }
+	  if (guia.getEstado().getLabel().equalsIgnoreCase("Revisao")){
+		  guiaMv.setTipoSituacao("G");
+	  }
+	  if (guia.getEstado().getLabel().equalsIgnoreCase("Pendente")){
+		  guiaMv.setTipoSituacao("P");
+		  guiaMv.setDataSolicitacao(guia.getDataSolicitacaoConvenio());
+		  
+		  if (guiaMv.getDataSolicitacao() != null){
+			  guiaMv.setTipoSituacao("S");
+		  }
+	  }
+	  if (guia.getEstado().getLabel().equalsIgnoreCase("Autorizado parcialmente")){
+		  guiaMv.setTipoSituacao("A");
+		  guiaMv.setDataAutorizacao(guia.getDataRespostaConvenio());
+		  guiaMv.setDiasAutorizadas(guiaMv.getDiasSolicitados()); // Default para 1 dia
+	  }
+	  
+	  return this.em.merge(guiaMv);
   }
 
   /**
