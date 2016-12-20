@@ -210,7 +210,10 @@ public class FaturamentoSrv {
       }
     }
 
-    list.sort((Faturamento f1, Faturamento f2) -> f1.getGrupo().equals(f2.getGrupo()) ? (f1.getConvenio().equals(f2.getConvenio()) ? (f2.getGe30Qtd().compareTo(f1.getLt30Qtd())) : f1.getConvenio().compareTo(f2.getConvenio())) : f1.getGrupo().compareTo(f2.getGrupo()));
+    list.sort((Faturamento f1, Faturamento f2) ->
+        f1.getGrupo().equals(f2.getGrupo()) ?
+            f2.getGe30Qtd().compareTo(f1.getGe30Qtd()) :
+            f1.getGrupo().compareTo(f2.getGrupo()));
 
     return list;
   }

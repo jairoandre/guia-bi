@@ -1,15 +1,20 @@
 package br.com.vah.guiabi.controllers;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import br.com.vah.guiabi.constants.*;
+import br.com.vah.guiabi.entities.dbamv.*;
+import br.com.vah.guiabi.entities.usrdbvah.Anexo;
+import br.com.vah.guiabi.entities.usrdbvah.Guia;
+import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
+import br.com.vah.guiabi.entities.usrdbvah.User;
+import br.com.vah.guiabi.exceptions.GuiaPersistException;
+import br.com.vah.guiabi.service.*;
+import br.com.vah.guiabi.util.ViewUtils;
+import com.opencsv.CSVReader;
+import org.apache.commons.lang3.StringUtils;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+import org.primefaces.model.UploadedFile;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -17,35 +22,12 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.commons.lang3.StringUtils;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-import org.primefaces.model.UploadedFile;
-
-import com.opencsv.CSVReader;
-
-import br.com.vah.guiabi.constants.AcoesGuiaEnum;
-import br.com.vah.guiabi.constants.AcoesRespostaEnum;
-import br.com.vah.guiabi.constants.EstadosGuiaEnum;
-import br.com.vah.guiabi.constants.GuiaFieldsEnum;
-import br.com.vah.guiabi.constants.TipoGuiaEnum;
-import br.com.vah.guiabi.entities.dbamv.Atendimento;
-import br.com.vah.guiabi.entities.dbamv.Convenio;
-import br.com.vah.guiabi.entities.dbamv.ProFat;
-import br.com.vah.guiabi.entities.dbamv.Setor;
-import br.com.vah.guiabi.entities.usrdbvah.Anexo;
-import br.com.vah.guiabi.entities.usrdbvah.Guia;
-import br.com.vah.guiabi.entities.usrdbvah.HistoricoGuia;
-import br.com.vah.guiabi.entities.usrdbvah.User;
-import br.com.vah.guiabi.exceptions.GuiaPersistException;
-import br.com.vah.guiabi.service.AtendimentoService;
-import br.com.vah.guiabi.service.ConvenioService;
-import br.com.vah.guiabi.service.DataAccessService;
-import br.com.vah.guiabi.service.EspecialidadeService;
-import br.com.vah.guiabi.service.GuiaService;
-import br.com.vah.guiabi.util.ViewUtils;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by Jairoportela on 06/04/2016.
@@ -484,6 +466,7 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
     guia.setDataAuditoria(getItem().getDataAuditoria());
     guia.setHistorico(getItem().getHistorico());
   }
+
   public void solicitarConvenio(Guia guia) {
     Guia attachedGuia = service.carregarListas(guia);
     attachedGuia.setDataSolicitacaoConvenio(new Date());
@@ -709,5 +692,27 @@ public class GuiaCtrl extends AbstractCtrl<Guia> {
 
   public Boolean getSomenteSemRecebimentos() {
     return somenteSemRecebimentos;
+  }
+
+  @Override
+  public String doSave() {
+    try {
+      if (getItem().getId() == null) {
+        setItem(getService().create(getItem()));
+        GuiaService guiaService = new GuiaService();
+        //GuiaMv guiaMv = guiaService.criarGuiaMv(getItem());
+        //getService().createMv(guiaMv);
+
+      } else {
+        setItem(getService().update(getItem()));
+        //getService().updateMv(getItem());
+      }
+      addMsg(new FacesMessage("Sucesso!", "Registro salvo"), true);
+      return back();
+    } catch (Exception e) {
+      addMsg(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro!", "Ops! Erro inesperado: " + e.getMessage()),
+          true);
+    }
+    return null;
   }
 }

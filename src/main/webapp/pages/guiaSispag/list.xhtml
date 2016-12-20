@@ -1,0 +1,58 @@
+<ui:composition template="/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+  <ui:define name="content">
+    <h:form id="form">
+      <p:panel>
+        <f:facet name="header">
+          <h:outputText value="Guias SIPAG (OPME)"/>
+        </f:facet>
+
+        <h:panelGroup id="listWrapper" style="margin-top: 5px;" layout="block">
+          <p:dataTable value="#{guiaSispagCtrl.lazyModel}" var="guia" sortBy="#{guia.id}" sortOrder="descending"
+                       paginator="true" emptyMessage="Sem registros"
+                       styleClass="table-left-header"
+                       paginatorPosition="bottom" rows="25" rowKey="index" rowIndexVar="indexVar"
+                       paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                       lazy="true" rowsPerPageTemplate="25,50,100">
+            <p:column headerText="Id" styleClass="left-align" width="35" sortBy="#{guia.id}">
+              <h:outputText value="#{guia.id}"/>
+            </p:column>
+            <p:column headerText="Convênio" width="150" styleClass="left-align ellipsis-text" sortBy="#{guia.convenio}">
+              <h:outputText value="#{guia.convenio.title}"/>
+            </p:column>
+            <p:column headerText="Paciente" styleClass="left-align ellipsis-text" width="175" sortBy="#{guia.paciente}">
+              <h:outputText value="#{guia.paciente}"/>
+            </p:column>
+            <p:column headerText="Prestador" styleClass="left-align ellipsis-text" width="175"
+                      sortBy="#{guia.prestador.nome}">
+              <h:outputText value="#{guia.prestador.nome}"/>
+            </p:column>
+            <p:column headerText="Status" width="85" styleClass="center-align">
+              <h:panelGroup id="status" styleClass="estadoGuia estadoGuia--#{guia.status}" layout="block">
+                <h:outputText value="#{guia.status.label}"/>
+              </h:panelGroup>
+            </p:column>
+            <p:column headerText="OPME" width="85" styleClass="center-align">
+              <h:panelGroup id="statusOpme" styleClass="estadoGuia estadoGuia--#{guia.statusOpme}"
+                            layout="block" rendered="#{not empty guia.statusOpme}">
+                <h:outputText value="#{guia.statusOpme.label}"/>
+              </h:panelGroup>
+            </p:column>
+            <p:column headerText="Emissão" width="100" styleClass="left-align" sortBy="#{guia.dataEmissao}">
+              <h:outputText value="#{guia.dataEmissao}">
+                <f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="GMT-03:00"/>
+              </h:outputText>
+            </p:column>
+            <p:column headerText="Tipo" width="75" styleClass="left-align">
+              <h:outputText value="#{guia.tipo eq 0 ? 'Internação' : 'SADT'}"/>
+            </p:column>
+          </p:dataTable>
+        </h:panelGroup>
+      </p:panel>
+    </h:form>
+  </ui:define>
+</ui:composition>
