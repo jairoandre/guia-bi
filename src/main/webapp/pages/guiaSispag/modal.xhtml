@@ -1,0 +1,235 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+  <p:dialog id="modal" widgetVar="modal" height="400" header="Guia" modal="true" width="1000" position="top"
+            styleClass="margin-top">
+    <h:panelGroup id="content" layout="block">
+      <p:tabView>
+        <p:tab title="Guia">
+          <p:panelGrid id="modalGrid" style="width: 100%;">
+            <p:row>
+              <p:column colspan="6" style="font-weight: bold; font-style: oblique;">
+                <h:outputText value="DADOS DA GUIA"/>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Tipo:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.tipo eq 0 ? 'Internação' : 'SADT'}"/>
+              </p:column>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Convênio:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.convenio.title}"/>
+              </p:column>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Núm.:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.numeroGuia}"/>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Protoc.:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.numeroSolicitacao}"/>
+              </p:column>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Senha:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.senha}"/>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Entrega:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.dataEntrega}">
+                  <f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="GMT-03:00"/>
+                </h:outputText>
+              </p:column>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Solicitação:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.dataEmissao}">
+                  <f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="GMT-03:00"/>
+                </h:outputText>
+              </p:column>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Resposta:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.dataResposta}">
+                  <f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="GMT-03:00"/>
+                </h:outputText>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column colspan="6" style="font-weight: bold; font-style: oblique;">
+                <h:outputText value="DADOS DO BENEFICIÁRIO"/>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Nº. Cartão:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.cartao}"/>
+              </p:column>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="CPF:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.cpf}"/>
+              </p:column>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Telefone:"/>
+              </p:column>
+              <p:column>
+                <h:outputText value="#{guiaSispagCtrl.item.numeroTelefone}"/>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Nome:"/>
+              </p:column>
+              <p:column colspan="5">
+                <h:outputText value="#{guiaSispagCtrl.item.paciente}"/>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column colspan="6" style="font-weight: bold; font-style: oblique;">
+                <h:outputText value="DADOS DO CONTRATADO EXECUTANTE"/>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Prestador:"/>
+              </p:column>
+              <p:column colspan="5">
+                <h:outputText value="#{guiaSispagCtrl.item.prestador.nome}"/>
+              </p:column>
+            </p:row>
+            <p:row>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="CPF:"/>
+              </p:column>
+              <p:column>
+                <h:panelGroup id="cpfPrestador">
+                  <h:outputText value="#{guiaSispagCtrl.item.prestador.cpf}"/>
+                </h:panelGroup>
+              </p:column>
+              <p:column style="font-weight: bold;">
+                <p:outputLabel value="Especialidades:"/>
+              </p:column>
+              <p:column colspan="3">
+                <h:panelGroup id="especialidadesPnl" layout="block">
+                  <ui:repeat value="#{guiaSispagCtrl.item.prestador.especialidades.toArray()}" var="especialidade"
+                             varStatus="idx">
+                    <h:outputText value="#{especialidade.title}"/>
+                    <h:outputText value=", " rendered="#{not idx.last}"/>
+                  </ui:repeat>
+                </h:panelGroup>
+              </p:column>
+            </p:row>
+          </p:panelGrid>
+        </p:tab>
+        <p:tab title="Procedimentos">
+          <h:panelGroup id="procedimentosTab" style="height: 100%;">
+            <h:panelGroup id="proFatItens" layout="block" styleClass="margin-top">
+              <ui:repeat value="#{guiaSispagCtrl.item.itens.toArray()}" var="item" varStatus="idx">
+                <h:panelGroup layout="block" style="margin-top: 5px;">
+                  <h:outputText value="Qtd #{item.quantidade} - #{item.nome}"/>
+                </h:panelGroup>
+              </ui:repeat>
+            </h:panelGroup>
+          </h:panelGroup>
+        </p:tab>
+        <p:tab title="OPME">
+          <h:panelGroup style="height: 100%" layout="block">
+            <h:panelGroup id="opmeItem">
+              <h:panelGroup id="opmeWrapper">
+                <h:panelGroup id="opmeItens" layout="block" styleClass="margin-top">
+                  <ui:repeat value="#{guiaSispagCtrl.item.opmes.toArray()}" var="item" varStatus="idx">
+                    <h:panelGroup layout="block"
+                                  style="margin-top: 5px;">
+                      <h:outputText value="Qtd #{item.quantidade} - #{item.nome}"/>
+                    </h:panelGroup>
+                  </ui:repeat>
+                </h:panelGroup>
+              </h:panelGroup>
+            </h:panelGroup>
+          </h:panelGroup>
+        </p:tab>
+        <p:tab title="Material Estoque">
+          <h:panelGroup style="height: 100%" layout="block">
+            <h:panelGroup id="matEstqItem">
+              <h:panelGroup id="matEstqWrapper">
+                <h:panelGroup id="materialItens" layout="block" styleClass="margin-top">
+                  <ui:repeat value="#{guiaSispagCtrl.item.materiais.toArray()}" var="item" varStatus="idx">
+                    <h:panelGroup id="outPutMatItemWrapper"
+                                  layout="block" style="margin-top: 5px;">
+                      <h:outputText value="Qtd #{item.quantidade} - #{item.nome}"/>
+                    </h:panelGroup>
+                  </ui:repeat>
+                </h:panelGroup>
+              </h:panelGroup>
+            </h:panelGroup>
+          </h:panelGroup>
+
+        </p:tab>
+        <p:tab title="Anexos">
+          <h:panelGroup id="anexosWrapper" layout="block" styleClass="margin-top">
+            <ui:repeat value="#{guiaSispagCtrl.item.anexos.toArray()}" var="anexo" varStatus="idx">
+              <h:panelGroup id="anexoItemWrapper" layout="block" styleClass="margin-top">
+                <p:commandButton value="#{anexo.nome} (#{anexo.tamanhoArquivo} bytes)"
+                                 ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" immediate="true"
+                                 icon="fa fa-download">
+                  <p:fileDownload value="#{guiaSispagCtrl.download(anexo)}" contentDisposition="attachment"/>
+                </p:commandButton>
+              </h:panelGroup>
+            </ui:repeat>
+          </h:panelGroup>
+
+        </p:tab>
+        <p:tab title="Histórico">
+          <p:dataTable value="#{guiaSispagCtrl.item.eventos}" var="evento"
+                       styleClass="margin-top"
+                       lazy="true" rendered="#{not empty guiaSispagCtrl.item.eventos}">
+            <p:column headerText="Evento" styleClass="left-align">
+              <h:outputText value="#{evento.texto}" escape="false"/>
+            </p:column>
+            <p:column headerText="Usuário" width="125" styleClass="left-align">
+              <h:outputText value="#{evento.usuario.login}"/>
+            </p:column>
+            <p:column headerText="Data" styleClass="left-align" width="100">
+              <h:outputText value="#{evento.dataEvento}">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" locale="pt_BR" timeZone="GMT-03:00"/>
+              </h:outputText>
+            </p:column>
+          </p:dataTable>
+
+        </p:tab>
+      </p:tabView>
+
+
+    </h:panelGroup>
+    <f:facet name="footer">
+      <p:commandButton value="Fechar" ajax="true" process="@this" oncomplete="PF('modal').hide();"
+                       rendered="#{not guiaSispagCtrl.editing}"/>
+
+    </f:facet>
+  </p:dialog>
+
+
+</ui:composition>

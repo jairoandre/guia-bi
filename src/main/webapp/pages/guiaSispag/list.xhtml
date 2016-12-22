@@ -12,7 +12,36 @@
         </f:facet>
 
         <h:panelGroup id="listWrapper" style="margin-top: 5px;" layout="block">
-          <p:dataTable value="#{guiaSispagCtrl.lazyModel}" var="guia" sortBy="#{guia.id}" sortOrder="descending"
+          <h:panelGroup id="filters">
+            <h:panelGroup layout="block">
+              <p:inputText id="pacienteFiltro"
+                           value="#{guiaSispagCtrl.pacienteTerm}"
+                           placeholder="Nome do Paciente..."
+                           style="width: 30%;"/>
+            </h:panelGroup>
+            <h:panelGroup layout="block" style="margin: 5px 0;">
+              <p:inputText id="convenioFiltro"
+                           value="#{guiaSispagCtrl.convenioTerm}"
+                           placeholder="Nome do Convênio..."
+                           style="width: 30%;"/>
+            </h:panelGroup>
+          </h:panelGroup>
+          <h:panelGroup layout="block" style="margin: 5px 0;">
+            <p:commandButton id="searchBtn" value="Filtrar Guias"
+                             action="#{guiaSispagCtrl.prepareSearch}" icon="fa fa-search"
+                             ajax="true" process="@form"
+                             update="table"
+                             title="Filtrar Guias"/>
+            <p:commandButton id="clearFilter" value="Limpar Filtros"
+                             action="#{guiaSispagCtrl.clearFilters}" icon="fa fa-eraser"
+                             ajax="true" process="@this"
+                             style="margin: 0 5px;"
+                             update="table filters"
+                             title="Limpar Filtros"/>
+          </h:panelGroup>
+
+          <p:dataTable id="table" value="#{guiaSispagCtrl.lazyModel}" var="guia" sortBy="#{guia.id}"
+                       sortOrder="descending"
                        paginator="true" emptyMessage="Sem registros"
                        styleClass="table-left-header"
                        paginatorPosition="bottom" rows="25" rowKey="index" rowIndexVar="indexVar"
@@ -25,7 +54,9 @@
               <h:outputText value="#{guia.convenio.title}"/>
             </p:column>
             <p:column headerText="Paciente" styleClass="left-align ellipsis-text" width="175" sortBy="#{guia.paciente}">
-              <h:outputText value="#{guia.paciente}"/>
+              <p:commandLink action="#{guiaSispagCtrl.preOpenModal(guia)}" value="#{guia.paciente}"
+                             ajax="true" process="@this" update="#{p:component('modalWrapper')}"
+                             oncomplete="PF('modal').show();"/>
             </p:column>
             <p:column headerText="Prestador" styleClass="left-align ellipsis-text" width="175"
                       sortBy="#{guia.prestador.nome}">
@@ -42,17 +73,27 @@
                 <h:outputText value="#{guia.statusOpme.label}"/>
               </h:panelGroup>
             </p:column>
+            <p:column headerText="MAT/MED" width="85" styleClass="center-align">
+              <h:panelGroup id="statusMat" styleClass="estadoGuia estadoGuia--#{guia.statusMat}"
+                            layout="block" rendered="#{not empty guia.statusMat}">
+                <h:outputText value="#{guia.statusMat.label}"/>
+              </h:panelGroup>
+            </p:column>
             <p:column headerText="Emissão" width="100" styleClass="left-align" sortBy="#{guia.dataEmissao}">
               <h:outputText value="#{guia.dataEmissao}">
                 <f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" timeZone="GMT-03:00"/>
               </h:outputText>
             </p:column>
-            <p:column headerText="Tipo" width="75" styleClass="left-align">
-              <h:outputText value="#{guia.tipo eq 0 ? 'Internação' : 'SADT'}"/>
-            </p:column>
+            <f:facet name="footer">
+              <h:outputText
+                value="#{guiaSispagCtrl.lazyModel.rowCount} registro(s)"/>
+            </f:facet>
           </p:dataTable>
         </h:panelGroup>
       </p:panel>
+      <h:panelGroup id="modalWrapper" layout="block">
+        <ui:include src="modal.xhtml"/>
+      </h:panelGroup>
     </h:form>
   </ui:define>
 </ui:composition>

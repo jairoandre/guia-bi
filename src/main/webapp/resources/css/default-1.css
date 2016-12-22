@@ -356,3 +356,51 @@ input.ui-state-disabled {
 .ui-chkbox {
   vertical-align: middle !important;
 }
+
+.estadoGuia {
+  padding: 3px;
+  border-radius: 2px;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+}
+
+.estadoGuia--CRIADA {
+  background: #3992d3;
+}
+
+.estadoGuia--ANALISE, .estadoGuia--RE_ANALISE {
+  background: #6a3ed3;
+}
+
+.estadoGuia--PENDENTE {
+  background: #d39830;
+}
+
+.estadoGuia--AUTORIZADA {
+  background: #15a510;
+}
+
+.estadoGuia--PARCIAL {
+  background: #57875e;
+}
+
+.estadoGuia--NEGADA {
+  background: #a53a1b;
+}
+
+.estadoGuia--LIBERADA {
+  background: #1b8686;
+}
+
+.estadoGuia--A_LIBERAR {
+  background: #a52b76;
+}
+
+.estadoGuia--CANCELADA {
+  background: #a52e00;
+}
+
+.estadoGuia--A_SOLICITAR {
+  background: #a52f8d;
+}

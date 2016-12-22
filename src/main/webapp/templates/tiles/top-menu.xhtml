@@ -21,9 +21,19 @@
       <p:menuitem value="Guias SISPAG"
                   action="/pages/guiaSispag/list.xhtml?faces-redirect=true" ajax="false"
                   icon="fa fa-file" onstart="PF('changePage').show()"/>
-      <p:menuitem value="Relatórios"
-                  action="/pages/relatorios/medias.xhtml?faces-redirect=true" ajax="false"
-                  icon="fa fa-bar-chart" onstart="PF('changePage').show()"/>
+      <p:submenu label="Relatórios" icon="fa fa-bar-chart">
+        <p:menuitem value="Tempo Médio"
+                    action="/pages/relatorios/medias.xhtml?faces-redirect=true" ajax="false"
+                    icon="fa fa-line-chart" onstart="PF('changePage').show()"/>
+        <p:menuitem id="gerarRelatorio"
+                    value="Contas Abertas"
+                    icon="fa fa-area-chart"
+                    ajax="false"
+                    onclick="PrimeFaces.monitorDownload(start, stop);">
+          <p:fileDownload value="#{faturamentoReportCtrl.relatorio}"/>
+        </p:menuitem>
+      </p:submenu>
+
       <p:menuitem value="Ajuda"
                   action="/ajuda.xhtml?faces-redirect=true" ajax="false"
                   icon="fa fa-book" onstart="PF('changePage').show()"/>
@@ -32,10 +42,12 @@
         <h:panelGroup style="margin-top: 3px;" layout="block">
           <p:commandButton value="#{sessionCtrl.conveniosStr}"
                            action="/selecionarSetor.xhtml?faces-redirect=true" ajax="false"
-                           icon="fa fa-leaf" rendered="#{not empty sessionCtrl.conveniosStr}" onstart="PF('changePage').show()"/>
+                           icon="fa fa-leaf" rendered="#{not empty sessionCtrl.conveniosStr}"
+                           onstart="PF('changePage').show()"/>
           <p:commandButton value="#{sessionCtrl.setor.title}"
                            action="/selecionarSetor.xhtml?faces-redirect=true" ajax="false"
-                           icon="fa fa-hospital-o" rendered="#{sessionCtrl.setor != null}" onstart="PF('changePage').show()"/>
+                           icon="fa fa-hospital-o" rendered="#{sessionCtrl.setor != null}"
+                           onstart="PF('changePage').show()"/>
           <p:commandButton value="#{sessionCtrl.username}"
                            action="/pages/guia/index.xhtml?faces-redirect=true" ajax="false"
                            icon="fa fa-user" rendered="#{request.getUserPrincipal() != null}"/>

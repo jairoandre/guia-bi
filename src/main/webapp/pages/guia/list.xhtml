@@ -150,13 +150,6 @@
                                  onclick="PrimeFaces.monitorDownload(start, stop);">
                   <p:fileDownload value="#{guiaCtrl.consultaCsv}"/>
                 </p:commandButton>
-                <p:commandButton rendered="true" id="gerarRelatorio" value="Relatório Balanço"
-                                 ajax="false"
-                                 process="@form"
-                                 onclick="PrimeFaces.monitorDownload(start, stop);">
-                  <p:fileDownload value="#{faturamentoReportCtrl.relatorio}"/>
-                </p:commandButton>
-
               </h:panelGroup>
               <div class="margin-top">
                 <p:selectBooleanCheckbox id="somenteMinhaAutoria" value="#{guiaCtrl.somenteMinhaAutoria}"
