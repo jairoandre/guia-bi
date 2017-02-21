@@ -3,6 +3,9 @@
 	<property name="ireport.zoom" value="1.2100000000000009"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="LOGO" class="java.lang.Object"/>
+	<parameter name="begin" class="java.lang.String"/>
+	<parameter name="end" class="java.lang.String"/>
 	<field name="setor" class="java.lang.String"/>
 	<field name="convenio" class="java.lang.String"/>
 	<field name="totalCriadas" class="java.lang.Integer"/>
@@ -304,7 +307,7 @@
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="37" splitType="Stretch">
+		<band height="50" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="0" width="555" height="30" uuid="8bef819b-acf6-479a-9f0d-ddec741a3064"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -316,6 +319,15 @@
 				<reportElement x="495" y="0" width="60" height="30" uuid="0e65a592-0a84-4942-bc94-d93b904c97f8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="121" height="30" uuid="22109067-9f9b-4ba5-9de0-deec3424348a"/>
+				<imageExpression><![CDATA[$P{LOGO}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="30" width="555" height="20" uuid="718c377d-0490-4f31-98c0-72bc56d35696"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[String.format("De %s à %s", $P{begin}, $P{end});]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -403,7 +415,18 @@
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band splitType="Stretch"/>
+		<band height="15" splitType="Stretch">
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="0" width="295" height="15" uuid="757ccef2-26ba-4478-b2e4-73209b52a6fa"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="0" width="100" height="15" uuid="db9501fe-8203-49e1-a5a9-d1a3a2724b92"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
 	</pageFooter>
 	<summary>
 		<band height="99" splitType="Stretch">

@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,14 +31,20 @@ import java.util.Map;
 @Stateless
 public class ReportLoader implements Serializable {
 
+  public StreamedContent imprimeRelatorio(String reportName, List list, Date begin, Date end) {
+    Map params = new HashMap<>();
+
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+    params.put("begin", sdf.format(begin));
+    params.put("end", sdf.format(end));
+
+    return printReport(reportName, reportName, list, params);
+  }
+
   public StreamedContent imprimeRelatorio(String reportName, List list) {
-
-    JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(list);
-
-    HashMap parameters = new HashMap();
-
-    return printReport(reportName, reportName, list, parameters);
-
+    Map params = new HashMap<>();
+    return printReport(reportName, reportName, list, params);
   }
 
   public StreamedContent printReport(String reportName, String dlFilename, List list, Map params) {
